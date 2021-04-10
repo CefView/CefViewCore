@@ -18,10 +18,6 @@ RenderDelegate::RenderDelegate(const std::string& bridge_name)
 {}
 
 void
-RenderDelegate::OnRenderThreadCreated(CefRefPtr<CefViewRenderApp> app, CefRefPtr<CefListValue> extra_info)
-{}
-
-void
 RenderDelegate::OnWebKitInitialized(CefRefPtr<CefViewRenderApp> app)
 {
   CefMessageRouterConfig config;

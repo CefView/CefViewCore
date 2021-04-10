@@ -38,13 +38,6 @@ public:
     ///
     /// </summary>
     /// <param name="app"></param>
-    /// <param name="extra_info"></param>
-    virtual void OnRenderThreadCreated(CefRefPtr<CefViewRenderApp> app, CefRefPtr<CefListValue> extra_info) {}
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="app"></param>
     virtual void OnWebKitInitialized(CefRefPtr<CefViewRenderApp> app) {}
 
     /// <summary>
@@ -155,13 +148,6 @@ public:
   typedef std::set<CefRefPtr<RenderDelegate>> RenderDelegateSet;
 
 private:
-  // Creates all of the RenderDelegate objects. Implemented in
-  // client_app_delegates.
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="delegates"></param>
-  static void CreateRenderDelegates(RenderDelegateSet& delegates, const std::string& bridge_name);
 
 #pragma region CefApp
   /// <summary>
@@ -173,13 +159,6 @@ private:
 #pragma endregion CefApp
 
 #pragma region CefRenderProcessHandler
-
-  // CefRenderProcessHandler methods:
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="extra_info"></param>
-  virtual void OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) override;
 
   /// <summary>
   ///

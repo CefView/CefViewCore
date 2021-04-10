@@ -15,34 +15,17 @@
 
 CefViewRenderApp::CefViewRenderApp(const std::string& bridge_name)
   : bridge_object_name_(bridge_name)
-{}
+{
+  CefViewDefaultRenderDelegate::CreateBrowserDelegate(render_delegates_, bridge_object_name_);
+}
 
 CefViewRenderApp::~CefViewRenderApp() {}
-
-void
-CefViewRenderApp::CreateRenderDelegates(RenderDelegateSet& delegates, const std::string& bridge_name)
-{
-  CefViewDefaultRenderDelegate::CreateBrowserDelegate(delegates, bridge_name);
-}
 
 //////////////////////////////////////////////////////////////////////////
 CefRefPtr<CefRenderProcessHandler>
 CefViewRenderApp::GetRenderProcessHandler()
 {
   return this;
-}
-
-//////////////////////////////////////////////////////////////////////////
-void
-CefViewRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info)
-{
-  CEF_REQUIRE_RENDERER_THREAD();
-
-  CreateRenderDelegates(render_delegates_, bridge_object_name_);
-
-  RenderDelegateSet::iterator it = render_delegates_.begin();
-  for (; it != render_delegates_.end(); ++it)
-    (*it)->OnRenderThreadCreated(this, extra_info);
 }
 
 void

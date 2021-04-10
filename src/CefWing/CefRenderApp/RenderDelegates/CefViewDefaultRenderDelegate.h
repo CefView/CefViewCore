@@ -35,8 +35,6 @@ public:
   /// </summary>
   RenderDelegate(const std::string& objName);
 
-  virtual void OnRenderThreadCreated(CefRefPtr<CefViewRenderApp> app, CefRefPtr<CefListValue> extra_info) override;
-
   /// <summary>
   ///
   /// </summary>

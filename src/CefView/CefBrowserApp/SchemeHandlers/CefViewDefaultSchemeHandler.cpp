@@ -64,7 +64,7 @@ SchemeHandler::Skip(int64 bytes_to_skip, int64& bytes_skipped, CefRefPtr<CefReso
   if (offset_ <= (int)data_.length()) {
     bytes_skipped = bytes_to_skip;
   } else {
-    offset_ = data_.length();
+    offset_ = (int)data_.length();
     bytes_skipped = data_.length() - offset_;
   }
 

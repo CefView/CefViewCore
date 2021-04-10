@@ -79,11 +79,5 @@ CefViewBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_
 }
 
 void
-CefViewBrowserApp::OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info)
-{
-  CEF_REQUIRE_IO_THREAD();
-}
-
-void
 CefViewBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms)
 {}
