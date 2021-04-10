@@ -3,3 +3,4 @@ dep/cef
 output
 dep/*.bz2
 .DS_Store
+dep/cef_binary_*

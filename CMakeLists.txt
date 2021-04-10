@@ -39,6 +39,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/output/$<CONFIG>/
 
 # Config the CEF
 ###############################################################
+include(CefConfig.cmake)
+
 if (${CMAKE_VERSION} GREATER "3.11")
   cmake_policy(SET CMP0074 NEW)
 endif()
@@ -63,7 +65,7 @@ else()
 endif()
 
 # Set CEF root dir and append it to CMAKE_MODULE_PATH
-set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef")
+set(CEF_ROOT "${CEF_SDK_DIR}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 
 # Find the CEF package
