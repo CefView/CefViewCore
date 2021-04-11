@@ -222,7 +222,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
 
-  CefRefPtr<CefBrowser> GetBrowser() const;
+  CefRefPtr<CefBrowser> GetBrowser();
 
   void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
 
@@ -280,9 +280,14 @@ private:
   bool initial_navigation_;
 
   /// <summary>
+  /// 
+  /// </summary>
+  std::condition_variable cv_all_closed_;
+
+  /// <summary>
   ///
   /// </summary>
-  mutable std::mutex mtx_;
+  std::mutex mtx_;
 
   /// <summary>
   ///

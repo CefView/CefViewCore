@@ -316,6 +316,9 @@ CefViewBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
       auto browserDelegate = browser_delegate_.lock();
       if (browserDelegate)
         browserDelegate->browserIsDestroying();
+
+      // notify all browser closed
+      cv_all_closed_.notify_all();
     }
   }
 }
@@ -483,7 +486,7 @@ CefViewBrowserHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
 {}
 
 CefRefPtr<CefBrowser>
-CefViewBrowserHandler::GetBrowser() const
+CefViewBrowserHandler::GetBrowser()
 {
   std::unique_lock<std::mutex> lock(mtx_);
   return main_browser_;
@@ -543,6 +546,13 @@ CefViewBrowserHandler::CloseAllBrowsers(bool force_close)
     auto host = main_browser_->GetHost();
     if (host)
       main_browser_->GetHost()->CloseBrowser(force_close);
+  }
+
+  if (!CefCurrentlyOn(TID_UI)) {
+    // if we are not in browser main thread we need to wait for
+    // all browsers to be closed, 
+    while (browser_count_)
+      cv_all_closed_.wait(lock);
   }
 }
 
