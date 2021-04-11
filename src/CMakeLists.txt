@@ -64,7 +64,7 @@ if (OS_WINDOWS)
   target_link_libraries(CefViewCore PUBLIC
     ${CefViewCore_LIBS}
   )
-endif()
+endif() # OS_WINDOWS
 
 if (OS_MACOS)
   file(GLOB_RECURSE CefViewCore_PUBLIC_HEADERS
@@ -104,7 +104,7 @@ if (OS_MACOS)
   target_link_libraries(CefViewCore PUBLIC
     ${CefViewCore_LIBS}
   )
-endif()
+endif() # OS_MACOS
 
 ### CefViewWing
 ################################################################################################
@@ -196,52 +196,73 @@ if (OS_MACOS)
     FILES ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
-  # Create the multiple Helper app bundle targets.
-  if(NOT CEF_HELPER_APP_SUFFIXES)
-    message("-- CEF_HELPER_APP_SUFFIXES is empty, use default instead")
-    set(CEF_HELPER_APP_SUFFIXES "::")
-  endif()
-
-  # Create Helper executable target.
-  add_executable(CefViewWing MACOSX_BUNDLE 
-    ${CefViewCore_SHARED_SRC_FILES}
-    ${CefViewWing_SRC_FILES}
-    ${CefViewWing_PLATFORM_SRC_FILES}
-  )
-
-  target_include_directories(CefViewWing PRIVATE 
-    ${CefViewCore_INCLUDE_PATH}
-  )
-
-  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
-  add_dependencies(CefViewWing 
-    libcef_dll_wrapper
-  )
-
   set(CefViewWing_LIBS
     libcef_dll_wrapper 
     ${CEF_STANDARD_LIBS}
   )
-  
+    
   if(USE_SANDBOX)
     list(APPEND CefViewWing_LIBS cef_sandbox_lib)
   endif()
 
-  target_link_libraries(CefViewWing 
-    ${CefViewWing_LIBS}
-  )
+  # CEF Helper app suffixes.
+  # Format is "<name suffix>:<target suffix>:<plist suffix>".
+  set(CEF_HELPER_APP_SUFFIXES
+    "::"
+    " (GPU):_gpu:.gpu"
+    " (Plugin):_plugin:.plugin"
+    " (Renderer):_renderer:.renderer")
 
-  set_target_properties(CefViewWing
-    PROPERTIES
-      MACOSX_BUNDLE_INFO_PLIST                  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/info.plist"
-      CLANG_ENABLE_OBJC_ARC                     "YES"
-      XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.cefview.cefviewwing"
-      XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME   "YES"
-      XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/CefViewWing.entitlements"
-  )
+      # Create the multiple Helper app bundle targets.
+  foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
+    # Convert to a list and extract the suffix values.
+    string(REPLACE ":" ";" _suffix_list ${_suffix_list})
+    list(GET _suffix_list 0 _name_suffix)
+    list(GET _suffix_list 1 _target_suffix)
+    list(GET _suffix_list 2 _plist_suffix)
 
-  # Add the Helper as a dependency of the main executable target.
-  add_dependencies(CefViewCore CefViewWing)
+    # Define Helper target and output names.
+    set(_helper_target "CefViewWing${_target_suffix}")
+    set(_helper_output_name "CefViewWing${_name_suffix}")
+
+    # Create Helper executable target.
+    add_executable(${_helper_target} MACOSX_BUNDLE 
+      ${CefViewCore_SHARED_SRC_FILES}
+      ${CefViewWing_SRC_FILES}
+      ${CefViewWing_PLATFORM_SRC_FILES}
+    )
+
+    target_include_directories(${_helper_target} PRIVATE 
+      ${CefViewCore_INCLUDE_PATH}
+    )
+
+    SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target} )
+    add_dependencies(${_helper_target} 
+      libcef_dll_wrapper
+    )
+
+    target_link_libraries(${_helper_target} 
+      ${CefViewWing_LIBS}
+    )
+
+    set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${_target_suffix}.plist")
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/info.plist" _plist_contents)
+    file(WRITE ${_helper_info_plist} ${_plist_contents})
+
+    set_target_properties(${_helper_target}
+      PROPERTIES
+        CLANG_ENABLE_OBJC_ARC                     "YES"
+        OUTPUT_NAME                               "${_helper_output_name}" 
+        MACOSX_BUNDLE_INFO_PLIST                  "${_helper_info_plist}"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.cefview.cefviewwing${_plist_suffix}"
+        XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME   "YES"
+        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/CefViewWing.entitlements"
+    )
+
+    # Add the Helper as a dependency of the main executable target.
+    add_dependencies(CefViewCore ${_helper_target})
+
+  endforeach()
 
   # copy cef binary files to the output folder
   add_custom_command(TARGET CefViewWing POST_BUILD
