@@ -85,6 +85,7 @@ if (OS_MACOS)
       XCODE_ATTRIBUTE_COPY_PHASE_STRIP                            "NO"
       XCODE_ATTRIBUTE_DEAD_CODE_STRIPPING[variant=Release]        "YES"       # -Wl,-dead_strip
       XCODE_ATTRIBUTE_GCC_C_LANGUAGE_STANDARD                     "c99"       # -std=c99
+      XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER                   "com.cefview.cefview"
   )
 
   add_dependencies(CefViewCore
@@ -234,6 +235,7 @@ if (OS_MACOS)
     PROPERTIES
       MACOSX_BUNDLE_INFO_PLIST                  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/info.plist"
       CLANG_ENABLE_OBJC_ARC                     "YES"
+      XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.cefview.cefviewwing"
       XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME   "YES"
       XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/CefViewWing.entitlements"
   )
