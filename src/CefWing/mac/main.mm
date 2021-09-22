@@ -60,7 +60,7 @@ bool LoadCefLibrary() {
 }
 
 int CefViewWingMain(int argc, char *argv[]) {
-  logI("CefViewWindg is launching....");
+  logI("CefViewWing is launching....");
 
 #if defined(CEF_USE_SANDBOX)
   // Initialize the macOS sandbox for this helper process.
