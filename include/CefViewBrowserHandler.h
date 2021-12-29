@@ -15,6 +15,7 @@
 #include <mutex>
 #include <set>
 #include <string>
+#include <condition_variable>
 
 #pragma endregion std_headers
 
@@ -280,7 +281,7 @@ private:
   bool initial_navigation_;
 
   /// <summary>
-  /// 
+  ///
   /// </summary>
   std::condition_variable cv_all_closed_;
 

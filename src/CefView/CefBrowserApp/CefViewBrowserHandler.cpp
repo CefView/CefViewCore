@@ -18,8 +18,8 @@
 CefViewBrowserHandler::CefViewBrowserHandler(CefViewBrowserDelegateWeakPtr delegate)
   : browser_delegate_(delegate)
   , browser_count_(0)
-  , initial_navigation_(false)
   , is_closing_(false)
+  , initial_navigation_(false)
   , resource_manager_(new CefResourceManager())
   , message_router_(nullptr)
   , cefquery_handler_(new CefViewQueryHandler(delegate))
@@ -550,7 +550,7 @@ CefViewBrowserHandler::CloseAllBrowsers(bool force_close)
 
   if (!CefCurrentlyOn(TID_UI)) {
     // if we are not in browser main thread we need to wait for
-    // all browsers to be closed, 
+    // all browsers to be closed,
     while (browser_count_)
       cv_all_closed_.wait(lock);
   }

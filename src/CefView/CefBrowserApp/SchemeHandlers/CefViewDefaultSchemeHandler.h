@@ -14,8 +14,6 @@
 #include <CefViewBrowserDelegate.h>
 
 namespace CefViewDefaultSchemeHandler {
-static const char* default_scheme_name = CEFVIEW_SCHEMA;
-
 bool
 RegisterSchemeHandlerFactory();
 

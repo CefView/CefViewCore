@@ -6,6 +6,10 @@ project(CefViewCore)
 
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
   if(CMAKE_SIZEOF_VOID_P MATCHES 8)
@@ -39,6 +43,7 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   set(OS_LINUX 1)
   set(OS_POSIX 1)
   add_definitions(-DOS_LINUX=1 -DOS_POSIX=1)
+  add_compile_options(-Wno-unknown-pragmas)
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(OS_WINDOWS 1)
   add_definitions(-DOS_WINDOWS=1)
@@ -85,7 +90,7 @@ find_package(CEF REQUIRED)
 # Add libcef dll wrapper
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 
-if(USE_SANDBOX)
+if(USE_SANDBOX AND (OS_WINDOWS OR OS_MACOS))
   add_definitions(-DCEF_USE_SANDBOX)
   message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}" )
   # Logical target used to link the cef_sandbox library.

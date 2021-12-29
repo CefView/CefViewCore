@@ -66,6 +66,27 @@ if (OS_WINDOWS)
   )
 endif() # OS_WINDOWS
 
+if (OS_LINUX)
+  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewCore)
+
+  ADD_LOGICAL_TARGET(libcef_lib "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+
+  add_dependencies(CefViewCore
+    libcef_lib
+    libcef_dll_wrapper
+  )
+
+  set(CefViewCore_LIBS
+    libcef_lib
+    libcef_dll_wrapper 
+    ${CEF_STANDARD_LIBS}
+  )
+  
+  target_link_libraries(CefViewCore PUBLIC
+    ${CefViewCore_LIBS}
+  )
+endif() # OS_LINUX
+
 if (OS_MACOS)
   file(GLOB_RECURSE CefViewCore_PUBLIC_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h"
@@ -182,6 +203,61 @@ if (OS_WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:CefViewWing>"
   )
 endif()  # OS_WINDOWS
+
+if (OS_LINUX)
+  file(GLOB_RECURSE CefViewWing_PLATFORM_SRC_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/linux/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/linux/*.cpp"
+  )
+  source_group(
+    TREE "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/linux"
+    PREFIX Source
+    FILES ${CefViewWing_PLATFORM_SRC_FILES}
+  )
+
+  # Create Helper executable target.
+  add_executable(CefViewWing
+    ${CefViewCore_SHARED_SRC_FILES}
+    ${CefViewWing_SRC_FILES}
+    ${CefViewWing_PLATFORM_SRC_FILES}
+  )
+
+  set_target_properties(CefViewWing
+    PROPERTIES 
+      INSTALL_RPATH "$ORIGIN"
+      BUILD_WITH_INSTALL_RPATH TRUE
+  )
+
+  target_include_directories(CefViewWing PRIVATE
+    ${CefViewCore_INCLUDE_PATH}
+  )
+
+  add_dependencies(CefViewWing 
+    libcef_lib
+    libcef_dll_wrapper
+  )
+
+  set(_helper_libs
+    libcef_lib
+    libcef_dll_wrapper 
+    ${CEF_STANDARD_LIBS}
+  )
+
+  target_link_libraries(CefViewWing 
+    ${_helper_libs}
+  )
+
+  # Add the Helper as a dependency of the main executable target.
+  add_dependencies(CefViewCore CefViewWing)
+
+  # copy cef binary files
+  add_custom_command(TARGET CefViewWing POST_BUILD  
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_RESOURCE_DIR}" "$<TARGET_FILE_DIR:CefViewWing>/resources"
+    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat" "$<TARGET_FILE_DIR:CefViewWing>"
+    COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:CefViewWing>"
+  )
+endif()  # OS_LINUX
 
 if (OS_MACOS)
   file(GLOB_RECURSE CefViewWing_PLATFORM_SRC_FILES
