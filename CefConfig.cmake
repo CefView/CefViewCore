@@ -11,6 +11,11 @@ elseif(OS_MACOS)
     # Change this value to swith between different CEF versions.
     "https://cef-builds.spotifycdn.com/cef_binary_89.0.12%2Bg2b76680%2Bchromium-89.0.4389.90_macosx64.tar.bz2"
     )
+elseif (OS_LINUX)
+  set(CEF_SDK_URL
+    # Change this value to swith between different CEF versions.
+    "https://cef-builds.spotifycdn.com/cef_binary_89.0.12%2Bg2b76680%2Bchromium-89.0.4389.90_linux64.tar.bz2"
+    )
 else()
   message(FATAL_ERROR "Unsupported plaftorm")
 endif()

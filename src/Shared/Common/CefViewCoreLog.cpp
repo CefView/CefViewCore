@@ -7,6 +7,7 @@
 
 #include "CefViewCoreLog.h"
 
+#include <cstdarg>
 #include <string>
 #include <vector>
 
@@ -46,7 +47,6 @@ void
 cefView_log(log_level level, const char* message)
 {
   std::string msg;
-  OutputDebugStringA(message);
   switch (level) {
     case ll_debug:
       msg = "[DEBUG]";
@@ -69,7 +69,27 @@ cefView_log(log_level level, const char* message)
   OutputDebugStringA(msg.c_str());
 }
 #elif defined(__linux__)
-
+#include <syslog.h>
+void
+cefView_log(log_level level, const char* message)
+{
+  switch (level) {
+    case ll_debug:
+      syslog(LOG_USER | LOG_DEBUG, "[DEBUG]%s", message);
+      break;
+    case ll_info:
+      syslog(LOG_USER | LOG_INFO, "[INFO]%s", message);
+      break;
+    case ll_error:
+      syslog(LOG_USER | LOG_ERR, "[ERROR]%s", message);
+      break;
+    case ll_fatal:
+      syslog(LOG_USER | LOG_CRIT, "[FATAL]%s", message);
+      break;
+    default:
+      break;
+  }
+}
 #else
 #error "unsupported platform"
 #endif
