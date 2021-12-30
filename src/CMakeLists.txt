@@ -42,9 +42,12 @@ target_include_directories(CefViewCore PRIVATE
 )
 
 if (OS_WINDOWS)
-  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewCore)
+  SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
   
-  ADD_LOGICAL_TARGET(libcef_lib "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+  ADD_LOGICAL_TARGET(libcef_lib 
+    "${CEF_LIB_DEBUG}"
+    "${CEF_LIB_RELEASE}"
+  )
 
   add_dependencies(CefViewCore
     libcef_lib
@@ -67,9 +70,12 @@ if (OS_WINDOWS)
 endif() # OS_WINDOWS
 
 if (OS_LINUX)
-  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewCore)
+  ADD_LOGICAL_TARGET(libcef_lib 
+    "${CEF_LIB_DEBUG}" 
+    "${CEF_LIB_RELEASE}"
+  )
 
-  ADD_LOGICAL_TARGET(libcef_lib "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+  SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
 
   add_dependencies(CefViewCore
     libcef_lib
@@ -82,8 +88,9 @@ if (OS_LINUX)
     ${CEF_STANDARD_LIBS}
   )
   
-  target_link_libraries(CefViewCore PUBLIC
-    ${CefViewCore_LIBS}
+  target_link_libraries(CefViewCore 
+    PUBLIC
+      ${CefViewCore_LIBS}
   )
 endif() # OS_LINUX
 
@@ -91,16 +98,19 @@ if (OS_MACOS)
   file(GLOB_RECURSE CefViewCore_PUBLIC_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h"
   )
-  
-  set_property(TARGET CefViewCore 
-    APPEND_STRING PROPERTY COMPILE_FLAGS "-fobjc-arc"
+
+  target_compile_options(CefViewCore
+    "-fobjc-arc"
   )
+  
+  SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
 
   set_target_properties(CefViewCore
     PROPERTIES
       FRAMEWORK TRUE
       PUBLIC_HEADER                                               "${CefViewCore_PUBLIC_HEADERS}"
       CLANG_ENABLE_OBJC_ARC                                       "YES"
+      APPEND_STRING PROPERTY COMPILE_FLAGS                        "-fobjc-arc"
       XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD                 "gnu++11"   # -std=gnu++11
       XCODE_ATTRIBUTE_CLANG_LINK_OBJC_RUNTIME                     "NO"        # -fno-objc-link-runtime
       XCODE_ATTRIBUTE_COPY_PHASE_STRIP                            "NO"
@@ -158,8 +168,15 @@ if (OS_WINDOWS)
     ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
-  target_include_directories(CefViewWing PRIVATE
-    ${CefViewCore_INCLUDE_PATH}
+  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
+  target_link_options(CefViewWing
+    PRIVATE
+      "/MANIFEST"
+  )
+
+  target_include_directories(CefViewWing 
+    PRIVATE
+      ${CefViewCore_INCLUDE_PATH}
   )
 
   add_dependencies(CefViewWing 
@@ -222,6 +239,8 @@ if (OS_LINUX)
     ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
+  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
+
   set_target_properties(CefViewWing
     PROPERTIES 
       INSTALL_RPATH "$ORIGIN"
@@ -257,6 +276,8 @@ if (OS_LINUX)
     COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat"
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:CefViewWing>"
   )
+
+  SET_LINUX_SUID_PERMISSIONS(CefViewWing "$<TARGET_FILE_DIR:CefViewWing>/chrome-sandbox")
 endif()  # OS_LINUX
 
 if (OS_MACOS)
@@ -307,19 +328,7 @@ if (OS_MACOS)
       ${CefViewWing_SRC_FILES}
       ${CefViewWing_PLATFORM_SRC_FILES}
     )
-
-    target_include_directories(${_helper_target} PRIVATE 
-      ${CefViewCore_INCLUDE_PATH}
-    )
-
     SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target} )
-    add_dependencies(${_helper_target} 
-      libcef_dll_wrapper
-    )
-
-    target_link_libraries(${_helper_target} 
-      ${CefViewWing_LIBS}
-    )
 
     set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${_target_suffix}.plist")
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/info.plist" _plist_contents)
@@ -333,6 +342,18 @@ if (OS_MACOS)
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.cefview.cefviewwing${_plist_suffix}"
         XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME   "YES"
         XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS    "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/CefViewWing.entitlements"
+    )
+
+    target_include_directories(${_helper_target} PRIVATE 
+      ${CefViewCore_INCLUDE_PATH}
+    )
+
+    add_dependencies(${_helper_target} 
+      libcef_dll_wrapper
+    )
+
+    target_link_libraries(${_helper_target} 
+      ${CefViewWing_LIBS}
     )
 
     # Add the Helper as a dependency of the main executable target.

@@ -54,7 +54,7 @@ CefViewWingMain(HINSTANCE hInstance)
   }
 
   // Execute the secondary process.
-  int rt = CefExecuteProcess(main_args, app, nullptr);
+  int rt = CefExecuteProcess(main_args, app, sandbox_info);
   logI("process returned with code: %d", rt);
 
   return rt;

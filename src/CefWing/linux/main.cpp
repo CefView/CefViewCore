@@ -7,9 +7,6 @@
 
 #pragma region cef_headers
 #include <include/cef_app.h>
-#if defined(CEF_USE_SANDBOX)
-#include <include/cef_sandbox_win.h>
-#endif
 #pragma endregion cef_headers
 
 #pragma region win_headers
@@ -27,15 +24,6 @@ int
 CefViewWingMain(int argc, char* argv[])
 {
   logI("CefViewWindg is launching....");
-
-  void* sandbox_info = NULL;
-#if defined(CEF_USE_SANDBOX)
-  // Manage the life span of the sandbox information object. This is necessary
-  // for sandbox support on Windows. See cef_sandbox_win.h for complete details.
-  CefScopedSandboxInfo scoped_sandbox;
-  sandbox_info = scoped_sandbox.sandbox_info();
-#endif
-
   CefMainArgs main_args(argc, argv);
 
   CefRefPtr<CefApp> app;
