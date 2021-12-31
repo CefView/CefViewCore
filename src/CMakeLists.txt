@@ -104,7 +104,8 @@ if (OS_MACOS)
   )
 
   target_compile_options(CefViewCore
-    "-fobjc-arc"
+    PRIVATE
+      "-fobjc-arc"
   )
   
   SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
