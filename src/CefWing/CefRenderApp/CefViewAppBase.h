@@ -25,6 +25,7 @@ public:
   enum ProcessType
   {
     UnkownProcess,
+    ZygoteProcess,
     RendererProcess,
     OtherProcess,
   };

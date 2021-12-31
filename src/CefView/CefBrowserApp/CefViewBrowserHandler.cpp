@@ -242,7 +242,7 @@ CefViewBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     // notify the parent window/view/widget
     auto browserDelegate = browser_delegate_.lock();
     if (browserDelegate)
-      browserDelegate->setCefBrowserWindowHandle(main_browser_->GetHost()->GetWindowHandle());
+      browserDelegate->setBrowserWindowId(main_browser_->GetHost()->GetWindowHandle());
   } else if (browser->IsPopup()) {
     // Add to the list of popup browsers.
     popup_browser_list_.push_back(browser);
@@ -466,7 +466,7 @@ CefViewBrowserHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                             CefRefPtr<CefRequestCallback> callback)
 {
   auto url = request->GetURL().ToString();
-  logD("require resouce: %s", url.c_str());
+  logD("require resource: %s", url.c_str());
   return resource_manager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 

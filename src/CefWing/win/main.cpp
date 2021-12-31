@@ -26,7 +26,7 @@
 int
 CefViewWingMain(HINSTANCE hInstance)
 {
-  logI("CefViewWindg is launching....");
+  logI("CefViewWing is launching....");
   CefEnableHighDPISupport();
 
   void* sandbox_info = NULL;

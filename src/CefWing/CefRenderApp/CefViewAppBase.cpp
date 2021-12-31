@@ -17,6 +17,7 @@
 
 // These flags must match the Chromium values.
 const char kProcessType[] = "type";
+const char kZygoteProcess[] = "zygote";
 const char kRendererProcess[] = "renderer";
 
 CefViewAppBase::CefViewAppBase() {}
@@ -31,7 +32,14 @@ CefViewAppBase::GetProcessType(CefRefPtr<CefCommandLine> command_line)
 
   const std::string& process_type = command_line->GetSwitchValue(kProcessType);
   logI("process type parameter is: %s", process_type.c_str());
-  return (process_type == kRendererProcess) ? RendererProcess : OtherProcess;
+  if (process_type == kZygoteProcess) {
+    // for linux only
+    return ZygoteProcess;
+  } else if (process_type == kRendererProcess) {
+    return RendererProcess;
+  }
+
+  return OtherProcess;
 }
 
 std::string
@@ -41,5 +49,6 @@ CefViewAppBase::GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line)
     return "";
 
   const std::string& name = command_line->GetSwitchValue(CEFVIEW_BRIDGE_OBJ_NAME_KEY);
+  logI("bridge object name: %d", name.c_str());
   return name;
 }

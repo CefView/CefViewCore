@@ -21,7 +21,7 @@ public:
   ///
   /// </summary>
   /// <param name="win"></param>
-  virtual void setCefBrowserWindowHandle(CefWindowHandle win) = 0;
+  virtual void setBrowserWindowId(CefWindowHandle win) = 0;
 
   /// <summary>
   ///

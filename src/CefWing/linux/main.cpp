@@ -23,14 +23,14 @@
 int
 CefViewWingMain(int argc, char* argv[])
 {
-  logI("CefViewWindg is launching....");
+  logI("CefViewWing is launching....");
   CefMainArgs main_args(argc, argv);
 
   CefRefPtr<CefApp> app;
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
   command_line->InitFromArgv(argc, argv);
   auto process_type = CefViewAppBase::GetProcessType(command_line);
-  if (process_type == CefViewAppBase::RendererProcess) {
+  if (process_type == CefViewAppBase::RendererProcess || process_type == CefViewAppBase::ZygoteProcess) {
     auto bridge_name = CefViewAppBase::GetBridgeObjectName(command_line);
     app = new CefViewRenderApp(bridge_name);
   } else if (process_type == CefViewAppBase::OtherProcess) {
