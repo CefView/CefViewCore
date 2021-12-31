@@ -41,14 +41,22 @@ target_include_directories(CefViewCore PRIVATE
   ${CefViewCore_INCLUDE_PATH}
 )
 
+# ADD_LOGICAL_TARGET(libcef_lib 
+#   "${CEF_LIB_DEBUG}"
+#   "${CEF_LIB_RELEASE}"
+# )
+
+add_library(libcef_lib ${CEF_LIBTYPE} IMPORTED GLOBAL)
+set_target_properties(libcef_lib 
+  PROPERTIES
+    IMPORTED_LOCATION "${CEF_LIB_RELEASE}"
+    IMPORTED_LOCATION_DEBUG "${CEF_LIB_DEBUG}"
+    IMPORTED_LOCATION_RELEASE "${CEF_LIB_RELEASE}"
+)
+
 if (OS_WINDOWS)
   SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
   
-  ADD_LOGICAL_TARGET(libcef_lib 
-    "${CEF_LIB_DEBUG}"
-    "${CEF_LIB_RELEASE}"
-  )
-
   add_dependencies(CefViewCore
     libcef_lib
     libcef_dll_wrapper
@@ -65,21 +73,16 @@ if (OS_WINDOWS)
   endif()
 
   target_link_libraries(CefViewCore 
-    PRIVATE
+    PUBLIC
       ${CefViewCore_LIBS}
   )
 endif() # OS_WINDOWS
 
 if (OS_LINUX)
-  ADD_LOGICAL_TARGET(libcef_lib 
-    "${CEF_LIB_DEBUG}" 
-    "${CEF_LIB_RELEASE}"
-  )
-
   SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
 
   add_dependencies(CefViewCore
-    libcef_lib
+   libcef_lib
     libcef_dll_wrapper
   )
 
@@ -90,7 +93,7 @@ if (OS_LINUX)
   )
   
   target_link_libraries(CefViewCore 
-    PRIVATE
+    PUBLIC
       ${CefViewCore_LIBS}
   )
 endif() # OS_LINUX
@@ -134,7 +137,7 @@ if (OS_MACOS)
   endif()
 
   target_link_libraries(CefViewCore
-    PRIVATE
+    PUBLIC
       ${CefViewCore_LIBS}
   )
 endif() # OS_MACOS
