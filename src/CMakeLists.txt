@@ -64,8 +64,9 @@ if (OS_WINDOWS)
     list(APPEND CefViewCore_LIBS cef_sandbox_lib)
   endif()
 
-  target_link_libraries(CefViewCore PUBLIC
-    ${CefViewCore_LIBS}
+  target_link_libraries(CefViewCore 
+    PRIVATE
+      ${CefViewCore_LIBS}
   )
 endif() # OS_WINDOWS
 
@@ -89,7 +90,7 @@ if (OS_LINUX)
   )
   
   target_link_libraries(CefViewCore 
-    PUBLIC
+    PRIVATE
       ${CefViewCore_LIBS}
   )
 endif() # OS_LINUX
@@ -132,8 +133,9 @@ if (OS_MACOS)
     list(APPEND CefViewCore_LIBS cef_sandbox_lib)
   endif()
 
-  target_link_libraries(CefViewCore PUBLIC
-    ${CefViewCore_LIBS}
+  target_link_libraries(CefViewCore
+    PRIVATE
+      ${CefViewCore_LIBS}
   )
 endif() # OS_MACOS
 
