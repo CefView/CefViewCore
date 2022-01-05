@@ -12,8 +12,10 @@
 
 #include <CefViewCoreProtocol.h>
 
-CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name)
+CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
+                                     CefViewBrowserAppDelegateInterface::RefPtr delegate)
   : bridge_object_name_(bridge_name)
+  , app_delegate_(delegate)
 {}
 
 CefViewBrowserApp::~CefViewBrowserApp() {}
@@ -80,4 +82,9 @@ CefViewBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_
 
 void
 CefViewBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms)
-{}
+{
+  auto delegate = app_delegate_.lock();
+
+  if (delegate)
+    delegate->OnScheduleMessageLoopWork(delay_ms);
+}

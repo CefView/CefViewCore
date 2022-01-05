@@ -11,18 +11,21 @@
 
 #pragma region std_headers
 #include <set>
+#include <string>
 #pragma endregion std_headers
 
 #pragma region cef_headers
 #include <include/cef_app.h>
 #pragma endregion cef_headers
 
+#include <CefViewBrowserAppDelegate.h>
+
 class CefViewBrowserApp
   : public CefApp
   , public CefBrowserProcessHandler
 {
 public:
-  CefViewBrowserApp(const std::string& bridge_name);
+  CefViewBrowserApp(const std::string& bridge_name, CefViewBrowserAppDelegateInterface::RefPtr delegate = nullptr);
   ~CefViewBrowserApp();
 
 private:
@@ -59,6 +62,9 @@ private:
 private:
   // The name of the bridge object
   std::string bridge_object_name_;
+
+  // The app delegate
+  CefViewBrowserAppDelegateInterface::WeakPtr app_delegate_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(CefViewBrowserApp);

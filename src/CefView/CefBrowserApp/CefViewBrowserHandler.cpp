@@ -15,8 +15,8 @@
 #include <CefViewCoreProtocol.h>
 #include <Common/CefViewCoreLog.h>
 
-CefViewBrowserHandler::CefViewBrowserHandler(CefViewBrowserDelegateWeakPtr delegate)
-  : browser_delegate_(delegate)
+CefViewBrowserHandler::CefViewBrowserHandler(CefViewBrowserHandlerDelegateInterface::WeakPtr delegate)
+  : handler_delegate_(delegate)
   , browser_count_(0)
   , is_closing_(false)
   , initial_navigation_(false)
@@ -87,7 +87,7 @@ CefViewBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
 {
   CEF_REQUIRE_UI_THREAD();
 
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->consoleMessage(message.ToString(), level);
 
@@ -240,7 +240,7 @@ CefViewBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     }
 
     // notify the parent window/view/widget
-    auto browserDelegate = browser_delegate_.lock();
+    auto browserDelegate = handler_delegate_.lock();
     if (browserDelegate)
       browserDelegate->setBrowserWindowId(main_browser_->GetHost()->GetWindowHandle());
   } else if (browser->IsPopup()) {
@@ -313,7 +313,7 @@ CefViewBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
       message_router_->RemoveHandler(cefquery_handler_.get());
       cefquery_handler_ = nullptr;
       message_router_ = nullptr;
-      auto browserDelegate = browser_delegate_.lock();
+      auto browserDelegate = handler_delegate_.lock();
       if (browserDelegate)
         browserDelegate->browserIsDestroying();
 
@@ -335,7 +335,7 @@ CefViewBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
     initial_navigation_ = false;
   }
 
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->loadingStateChanged(isLoading, canGoBack, canGoForward);
 }
@@ -346,7 +346,7 @@ CefViewBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
                                    TransitionType transition_type)
 {
   CEF_REQUIRE_UI_THREAD();
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->loadStart();
 }
@@ -355,7 +355,7 @@ void
 CefViewBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
   CEF_REQUIRE_UI_THREAD();
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->loadEnd(httpStatusCode);
 }
@@ -375,7 +375,7 @@ CefViewBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
   auto url = failedUrl.ToString();
 
   bool handled = false;
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->loadError(errorCode, msg, url, handled);
 
@@ -598,7 +598,7 @@ CefViewBrowserHandler::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
                                              CefRefPtr<CefProcessMessage> message)
 {
   // validate the browser delegate
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (!browserDelegate || message->GetName() != INVOKEMETHOD_NOTIFY_MESSAGE)
     return false;
 
@@ -645,7 +645,7 @@ CefViewBrowserHandler::NotifyTakeFocus(bool next)
     return;
   }
 
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->takeFocus(next);
 }
@@ -659,7 +659,7 @@ CefViewBrowserHandler::NotifyDragRegion(const std::vector<CefDraggableRegion> re
     return;
   }
 
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate)
     browserDelegate->draggableRegionChanged(regions);
 }

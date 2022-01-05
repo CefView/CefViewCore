@@ -1,7 +1,7 @@
 ﻿#include <CefViewQueryHandler.h>
 
-CefViewQueryHandler::CefViewQueryHandler(CefViewBrowserDelegateWeakPtr delegate)
-  : browser_delegate_(delegate)
+CefViewQueryHandler::CefViewQueryHandler(CefViewBrowserHandlerDelegateInterface::WeakPtr delegate)
+  : handler_delegate_(delegate)
 {}
 
 CefViewQueryHandler::~CefViewQueryHandler() {}
@@ -14,7 +14,7 @@ CefViewQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
                              bool persistent,
                              CefRefPtr<Callback> callback)
 {
-  auto browserDelegate = browser_delegate_.lock();
+  auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate) {
     mtxCallbackMap_.lock();
     mapCallback_[query_id] = callback;

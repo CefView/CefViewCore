@@ -25,7 +25,7 @@
 #include <include/wrapper/cef_resource_manager.h>
 #pragma endregion cef_headers
 
-#include <CefViewBrowserDelegate.h>
+#include <CefViewBrowserHandlerDelegate.h>
 #include <CefViewQueryHandler.h>
 
 class CefViewBrowserHandler
@@ -55,7 +55,7 @@ public:
   ///
   /// </summary>
   /// <param name="delegate"></param>
-  CefViewBrowserHandler(CefViewBrowserDelegateWeakPtr delegate);
+  CefViewBrowserHandler(CefViewBrowserHandlerDelegateInterface::WeakPtr delegate);
 
   /// <summary>
   ///
@@ -263,7 +263,7 @@ private:
   /// <summary>
   ///
   /// </summary>
-  CefViewBrowserDelegateWeakPtr browser_delegate_;
+  CefViewBrowserHandlerDelegateInterface::WeakPtr handler_delegate_;
 
   /// <summary>
   ///
@@ -315,11 +315,34 @@ private:
   /// </summary>
   CefRefPtr<CefViewQueryHandler> cefquery_handler_;
 
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefContextMenuHandler> pContextMenuHandler_;
+
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefDialogHandler> pDialogHandler_;
+
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefDisplayHandler> pDisplayHandler_;
+
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefDownloadHandler> pDownloadHandler_;
+
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefJSDialogHandler> pJSDialogHandler_;
+
+  /// <summary>
+  ///
+  /// </summary>
   CefRefPtr<CefKeyboardHandler> pKeyboardHandler_;
 
   // Include the default reference counting implementation.
