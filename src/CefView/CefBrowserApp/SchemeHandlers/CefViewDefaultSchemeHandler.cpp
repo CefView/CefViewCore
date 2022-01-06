@@ -14,7 +14,6 @@
 #include <include/cef_response.h>
 #include <include/cef_scheme.h>
 #include <include/wrapper/cef_helpers.h>
-
 #pragma endregion cef_headers
 
 #include <CefViewCoreProtocol.h>
@@ -22,7 +21,7 @@
 namespace CefViewDefaultSchemeHandler {
 //////////////////////////////////////////////////////////////////////////
 // handler
-SchemeHandler::SchemeHandler(CefViewBrowserDelegateWeakPtr delegate)
+SchemeHandler::SchemeHandler(CefViewBrowserHandlerDelegateInterface::RefPtr delegate)
   : browser_delegate_(delegate)
   , offset_(0)
 {}
@@ -100,7 +99,7 @@ SchemeHandlerFactory::Create(CefRefPtr<CefBrowser> browser,
                              const CefString& scheme_name,
                              CefRefPtr<CefRequest> request)
 {
-  CefViewBrowserDelegateWeakPtr browserDelegate;
+  CefViewBrowserHandlerDelegateInterface::RefPtr browserDelegate;
   return new SchemeHandler(browserDelegate);
 }
 

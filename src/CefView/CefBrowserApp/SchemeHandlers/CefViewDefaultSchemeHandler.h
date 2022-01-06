@@ -11,7 +11,7 @@
 #pragma endregion cef_headers
 
 #include <CefViewCoreProtocol.h>
-#include <CefViewBrowserDelegate.h>
+#include <CefViewBrowserHandlerDelegate.h>
 
 namespace CefViewDefaultSchemeHandler {
 bool
@@ -23,7 +23,7 @@ RegisterScheme(CefRawPtr<CefSchemeRegistrar> registrar);
 class SchemeHandler : public CefResourceHandler
 {
 public:
-  SchemeHandler(CefViewBrowserDelegateWeakPtr delegate);
+  SchemeHandler(CefViewBrowserHandlerDelegateInterface::RefPtr delegate);
 
   virtual bool Open(CefRefPtr<CefRequest> request, bool& handle_request, CefRefPtr<CefCallback> callback) override;
 
@@ -41,7 +41,7 @@ public:
   virtual void Cancel() override;
 
 private:
-  CefViewBrowserDelegateWeakPtr browser_delegate_;
+  CefViewBrowserHandlerDelegateInterface::WeakPtr browser_delegate_;
   std::string data_;
   std::string mime_type_;
   int offset_;
