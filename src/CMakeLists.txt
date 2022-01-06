@@ -213,17 +213,30 @@ if (OS_WINDOWS)
   # Add the Helper as a dependency of the main executable target.
   add_dependencies(CefViewCore CefViewWing)
 
-  # copy cef binary files
-  add_custom_command(TARGET CefViewWing POST_BUILD
+  add_custom_command(TARGET CefViewWing 
+    POST_BUILD
+
+    # embed the manifest file
     COMMAND mt.exe 
-    -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\" 
-    -inputresource:\"$<TARGET_FILE:CefViewWing>\" 
-    -outputresource:\"$<TARGET_FILE:CefViewWing>\"
+      -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\" 
+      -inputresource:\"$<TARGET_FILE:CefViewWing>\" 
+      -outputresource:\"$<TARGET_FILE:CefViewWing>\"
+
+    # copy cef binary files
+    #.1 copy the cef resources to output dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+      "${CEF_RESOURCE_DIR}" 
+      "$<TARGET_FILE_DIR:CefViewWing>/resources"
     
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_RESOURCE_DIR}" "$<TARGET_FILE_DIR:CefViewWing>/resources"
-    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat" "$<TARGET_FILE_DIR:CefViewWing>"
-    COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:CefViewWing>"
+    #.2 move the icudtl.dat to root of output dir
+    COMMAND ${CMAKE_COMMAND} -E rename 
+      "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat" 
+      "$<TARGET_FILE_DIR:CefViewWing>/icudtl.dat"
+
+    #.3 copy all cef binary files to output dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+      "${CEF_BINARY_DIR}"
+      "$<TARGET_FILE_DIR:CefViewWing>"
   )
 endif()  # OS_WINDOWS
 
@@ -276,11 +289,24 @@ if (OS_LINUX)
   add_dependencies(CefViewCore CefViewWing)
 
   # copy cef binary files
-  add_custom_command(TARGET CefViewWing POST_BUILD  
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_RESOURCE_DIR}" "$<TARGET_FILE_DIR:CefViewWing>/resources"
-    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat" "$<TARGET_FILE_DIR:CefViewWing>"
-    COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:CefViewWing>"
+  add_custom_command(TARGET CefViewWing 
+    POST_BUILD
+
+    # copy cef binary files
+    #.1 copy the cef resources to output dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+      "${CEF_RESOURCE_DIR}" 
+      "$<TARGET_FILE_DIR:CefViewWing>/resources"
+    
+    #.2 move the icudtl.dat to root of output dir
+    COMMAND ${CMAKE_COMMAND} -E rename 
+      "$<TARGET_FILE_DIR:CefViewWing>/resources/icudtl.dat" 
+      "$<TARGET_FILE_DIR:CefViewWing>/icudtl.dat"
+
+    #.3 copy all cef binary files to output dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+      "${CEF_BINARY_DIR}"
+      "$<TARGET_FILE_DIR:CefViewWing>"
   )
 
   SET_LINUX_SUID_PERMISSIONS(CefViewWing "$<TARGET_FILE_DIR:CefViewWing>/chrome-sandbox")
@@ -368,9 +394,13 @@ if (OS_MACOS)
   endforeach()
 
   # copy cef binary files to the output folder
-  add_custom_command(TARGET CefViewWing POST_BUILD
-    #copy the cef framework to resource directory
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework" "$<TARGET_BUNDLE_DIR:CefViewWing>/../Chromium Embedded Framework.framework"
+  add_custom_command(TARGET CefViewWing 
+    POST_BUILD
+
+    #copy the cef framework to output directory
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+      "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework" 
+      "$<TARGET_BUNDLE_DIR:CefViewWing>/../Chromium Embedded Framework.framework"
     VERBATIM
   )
 endif() # OS_MACOS
