@@ -4,6 +4,9 @@
 cmake_minimum_required(VERSION 3.19.1)
 project(CefViewCore)
 
+option(USE_SANDBOX      "Enable CEF Sandbox"                  OFF)
+option(STATIC_CRT       "Use MultiThreaded linkage for MSVC"  OFF)
+
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 if (NOT CMAKE_BUILD_TYPE)
@@ -67,17 +70,22 @@ endif()
 
 if (OS_WINDOWS)
   add_link_options(/DEBUG)
-  set(CEF_RUNTIME_LIBRARY_FLAG "/MD" CACHE STRING "Use dynamic runtime")
-endif()
-
-# Disable the sandbox
-if ((NOT DEFINED USE_SANDBOX) OR (USE_SANDBOX STREQUAL "") 
-    OR (${USE_SANDBOX} MATCHES "(FALSE|false|0|OFF)"))
-    option(USE_SANDBOX "Enable CEF Sandbox" OFF)
-elseif(${USE_SANDBOX} MATCHES "(TRUE|true|1|null|ON)")
-    option(USE_SANDBOX "Enable CEF Sandbox" ON)
-else()
-    message(FATAL_ERROR "++++++++++ INVALID FLAG USE_SANDBOX=" ${USE_SANDBOX})
+  if (USE_SANDBOX)
+    # cef_sandbox.lib is MT already, must keep the same with it
+    set(CEF_RUNTIME_LIBRARY_FLAG "/MT" CACHE STRING "Use static runtime")
+    add_compile_options("/MT$<$<CONFIG:Debug>:d>")
+  else()
+    # either MT or MD is supported
+    message(STATUS "===== " ${STATIC_CRT})
+    set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
+    add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
+  endif()
+else ()
+  add_compile_options(
+    "-g"
+    "$<$<CONFIG:DEBUG>:-O0>"
+    "$<$<CONFIG:RELEASE>:-O3>"
+  )
 endif()
 
 # Set CEF root dir and append it to CMAKE_MODULE_PATH
