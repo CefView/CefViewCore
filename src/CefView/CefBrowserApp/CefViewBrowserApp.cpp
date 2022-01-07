@@ -15,7 +15,7 @@
 #include <CefViewCoreProtocol.h>
 
 CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
-                                     CefViewBrowserAppDelegateInterface::RefPtr delegate)
+                                     CefViewBrowserAppDelegateInterface::WeakPtr delegate)
   : bridge_object_name_(bridge_name)
   , app_delegate_(delegate)
 {}

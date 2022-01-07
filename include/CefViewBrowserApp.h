@@ -25,7 +25,7 @@ class CefViewBrowserApp
   , public CefBrowserProcessHandler
 {
 public:
-  CefViewBrowserApp(const std::string& bridge_name, CefViewBrowserAppDelegateInterface::RefPtr delegate = nullptr);
+  CefViewBrowserApp(const std::string& bridge_name, CefViewBrowserAppDelegateInterface::WeakPtr delegate);
   ~CefViewBrowserApp();
 
 private:
