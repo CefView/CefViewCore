@@ -10,6 +10,8 @@
 #include <include/wrapper/cef_helpers.h>
 #pragma endregion cef_headers
 
+#include "Common/CefViewCoreLog.h"
+
 #include <CefViewCoreProtocol.h>
 
 CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
@@ -18,7 +20,10 @@ CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
   , app_delegate_(delegate)
 {}
 
-CefViewBrowserApp::~CefViewBrowserApp() {}
+CefViewBrowserApp::~CefViewBrowserApp()
+{
+  log_debug("CefViewBrowserApp::~CefViewBrowserApp");
+}
 
 //////////////////////////////////////////////////////////////////////////
 void

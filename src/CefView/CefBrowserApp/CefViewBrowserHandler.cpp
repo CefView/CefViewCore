@@ -25,7 +25,10 @@ CefViewBrowserHandler::CefViewBrowserHandler(CefViewBrowserHandlerDelegateInterf
   , cefquery_handler_(new CefViewQueryHandler(delegate))
 {}
 
-CefViewBrowserHandler::~CefViewBrowserHandler() {}
+CefViewBrowserHandler::~CefViewBrowserHandler()
+{
+  log_debug("CefViewBrowserHandler::~CefViewBrowserHandler()");
+}
 
 bool
 CefViewBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -234,7 +237,7 @@ CefViewBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
   if (!main_browser_) {
     // If this is the main browser then keep it
     {
-      std::unique_lock<std::mutex> lock(mtx_);
+      std::unique_lock<std::recursive_mutex> lock(mtx_);
       // We need to keep the main child window, but not popup windows
       main_browser_ = browser;
     }
@@ -254,7 +257,7 @@ CefViewBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 
   // Increase the browser count
   {
-    std::unique_lock<std::mutex> lock(mtx_);
+    std::unique_lock<std::recursive_mutex> lock(mtx_);
     browser_count_++;
   }
 }
@@ -308,7 +311,7 @@ CefViewBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
   // Decrease the browser count
   {
-    std::unique_lock<std::mutex> lock(mtx_);
+    std::unique_lock<std::recursive_mutex> lock(mtx_);
     if (--browser_count_ == 0) {
       message_router_->RemoveHandler(cefquery_handler_.get());
       cefquery_handler_ = nullptr;
@@ -488,7 +491,7 @@ CefViewBrowserHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
 CefRefPtr<CefBrowser>
 CefViewBrowserHandler::GetBrowser()
 {
-  std::unique_lock<std::mutex> lock(mtx_);
+  std::unique_lock<std::recursive_mutex> lock(mtx_);
   return main_browser_;
 }
 
@@ -521,7 +524,7 @@ void
 CefViewBrowserHandler::CloseAllBrowsers(bool force_close)
 {
   // If all browsers had been closed, then return
-  std::unique_lock<std::mutex> lock(mtx_);
+  std::unique_lock<std::recursive_mutex> lock(mtx_);
   if (!browser_count_) {
     return;
   }

@@ -283,12 +283,12 @@ private:
   /// <summary>
   ///
   /// </summary>
-  std::condition_variable cv_all_closed_;
+  std::condition_variable_any cv_all_closed_;
 
   /// <summary>
   ///
   /// </summary>
-  std::mutex mtx_;
+  std::recursive_mutex mtx_;
 
   /// <summary>
   ///
