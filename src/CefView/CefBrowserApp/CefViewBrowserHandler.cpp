@@ -374,6 +374,10 @@ CefViewBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
   if (errorCode == ERR_ABORTED)
     return;
 
+  // If the browser is closing, block the popup
+  if (is_closing_)
+    return;
+
   auto msg = errorText.ToString();
   auto url = failedUrl.ToString();
 
