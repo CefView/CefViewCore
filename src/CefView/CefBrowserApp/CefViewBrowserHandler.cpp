@@ -541,18 +541,25 @@ CefViewBrowserHandler::CloseAllBrowsers(bool force_close)
     for (auto it = popup_browser_list_.begin(); it != popup_browser_list_.end(); ++it) {
       if (!(*it))
         continue;
+
+      (*it)->StopLoad();
+
       auto host = (*it)->GetHost();
       if (!host)
         continue;
+
       host->CloseBrowser(force_close);
     }
   }
 
   if (main_browser_) {
+    // Stop loading
+    main_browser_->StopLoad();
+
     // Request that the main browser close.
     auto host = main_browser_->GetHost();
     if (host)
-      main_browser_->GetHost()->CloseBrowser(force_close);
+      host->CloseBrowser(force_close);
   }
 
   if (!CefCurrentlyOn(TID_UI)) {
