@@ -21,7 +21,7 @@
 namespace CefViewDefaultSchemeHandler {
 //////////////////////////////////////////////////////////////////////////
 // handler
-SchemeHandler::SchemeHandler(CefViewBrowserHandlerDelegateInterface::RefPtr delegate)
+SchemeHandler::SchemeHandler(CefViewBrowserClientDelegateInterface::RefPtr delegate)
   : browser_delegate_(delegate)
   , offset_(0)
 {}
@@ -99,7 +99,7 @@ SchemeHandlerFactory::Create(CefRefPtr<CefBrowser> browser,
                              const CefString& scheme_name,
                              CefRefPtr<CefRequest> request)
 {
-  CefViewBrowserHandlerDelegateInterface::RefPtr browserDelegate;
+  CefViewBrowserClientDelegateInterface::RefPtr browserDelegate;
   return new SchemeHandler(browserDelegate);
 }
 

@@ -11,11 +11,12 @@
 #pragma endregion cef_headers
 
 #include "Common/CefViewCoreLog.h"
+#include "SchemeHandlers/CefViewDefaultSchemeHandler.h"
 
 #include <CefViewCoreProtocol.h>
 
 CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
-                                     CefViewBrowserAppDelegateInterface::WeakPtr delegate)
+                                     CefViewBrowserAppDelegateInterface::RefPtr delegate)
   : bridge_object_name_(bridge_name)
   , app_delegate_(delegate)
 {}
@@ -23,6 +24,18 @@ CefViewBrowserApp::CefViewBrowserApp(const std::string& bridge_name,
 CefViewBrowserApp::~CefViewBrowserApp()
 {
   log_debug("CefViewBrowserApp::~CefViewBrowserApp");
+}
+
+void
+CefViewBrowserApp::RegisterCustomSchemesHandlerFactories()
+{
+  CefViewDefaultSchemeHandler::RegisterSchemeHandlerFactory();
+}
+
+void
+CefViewBrowserApp::RegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
+{
+  CefViewDefaultSchemeHandler::RegisterScheme(registrar);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -21,7 +21,7 @@
 
 #pragma endregion cef_headers
 
-#include <CefViewBrowserHandlerDelegate.h>
+#include <CefViewBrowserClientDelegate.h>
 
 /// <summary>
 ///
@@ -31,7 +31,7 @@ class CefViewQueryHandler
   , public CefMessageRouterBrowserSide::Handler
 {
 public:
-  CefViewQueryHandler(CefViewBrowserHandlerDelegateInterface::WeakPtr delegate);
+  CefViewQueryHandler(CefViewBrowserClientDelegateInterface::WeakPtr delegate);
   ~CefViewQueryHandler();
 
   /// <summary>
@@ -73,7 +73,7 @@ private:
   /// <summary>
   ///
   /// </summary>
-  CefViewBrowserHandlerDelegateInterface::WeakPtr handler_delegate_;
+  CefViewBrowserClientDelegateInterface::WeakPtr handler_delegate_;
 
   /// <summary>
   ///

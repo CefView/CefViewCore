@@ -15,8 +15,7 @@
 #include <mutex>
 #include <set>
 #include <string>
-#include <condition_variable>
-
+#include <unordered_map>
 #pragma endregion std_headers
 
 #pragma region cef_headers
@@ -25,10 +24,10 @@
 #include <include/wrapper/cef_resource_manager.h>
 #pragma endregion cef_headers
 
-#include <CefViewBrowserHandlerDelegate.h>
+#include <CefViewBrowserClientDelegate.h>
 #include <CefViewQueryHandler.h>
 
-class CefViewBrowserHandler
+class CefViewBrowserClient
   : public CefClient
   , public CefContextMenuHandler
   , public CefDisplayHandler
@@ -55,34 +54,16 @@ public:
   ///
   /// </summary>
   /// <param name="delegate"></param>
-  CefViewBrowserHandler(CefViewBrowserHandlerDelegateInterface::WeakPtr delegate);
+  CefViewBrowserClient(CefViewBrowserClientDelegateInterface::RefPtr delegate);
 
   /// <summary>
   ///
   /// </summary>
-  ~CefViewBrowserHandler();
+  ~CefViewBrowserClient();
 
   //////////////////////////////////////////////////////////////////////////
   // CefClient methods:
-  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override
-  {
-    return pContextMenuHandler_ ? pContextMenuHandler_ : this;
-  }
-  virtual CefRefPtr<CefDialogHandler> GetDialogHandler() override { return pDialogHandler_; }
-  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override
-  {
-    return pDisplayHandler_ ? pDisplayHandler_ : this;
-  }
-  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override { return pDownloadHandler_; }
   virtual CefRefPtr<CefDragHandler> GetDragHandler() override { return this; }
-  virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override
-  {
-    return pJSDialogHandler_ ? pJSDialogHandler_ : this;
-  }
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override
-  {
-    return pKeyboardHandler_ ? pKeyboardHandler_ : this;
-  }
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
@@ -223,8 +204,6 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
 
-  CefRefPtr<CefBrowser> GetBrowser();
-
   void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
 
   void AddArchiveResourceProvider(const std::string& archive_path,
@@ -235,7 +214,7 @@ public:
   // Request that all existing browser windows close.
   void CloseAllBrowsers(bool force_close);
 
-  bool TriggerEvent(const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
+  bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
 
   bool ResponseQuery(const int64_t query, bool success, const CefString& response, int error);
 
@@ -243,109 +222,26 @@ public:
                              CefProcessId source_process,
                              CefRefPtr<CefProcessMessage> message);
 
-  void NotifyTakeFocus(bool next);
+  void NotifyTakeFocus(CefRefPtr<CefBrowser> browser, bool next);
 
-  void NotifyDragRegion(const std::vector<CefDraggableRegion> regions);
-
-  void SetContextMenuHandler(CefRefPtr<CefContextMenuHandler> handler) { pContextMenuHandler_ = handler; }
-
-  void SetDialogHandler(CefRefPtr<CefDialogHandler> handler) { pDialogHandler_ = handler; }
-
-  void SetDisplayHandler(CefRefPtr<CefDisplayHandler> handler) { pDisplayHandler_ = handler; }
-
-  void SetDownloadHandler(CefRefPtr<CefDownloadHandler> handler) { pDownloadHandler_ = handler; }
-
-  void SetJSDialogHandler(CefRefPtr<CefJSDialogHandler> handler) { pJSDialogHandler_ = handler; }
-
-  void SetKeyboardHandler(CefRefPtr<CefKeyboardHandler> handler) { pKeyboardHandler_ = handler; }
+  void NotifyDragRegion(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> regions);
 
 private:
-  /// <summary>
-  ///
-  /// </summary>
-  CefViewBrowserHandlerDelegateInterface::WeakPtr handler_delegate_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  int browser_count_;
-
-  /// <summary>
-  ///
-  /// </summary>
   bool is_closing_;
-
-  /// <summary>
-  ///
-  /// </summary>
   bool initial_navigation_;
 
-  /// <summary>
-  ///
-  /// </summary>
-  std::condition_variable_any cv_all_closed_;
+  std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
+  CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
 
-  /// <summary>
-  ///
-  /// </summary>
-  std::recursive_mutex mtx_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefBrowser> main_browser_;
-
-  /// <summary>
-  /// List of existing browser windows. Only accessed on the CEF UI thread.
-  /// </summary>
-  std::list<CefRefPtr<CefBrowser>> popup_browser_list_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefResourceManager> resource_manager_;
-
-  /// <summary>
-  ///
-  /// </summary>
+  // message router
+  CefMessageRouterConfig message_router_config_;
+  CefRefPtr<CefViewQueryHandler> cefquery_handler_;
   CefRefPtr<CefMessageRouterBrowserSide> message_router_;
 
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefViewQueryHandler> cefquery_handler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefContextMenuHandler> pContextMenuHandler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefDialogHandler> pDialogHandler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefDisplayHandler> pDisplayHandler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefDownloadHandler> pDownloadHandler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefJSDialogHandler> pJSDialogHandler_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  CefRefPtr<CefKeyboardHandler> pKeyboardHandler_;
+  // resource manager
+  CefRefPtr<CefResourceManager> resource_manager_;
 
   // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(CefViewBrowserHandler);
+  IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 };
 #endif
