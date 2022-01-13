@@ -7,10 +7,18 @@ project(CefViewCore)
 option(USE_SANDBOX      "Enable CEF Sandbox"                  OFF)
 option(STATIC_CRT       "Use MultiThreaded linkage for MSVC"  OFF)
 
-# Only generate Debug and Release configuration types.
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Debug")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+  set(OS_MACOS 1)
+  set(OS_POSIX 1)
+  add_definitions(-DOS_MACOS=1 -DOS_POSIX=1)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  set(OS_LINUX 1)
+  set(OS_POSIX 1)
+  add_definitions(-DOS_LINUX=1 -DOS_POSIX=1)
+  add_compile_options(-Wno-unknown-pragmas)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  set(OS_WINDOWS 1)
+  add_definitions(-DOS_WINDOWS=1)
 endif()
 
 # Determine the project architecture.
@@ -27,6 +35,12 @@ if(NOT DEFINED PROJECT_ARCH)
   endif()
 endif()
 
+# Only generate Debug and Release configuration types.
+set(CMAKE_CONFIGURATION_TYPES Debug Release)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # Use folders in the resulting project files.
 set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
@@ -37,20 +51,6 @@ set(CMAKE_C_STANDARD 11)
 # C++ standard
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11)
-
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-  set(OS_MACOS 1)
-  set(OS_POSIX 1)
-  add_definitions(-DOS_MACOS=1 -DOS_POSIX=1)
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(OS_LINUX 1)
-  set(OS_POSIX 1)
-  add_definitions(-DOS_LINUX=1 -DOS_POSIX=1)
-  add_compile_options(-Wno-unknown-pragmas)
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-  set(OS_WINDOWS 1)
-  add_definitions(-DOS_WINDOWS=1)
-endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/$<CONFIG>/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
