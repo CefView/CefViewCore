@@ -211,8 +211,7 @@ public:
                                   const std::string& password,
                                   int priority = 0);
 
-  // Request that all existing browser windows close.
-  void CloseAllBrowsers(bool force_close);
+  int GetBrowserCount();
 
   bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
 
