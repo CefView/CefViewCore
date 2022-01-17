@@ -449,10 +449,19 @@ CefViewBrowserClient::AddArchiveResourceProvider(const std::string& archive_path
   resource_manager_->AddArchiveProvider(url, archive_path, password, 0, identifier);
 }
 
+void
+CefViewBrowserClient::CloseAllBrowsers()
+{
+  for (auto& kv : browser_map_) {
+    kv.second->StopLoad();
+    kv.second->GetHost()->CloseBrowser(true);
+  }
+}
+
 int
 CefViewBrowserClient::GetBrowserCount()
 {
-  return browser_map_.size();
+  return static_cast<int>(browser_map_.size());
 }
 
 bool

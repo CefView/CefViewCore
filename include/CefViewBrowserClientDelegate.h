@@ -113,11 +113,6 @@ public:
                                   int frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
-
-  /// <summary>
-  ///
-  /// </summary>
-  virtual void browserIsDestroying() = 0;
 };
 
 #endif

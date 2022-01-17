@@ -211,6 +211,8 @@ public:
                                   const std::string& password,
                                   int priority = 0);
 
+  void CloseAllBrowsers();
+
   int GetBrowserCount();
 
   bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
