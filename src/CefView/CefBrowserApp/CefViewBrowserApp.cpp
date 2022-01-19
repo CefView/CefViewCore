@@ -63,7 +63,8 @@ CefViewBrowserApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
 void
 CefViewBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
 {
-  RegisterCustomSchemes(registrar);
+  // RegisterCustomSchemes(registrar);
+  // RegisterCustomSchemesHandlerFactories();
 }
 
 CefRefPtr<CefBrowserProcessHandler>
