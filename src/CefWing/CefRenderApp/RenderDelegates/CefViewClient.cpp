@@ -1,31 +1,10 @@
 ﻿#pragma region projet_headers
+#include "Common/CefViewCoreLog.h"
 #include "CefViewClient.h"
 #pragma endregion projet_headers
 
-// bool CefViewClient::Accessor::Get(const CefString& name,
-//  const CefRefPtr<CefV8Value> object,
-//  CefRefPtr<CefV8Value>& retval,
-//  CefString& exception)
-//{
-//  return true;
-//}
-//
-// bool CefViewClient::Accessor::Set(const CefString& name,
-//  const CefRefPtr<CefV8Value> object,
-//  const CefRefPtr<CefV8Value> value,
-//  CefString& exception)
-//{
-//  return true;
-//}
-
-//////////////////////////////////////////////////////////////////////////
-
-CefViewClient::V8Handler::V8Handler(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    CefViewClient::EventListenerListMap& eventListenerListMap)
-  : browser_(browser)
-  , frame_(frame)
-  , eventListenerListMap_(eventListenerListMap)
+CefViewClient::V8Handler::V8Handler(CefViewClient* client)
+  : client_(client)
 {}
 
 bool
@@ -54,31 +33,7 @@ CefViewClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
                                               CefRefPtr<CefV8Value>& retval,
                                               CefString& exception)
 {
-  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
-
-  CefRefPtr<CefListValue> args = msg->GetArgumentList();
-  int frameId = (int)frame_->GetIdentifier();
-
-  int idx = 0;
-  args->SetInt(idx++, frameId);
-  args->SetString(idx++, function);
-
-  for (std::size_t i = 0; i < arguments.size(); i++) {
-    if (arguments[i]->IsBool())
-      args->SetBool(idx++, arguments[i]->GetBoolValue());
-    else if (arguments[i]->IsInt())
-      args->SetInt(idx++, arguments[i]->GetIntValue());
-    else if (arguments[i]->IsDouble())
-      args->SetDouble(idx++, arguments[i]->GetDoubleValue());
-    else if (arguments[i]->IsString())
-      args->SetString(idx++, arguments[i]->GetStringValue());
-    else
-      args->SetNull(idx++);
-  }
-
-  if (browser_)
-    frame_->SendProcessMessage(PID_BROWSER, msg);
-
+  client_->ExecutedInvokeMethod(arguments);
   retval = CefV8Value::CreateUndefined();
 }
 
@@ -98,26 +53,7 @@ CefViewClient::V8Handler::ExecuteAddEventListener(const CefString& function,
         EventListener listener;
         listener.callback_ = arguments[1];
         listener.context_ = CefV8Context::GetCurrentContext();
-
-        auto itListenerList = eventListenerListMap_.find(eventName);
-        if (itListenerList == eventListenerListMap_.end()) {
-          EventListenerList eventListenerList;
-          eventListenerList.push_back(listener);
-          eventListenerListMap_[eventName] = eventListenerList;
-        } else {
-          EventListenerList& eventListenerList = itListenerList->second;
-          // does this listener exist?
-          bool found = false;
-          for (auto item : eventListenerList) {
-            if (item.callback_->IsSame(listener.callback_)) {
-              found = true;
-              break;
-            }
-          }
-
-          if (!found)
-            eventListenerList.push_back(listener);
-        }
+        client_->AddEventListener(eventName, listener);
         bRet = true;
       } else
         exception = "Invalid parameters; parameter 2 should be a function";
@@ -145,15 +81,7 @@ CefViewClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
         EventListener listener;
         listener.callback_ = arguments[1];
         listener.context_ = CefV8Context::GetCurrentContext();
-
-        auto itListenerList = eventListenerListMap_.find(eventName);
-        if (itListenerList != eventListenerListMap_.end()) {
-          EventListenerList& eventListenerList = itListenerList->second;
-          for (auto itListener = eventListenerList.begin(); itListener != eventListenerList.end(); itListener++) {
-            if (itListener->callback_->IsSame(listener.callback_))
-              eventListenerList.erase(itListener);
-          }
-        }
+        client_->RemoveEventListener(eventName, listener);
       } else
         exception = "Invalid parameters; parameter 2 is expecting a function";
     } else
@@ -170,22 +98,20 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> 
   : object_(CefV8Value::CreateObject(nullptr, nullptr))
   , browser_(browser)
   , frame_(frame)
+  , v8Handler_(new V8Handler(this))
 {
-  // create function handler
-  CefRefPtr<V8Handler> handler = new V8Handler(browser_, frame_, eventListenerListMap_);
-
   // create function "InvokeMethod"
-  CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(CEFVIEW_INVOKEMETHOD, handler);
+  CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(CEFVIEW_INVOKEMETHOD, v8Handler_);
   // add this function to window object
   object_->SetValue(CEFVIEW_INVOKEMETHOD, funcInvokeMethod, V8_PROPERTY_ATTRIBUTE_READONLY);
 
   // create function addEventListener
-  CefRefPtr<CefV8Value> funcAddEventListener = CefV8Value::CreateFunction(CEFVIEW_ADDEVENTLISTENER, handler);
+  CefRefPtr<CefV8Value> funcAddEventListener = CefV8Value::CreateFunction(CEFVIEW_ADDEVENTLISTENER, v8Handler_);
   // add this function to window object
   object_->SetValue(CEFVIEW_ADDEVENTLISTENER, funcAddEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
 
   // create function removeListener
-  CefRefPtr<CefV8Value> funcRemoveEventListener = CefV8Value::CreateFunction(CEFVIEW_REMOVEEVENTLISTENER, handler);
+  CefRefPtr<CefV8Value> funcRemoveEventListener = CefV8Value::CreateFunction(CEFVIEW_REMOVEEVENTLISTENER, v8Handler_);
   // add this function to window object
   object_->SetValue(CEFVIEW_REMOVEEVENTLISTENER, funcRemoveEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
 }
@@ -196,41 +122,194 @@ CefViewClient::GetObject()
   return object_;
 }
 
-void
-CefViewClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict)
+CefRefPtr<CefV8Value>
+CefViewClient::CefValueToV8Value(CefValue* cefValue)
 {
-  auto itListenerList = eventListenerListMap_.find(eventName);
+  CefRefPtr<CefV8Value> v8Value = CefV8Value::CreateNull();
+  if (!cefValue) {
+    return v8Value;
+  }
+
+  auto type = cefValue->GetType();
+  switch (type) {
+    case CefValueType::VTYPE_INVALID: {
+      v8Value = CefV8Value::CreateUndefined();
+    } break;
+    case CefValueType::VTYPE_NULL: {
+      v8Value = CefV8Value::CreateNull();
+    } break;
+    case CefValueType::VTYPE_BOOL: {
+      auto v = cefValue->GetBool();
+      v8Value = CefV8Value::CreateBool(v);
+    } break;
+    case CefValueType::VTYPE_INT: {
+      auto v = cefValue->GetInt();
+      v8Value = CefV8Value::CreateInt(v);
+    } break;
+    case CefValueType::VTYPE_DOUBLE: {
+      auto v = cefValue->GetDouble();
+      v8Value = CefV8Value::CreateDouble(v);
+    } break;
+    case CefValueType::VTYPE_STRING: {
+      auto v = cefValue->GetString();
+      v8Value = CefV8Value::CreateString(v);
+    } break;
+    case CefValueType::VTYPE_BINARY: {
+      // TO-DO
+      // currently not supported
+    } break;
+    case CefValueType::VTYPE_DICTIONARY: {
+      auto cDict = cefValue->GetDictionary();
+      CefDictionaryValue::KeyList cKeys;
+      cDict->GetKeys(cKeys);
+      v8Value = CefV8Value::CreateObject(nullptr, nullptr);
+      for (auto& key : cKeys) {
+        auto cVal = cDict->GetValue(key);
+        auto v8Val = CefValueToV8Value(cVal);
+        v8Val->SetValue(key, v8Val, V8_PROPERTY_ATTRIBUTE_NONE);
+      }
+    } break;
+    case CefValueType::VTYPE_LIST: {
+      auto cList = cefValue->GetList();
+      int cCount = static_cast<int>(cList->GetSize());
+      v8Value = CefV8Value::CreateArray(static_cast<int>(cCount));
+      for (int i = 0; i < cCount; i++) {
+        auto cVal = cList->GetValue(i);
+        auto v8Val = CefValueToV8Value(cVal);
+        v8Value->SetValue(i, v8Value);
+      }
+    } break;
+    default:
+      break;
+  }
+
+  return v8Value;
+}
+
+CefRefPtr<CefValue>
+CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
+{
+  CefRefPtr<CefValue> cefValue = CefValue::Create();
+  if (!v8Value) {
+    return cefValue;
+  }
+
+  if (v8Value->IsNull() || v8Value->IsUndefined())
+    cefValue->SetNull();
+  else if (v8Value->IsBool())
+    cefValue->SetBool(v8Value->GetBoolValue());
+  else if (v8Value->IsInt())
+    cefValue->SetInt(v8Value->GetIntValue());
+  else if (v8Value->IsUInt() || v8Value->IsDouble())
+    cefValue->SetDouble(v8Value->GetDoubleValue());
+  else if (v8Value->IsString())
+    cefValue->SetString(v8Value->GetStringValue());
+  else if (v8Value->IsArrayBuffer()) {
+    // TO-DO
+    // currently not supported
+  } else if (v8Value->IsObject()) {
+    CefDictionaryValue::KeyList keys;
+    v8Value->GetKeys(keys);
+    auto cefDict = CefDictionaryValue::Create();
+    for (auto& key : keys) {
+      auto v8Val = v8Value->GetValue(key);
+      auto cefVal = V8ValueToCefValue(v8Val);
+      cefDict->SetValue(key, cefValue);
+    }
+    cefValue->SetDictionary(cefDict);
+  } else if (v8Value->IsArray()) {
+    auto s = v8Value->GetArrayLength();
+    auto cefList = CefListValue::Create();
+    for (int i = 0; i < s; i++) {
+      auto v8Val = v8Value->GetValue(i);
+      auto cefVal = V8ValueToCefValue(v8Val);
+      cefList->SetValue(i, cefValue);
+    }
+    cefValue->SetList(cefList);
+  } else
+    cefValue->SetNull();
+
+  return cefValue;
+}
+
+void
+CefViewClient::ExecutedInvokeMethod(const CefV8ValueList& arguments)
+{
+  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
+
+  CefRefPtr<CefListValue> args = msg->GetArgumentList();
+  int frameId = (int)frame_->GetIdentifier();
+
+  int idx = 0;
+  args->SetInt(idx++, frameId);
+  for (std::size_t i = 0; i < arguments.size(); i++) {
+    auto cefValue = V8ValueToCefValue(arguments[i]);
+    args->SetValue(idx++, cefValue);
+  }
+
+  if (browser_)
+    frame_->SendProcessMessage(PID_BROWSER, msg);
+}
+
+void
+CefViewClient::AddEventListener(const CefString& name, const EventListener& listener)
+{
+  auto itListenerList = eventListenerListMap_.find(name);
+  if (itListenerList == eventListenerListMap_.end()) {
+    EventListenerList eventListenerList;
+    eventListenerList.push_back(listener);
+    eventListenerListMap_[name] = eventListenerList;
+  } else {
+    EventListenerList& eventListenerList = itListenerList->second;
+    // does this listener exist?
+    bool found = false;
+    for (auto item : eventListenerList) {
+      if (item.callback_->IsSame(listener.callback_)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found)
+      eventListenerList.push_back(listener);
+  }
+}
+
+void
+CefViewClient::RemoveEventListener(const CefString& name, const EventListener& listener)
+{
+  auto itListenerList = eventListenerListMap_.find(name);
   if (itListenerList != eventListenerListMap_.end()) {
     EventListenerList& eventListenerList = itListenerList->second;
-    for (auto listener : eventListenerList) {
-      listener.context_->Enter();
-
-      CefRefPtr<CefV8Value> eventObject = CefV8Value::CreateObject(nullptr, nullptr);
-      CefDictionaryValue::KeyList kyes;
-      dict->GetKeys(kyes);
-      CefRefPtr<CefValue> value;
-      CefRefPtr<CefV8Value> v8Value;
-      for (const CefString& key : kyes) {
-        value = dict->GetValue(key);
-        if (VTYPE_BOOL == value->GetType())
-          v8Value = CefV8Value::CreateBool(value->GetBool());
-        else if (VTYPE_INT == value->GetType())
-          v8Value = CefV8Value::CreateInt(value->GetInt());
-        else if (VTYPE_DOUBLE == value->GetType())
-          v8Value = CefV8Value::CreateDouble(value->GetDouble());
-        else if (VTYPE_STRING == value->GetType())
-          v8Value = CefV8Value::CreateString(value->GetString());
-        else
-          continue;
-
-        eventObject->SetValue(key, v8Value, V8_PROPERTY_ATTRIBUTE_READONLY);
-      }
-
-      CefV8ValueList arguments;
-      arguments.push_back(eventObject);
-
-      listener.callback_->ExecuteFunction(object_, arguments);
-      listener.context_->Exit();
+    for (auto itListener = eventListenerList.begin(); itListener != eventListenerList.end(); itListener++) {
+      if (itListener->callback_->IsSame(listener.callback_))
+        eventListenerList.erase(itListener);
     }
+  }
+}
+
+void
+CefViewClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefListValue> args)
+{
+  // find the listeners
+  auto itListenerList = eventListenerListMap_.find(eventName);
+  if (itListenerList == eventListenerListMap_.end()) {
+    return;
+  }
+
+  EventListenerList& eventListenerList = itListenerList->second;
+  for (auto listener : eventListenerList) {
+    listener.context_->Enter();
+
+    // convert argument list from CefValue to CefV8Value
+    CefV8ValueList v8ArgList;
+    for (size_t i = 0; i < args->GetSize(); i++) {
+      auto cefValue = args->GetValue(i);
+      auto v8Value = CefValueToV8Value(cefValue);
+      v8ArgList.push_back(v8Value);
+    }
+
+    listener.callback_->ExecuteFunction(object_, v8ArgList);
+    listener.context_->Exit();
   }
 }

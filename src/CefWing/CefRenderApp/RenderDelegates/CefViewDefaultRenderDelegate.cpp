@@ -1,4 +1,5 @@
 ﻿#pragma region project_headers
+#include "Common/CefViewCoreLog.h"
 #include "CefViewDefaultRenderDelegate.h"
 #include "CefViewClient.h"
 #pragma endregion project_headers
@@ -104,20 +105,34 @@ RenderDelegate::OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser,
                                             CefRefPtr<CefProcessMessage> message)
 {
   if (message->GetName() == TRIGGEREVENT_NOTIFY_MESSAGE) {
-    CefRefPtr<CefListValue> messageArguments = message->GetArgumentList();
-    if (messageArguments && (messageArguments->GetSize() >= 2)) {
-      int idx = 0;
-      if (CefValueType::VTYPE_STRING == messageArguments->GetType(idx)) {
-        CefString eventName = messageArguments->GetString(idx++);
-
-        if (CefValueType::VTYPE_DICTIONARY == messageArguments->GetType(idx)) {
-          CefRefPtr<CefDictionaryValue> dict = messageArguments->GetDictionary(idx++);
-
-          ExecuteEventListener(browser, frame, eventName, dict);
-          return true;
-        }
-      }
+    CefRefPtr<CefListValue> args = message->GetArgumentList()->Copy();
+    //** arguments(CefValueList)
+    //** +------------+
+    //** | event name |
+    //** | event arg1 |
+    //** | event arg2 |
+    //** | event arg3 |
+    //** | event arg4 |
+    //** |    ...     |
+    //** |    ...     |
+    //** |    ...     |
+    //** |    ...     |
+    //** +------------+
+    if (!args || args->GetSize() <= 0) {
+      log_error("Invalid message arguments, event name is required");
+      return true;
     }
+
+    if (CefValueType::VTYPE_STRING != args->GetType(0)) {
+      log_error("Invalid message arguments, invalid type for event name");
+      return true;
+    }
+
+    auto name = args->GetString(0);
+    args->Remove(0);
+    ExecuteEventListener(browser, frame, name, args);
+
+    return true;
   }
 
   return false;
@@ -127,14 +142,14 @@ void
 RenderDelegate::ExecuteEventListener(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefFrame> frame,
                                      const CefString& name,
-                                     CefRefPtr<CefDictionaryValue> dict)
+                                     CefRefPtr<CefListValue> args)
 {
   if (browser && frame) {
     int64 frameId = frame->GetIdentifier();
     auto it = frame_id_to_client_map_.find(frameId);
     if (it != frame_id_to_client_map_.end()) {
       const CefRefPtr<CefViewClient>& objClient = it->second;
-      objClient->ExecuteEventListener(name, dict);
+      objClient->ExecuteEventListener(name, args);
     }
   }
 }

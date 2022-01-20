@@ -15,24 +15,6 @@
 /// </summary>
 class CefViewClient : public CefBaseRefCounted
 {
-  // class Accessor
-  //    : public CefV8Accessor
-  //{
-  // public:
-  //    virtual bool Get(const CefString& name,
-  //        const CefRefPtr<CefV8Value> object,
-  //        CefRefPtr<CefV8Value>& retval,
-  //        CefString& exception) override;
-
-  //    virtual bool Set(const CefString& name,
-  //        const CefRefPtr<CefV8Value> object,
-  //        const CefRefPtr<CefV8Value> value,
-  //        CefString& exception) override;
-
-  // private:
-  //    IMPLEMENT_REFCOUNTING(Accessor);
-  //};
-
   /// <summary>
   ///
   /// </summary>
@@ -61,12 +43,8 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    /// <param name="browser"></param>
-    /// <param name="frame"></param>
-    /// <param name="eventListenerListMap"></param>
-    V8Handler(CefRefPtr<CefBrowser> browser,
-              CefRefPtr<CefFrame> frame,
-              CefViewClient::EventListenerListMap& eventListenerListMap);
+    /// <param name="client"></param>
+    V8Handler(CefViewClient* client);
 
     /// <summary>
     ///
@@ -130,17 +108,7 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    CefRefPtr<CefBrowser> browser_;
-
-    /// <summary>
-    ///
-    /// </summary>
-    CefRefPtr<CefFrame> frame_;
-
-    /// <summary>
-    ///
-    /// </summary>
-    CefViewClient::EventListenerListMap& eventListenerListMap_;
+    CefViewClient* client_;
 
   private:
     IMPLEMENT_REFCOUNTING(V8Handler);
@@ -163,9 +131,45 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="v8Value"></param>
+  /// <param name="cefValue"></param>
+  /// <returns></returns>
+  CefRefPtr<CefV8Value> CefValueToV8Value(CefValue* cefValue);
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="v8Value"></param>
+  /// <returns></returns>
+  CefRefPtr<CefValue> V8ValueToCefValue(CefV8Value* v8Value);
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="arguments"></param>
+  void ExecutedInvokeMethod(const CefV8ValueList& arguments);
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="name"></param>
+  /// <param name="listener"></param>
+  /// <returns></returns>
+  void AddEventListener(const CefString& name, const EventListener& listener);
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="name"></param>
+  /// <param name="listener"></param>
+  void RemoveEventListener(const CefString& name, const EventListener& listener);
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="eventName"></param>
-  /// <param name="dict"></param>
-  void ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict);
+  /// <param name="args"></param>
+  void ExecuteEventListener(const CefString eventName, CefRefPtr<CefListValue> args);
 
 private:
   /// <summary>
@@ -186,7 +190,12 @@ private:
   /// <summary>
   ///
   /// </summary>
-  EventListenerListMap eventListenerListMap_;
+  CefRefPtr<V8Handler> v8Handler_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  CefViewClient::EventListenerListMap eventListenerListMap_;
 
 private:
   IMPLEMENT_REFCOUNTING(CefViewClient);

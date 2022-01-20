@@ -104,11 +104,11 @@ protected:
   /// <param name="browser"></param>
   /// <param name="frame"></param>
   /// <param name="name"></param>
-  /// <param name="dict"></param>
+  /// <param name="list"></param>
   void ExecuteEventListener(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             const CefString& name,
-                            CefRefPtr<CefDictionaryValue> dict);
+                            CefRefPtr<CefListValue> args);
 
 private:
   std::string bridge_object_name_;

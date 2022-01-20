@@ -512,35 +512,27 @@ CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
     return false;
 
   // validate the argument list
-  CefRefPtr<CefListValue> messageArguments = message->GetArgumentList();
-  if (!messageArguments || (messageArguments->GetSize() < 2))
+  CefRefPtr<CefListValue> arguments = message->GetArgumentList();
+  if (!arguments || (arguments->GetSize() < 2))
     return false;
 
-  messageArguments = messageArguments->Copy();
+  arguments = arguments->Copy();
 
   // validate the frame id
-  if (CefValueType::VTYPE_INT != messageArguments->GetType(0))
+  if (CefValueType::VTYPE_INT != arguments->GetType(0))
     return false;
-  int frameId = messageArguments->GetInt(0);
-  messageArguments->Remove(0);
-
-  // validate the function name
-  if (CefValueType::VTYPE_STRING != messageArguments->GetType(0))
-    return false;
-  CefString functionName = messageArguments->GetString(0);
-  if (functionName != CEFVIEW_INVOKEMETHOD)
-    return false;
-  messageArguments->Remove(0);
+  int frameId = arguments->GetInt(0);
+  arguments->Remove(0);
 
   // validate the method name
   std::string method;
-  if (CefValueType::VTYPE_STRING != messageArguments->GetType(0))
+  if (CefValueType::VTYPE_STRING != arguments->GetType(0))
     return false;
-  method = messageArguments->GetString(0).ToString();
+  method = arguments->GetString(0).ToString();
   if (method.empty())
     return false;
-  messageArguments->Remove(0);
-  delegate->invokeMethodNotify(browser, frameId, method, messageArguments);
+  arguments->Remove(0);
+  delegate->invokeMethodNotify(browser, frameId, method, arguments);
   return true;
 }
 
