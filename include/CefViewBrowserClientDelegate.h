@@ -97,8 +97,12 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
   /// <param name="query"></param>
+  /// <param name="query_id"></param>
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
+                                   int frameId,
                                    const std::string& query,
                                    const int64_t query_id) = 0;
 

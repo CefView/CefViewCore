@@ -20,7 +20,7 @@ CefViewQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
     mapCallback_[query_id] = callback;
     mtxCallbackMap_.unlock();
 
-    browserDelegate->processQueryRequest(browser, request.ToString(), query_id);
+    browserDelegate->processQueryRequest(browser, frame->GetIdentifier(), request.ToString(), query_id);
 
     return true;
   }
