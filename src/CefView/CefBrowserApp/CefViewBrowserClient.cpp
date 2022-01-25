@@ -3,6 +3,7 @@
 #pragma region std_headers
 #include <sstream>
 #include <string>
+#include <algorithm>
 #pragma endregion std_headers
 
 #pragma region cef_headers
@@ -431,8 +432,13 @@ CefViewBrowserClient::AddLocalDirectoryResourceProvider(const std::string& dir_p
   if (dir_path.empty() || url.empty())
     return;
 
+  // convert to lower case
+  auto lower_url = url;
+  std::transform(
+    lower_url.begin(), lower_url.end(), lower_url.begin(), [](unsigned char c) { return std::tolower(c); });
+
   std::string identifier;
-  resource_manager_->AddDirectoryProvider(url, dir_path, priority, identifier);
+  resource_manager_->AddDirectoryProvider(lower_url, dir_path, priority, identifier);
 }
 
 void
