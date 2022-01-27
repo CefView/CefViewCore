@@ -174,7 +174,9 @@ CefViewBrowserClient::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next)
 {
   CEF_REQUIRE_UI_THREAD();
 
-  NotifyTakeFocus(browser, next);
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->takeFocus(browser, next);
 }
 
 bool
@@ -182,11 +184,19 @@ CefViewBrowserClient::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource sour
 {
   CEF_REQUIRE_UI_THREAD();
 
-  if (initial_navigation_) {
-    return true;
-  }
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->setFocus(browser);
 
-  return false;
+  return true;
+}
+
+void
+CefViewBrowserClient::OnGotFocus(CefRefPtr<CefBrowser> browser)
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->gotFocus(browser);
 }
 
 bool
@@ -539,20 +549,6 @@ CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
   arguments->Remove(0);
   delegate->invokeMethodNotify(browser, frameId, method, arguments);
   return true;
-}
-
-void
-CefViewBrowserClient::NotifyTakeFocus(CefRefPtr<CefBrowser> browser, bool next)
-{
-  if (!CefCurrentlyOn(TID_UI)) {
-    // Execute this method on the main thread.
-    CefPostTask(TID_UI, CefCreateClosureTask(base::Bind(&CefViewBrowserClient::NotifyTakeFocus, this, browser, next)));
-    return;
-  }
-
-  auto delegate = client_delegate_.lock();
-  if (delegate)
-    delegate->takeFocus(browser, next);
 }
 
 void

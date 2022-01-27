@@ -91,6 +91,19 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <returns></returns>
+  virtual bool setFocus(CefRefPtr<CefBrowser>& browser) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  virtual void gotFocus(CefRefPtr<CefBrowser>& browser) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="url"></param>
   virtual void processUrlRequest(const std::string& url) = 0;
 
