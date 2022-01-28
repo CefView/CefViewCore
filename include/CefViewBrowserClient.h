@@ -32,14 +32,30 @@ class CefViewBrowserClient
   , public CefContextMenuHandler
   , public CefDisplayHandler
   , public CefDragHandler
-  , public CefJSDialogHandler
   , public CefFocusHandler
+  , public CefJSDialogHandler
   , public CefKeyboardHandler
   , public CefLifeSpanHandler
   , public CefLoadHandler
   , public CefRequestHandler
   , public CefResourceRequestHandler
+  , public CefRenderHandler
 {
+private:
+  bool is_closing_;
+  bool initial_navigation_;
+
+  std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
+  CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
+
+  // message router
+  CefMessageRouterConfig message_router_config_;
+  CefRefPtr<CefViewQueryHandler> cefquery_handler_;
+  CefRefPtr<CefMessageRouterBrowserSide> message_router_;
+
+  // resource manager
+  CefRefPtr<CefResourceManager> resource_manager_;
+
 public:
   /// <summary>
   ///
@@ -60,6 +76,26 @@ public:
   ///
   /// </summary>
   ~CefViewBrowserClient();
+
+  //////////////////////////////////////////////////////////////////////////
+  void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
+
+  void AddArchiveResourceProvider(const std::string& archive_path,
+                                  const std::string& url,
+                                  const std::string& password,
+                                  int priority = 0);
+
+  void CloseAllBrowsers();
+
+  int GetBrowserCount() { return static_cast<int>(browser_map_.size()); }
+
+  bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
+
+  bool ResponseQuery(const int64_t query, bool success, const CefString& response, int error);
+
+  bool DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
+                             CefProcessId source_process,
+                             CefRefPtr<CefProcessMessage> message);
 
   //////////////////////////////////////////////////////////////////////////
   // CefClient methods:
@@ -100,6 +136,12 @@ public:
                                          CefRefPtr<CefFrame> frame,
                                          const std::vector<CefDraggableRegion>& regions) override;
 
+  // CefFocusHandler methods
+  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() override { return this; }
+  void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) override;
+  bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) override;
+  void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
+
   // CefJSDialogHandler methods
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override { return this; }
   virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser,
@@ -115,12 +157,6 @@ public:
                                     bool is_reload,
                                     CefRefPtr<CefJSDialogCallback> callback) override;
   virtual void OnResetDialogState(CefRefPtr<CefBrowser> browser) override;
-
-  // CefFocusHandler methods
-  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() override { return this; }
-  void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) override;
-  bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) override;
-  void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
 
   // CefKeyboardHandler methods
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override { return this; }
@@ -163,6 +199,40 @@ public:
                            const CefString& errorText,
                            const CefString& failedUrl) override;
 
+  // CefRenderHandler
+  virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return this; }
+  virtual CefRefPtr<CefAccessibilityHandler> GetAccessibilityHandler() override;
+  virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
+  virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
+  virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY) override;
+  virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) override;
+  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
+  virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
+  virtual void OnPaint(CefRefPtr<CefBrowser> browser,
+                       PaintElementType type,
+                       const RectList& dirtyRects,
+                       const void* buffer,
+                       int width,
+                       int height) override;
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  PaintElementType type,
+                                  const RectList& dirtyRects,
+                                  void* shared_handle) override;
+  virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefDragData> drag_data,
+                             CefRenderHandler::DragOperationsMask allowed_ops,
+                             int x,
+                             int y) override;
+  virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser, DragOperation operation) override;
+  virtual void OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, double x, double y) override;
+  virtual void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
+                                            const CefRange& selected_range,
+                                            const RectList& character_bounds) override;
+  virtual void OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
+                                      const CefString& selected_text,
+                                      const CefRange& selected_range) override;
+  virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
+
   // CefRequestHandler methods
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
@@ -177,14 +247,6 @@ public:
                                 CefRequestHandler::WindowOpenDisposition target_disposition,
                                 bool user_gesture) override;
 
-  virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
-                                                                         CefRefPtr<CefFrame> frame,
-                                                                         CefRefPtr<CefRequest> request,
-                                                                         bool is_navigation,
-                                                                         bool is_download,
-                                                                         const CefString& request_initiator,
-                                                                         bool& disable_default_handling) override;
-
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                               const CefString& origin_url,
                               int64 new_size,
@@ -193,6 +255,17 @@ public:
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
 
   // CefResourceRequestHandler
+  virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
+                                                                         CefRefPtr<CefFrame> frame,
+                                                                         CefRefPtr<CefRequest> request,
+                                                                         bool is_navigation,
+                                                                         bool is_download,
+                                                                         const CefString& request_initiator,
+                                                                         bool& disable_default_handling) override
+  {
+    return this;
+  }
+
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
@@ -207,46 +280,7 @@ public:
                                    CefRefPtr<CefRequest> request,
                                    bool& allow_os_execution) override;
 
-  //////////////////////////////////////////////////////////////////////////
-
-  void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
-
-  void AddArchiveResourceProvider(const std::string& archive_path,
-                                  const std::string& url,
-                                  const std::string& password,
-                                  int priority = 0);
-
-  void CloseAllBrowsers();
-
-  int GetBrowserCount();
-
-  bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
-
-  bool ResponseQuery(const int64_t query, bool success, const CefString& response, int error);
-
-  bool DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
-                             CefProcessId source_process,
-                             CefRefPtr<CefProcessMessage> message);
-
-  void NotifyTakeFocus(CefRefPtr<CefBrowser> browser, bool next);
-
-  void NotifyDragRegion(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> regions);
-
 private:
-  bool is_closing_;
-  bool initial_navigation_;
-
-  std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
-  CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
-
-  // message router
-  CefMessageRouterConfig message_router_config_;
-  CefRefPtr<CefViewQueryHandler> cefquery_handler_;
-  CefRefPtr<CefMessageRouterBrowserSide> message_router_;
-
-  // resource manager
-  CefRefPtr<CefResourceManager> resource_manager_;
-
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 };
