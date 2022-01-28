@@ -12,6 +12,8 @@
 #include <memory>
 #include <string>
 
+#include <include/cef_client.h>
+
 /// <summary>
 ///
 /// </summary>
@@ -130,6 +132,20 @@ public:
                                   int frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
+
+  // Off screen rendering
+  virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
+  virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
+  virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY) = 0;
+  virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) = 0;
+  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) = 0;
+  virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) = 0;
+  virtual void OnPaint(CefRefPtr<CefBrowser> browser,
+                       CefRenderHandler::PaintElementType type,
+                       const CefRenderHandler::RectList& dirtyRects,
+                       const void* buffer,
+                       int width,
+                       int height) = 0;
 };
 
 #endif
