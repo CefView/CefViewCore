@@ -72,7 +72,8 @@ CefViewBrowserClient::AddArchiveResourceProvider(const std::string& archive_path
 void
 CefViewBrowserClient::CloseAllBrowsers()
 {
-  for (auto& kv : browser_map_) {
+  auto browsers = browser_map_;
+  for (auto& kv : browsers) {
     kv.second->StopLoad();
     kv.second->GetHost()->CloseBrowser(true);
   }

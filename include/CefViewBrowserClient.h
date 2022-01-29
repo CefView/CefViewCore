@@ -120,11 +120,21 @@ public:
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
   virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) override;
+  virtual void OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls);
+  virtual void OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen);
+  virtual bool OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text);
+  virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value);
   virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                 cef_log_severity_t level,
                                 const CefString& message,
                                 const CefString& source,
                                 int line) override;
+  virtual bool OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& new_size);
+  virtual void OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, double progress);
+  virtual bool OnCursorChange(CefRefPtr<CefBrowser> browser,
+                              CefCursorHandle cursor,
+                              cef_cursor_type_t type,
+                              const CefCursorInfo& custom_cursor_info);
 
   // CefDragHandler methods
   virtual CefRefPtr<CefDragHandler> GetDragHandler() override { return this; }

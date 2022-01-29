@@ -24,6 +24,31 @@ CefViewBrowserClient::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefStri
   CEF_REQUIRE_UI_THREAD();
 }
 
+void
+CefViewBrowserClient::OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls)
+{
+  CEF_REQUIRE_UI_THREAD();
+}
+
+void
+CefViewBrowserClient::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen)
+{
+  CEF_REQUIRE_UI_THREAD();
+}
+
+bool
+CefViewBrowserClient::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text)
+{
+  CEF_REQUIRE_UI_THREAD();
+  return false;
+}
+
+void
+CefViewBrowserClient::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
+{
+  CEF_REQUIRE_UI_THREAD();
+}
+
 bool
 CefViewBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                        cef_log_severity_t level,
@@ -42,4 +67,32 @@ CefViewBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
 #else
   return true;
 #endif
+}
+
+bool
+CefViewBrowserClient::OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& new_size)
+{
+  CEF_REQUIRE_UI_THREAD();
+  return false;
+}
+
+void
+CefViewBrowserClient::OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, double progress)
+{
+  CEF_REQUIRE_UI_THREAD();
+}
+
+bool
+CefViewBrowserClient::OnCursorChange(CefRefPtr<CefBrowser> browser,
+                                     CefCursorHandle cursor,
+                                     cef_cursor_type_t type,
+                                     const CefCursorInfo& custom_cursor_info)
+{
+  CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->cursorChanged(browser, cursor, type, custom_cursor_info);
+
+  return false;
 }

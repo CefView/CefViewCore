@@ -87,6 +87,18 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="cursor"></param>
+  /// <param name="type"></param>
+  /// <param name="custom_cursor_info"></param>
+  virtual void cursorChanged(CefRefPtr<CefBrowser> browser,
+                             CefCursorHandle cursor,
+                             cef_cursor_type_t type,
+                             const CefCursorInfo& custom_cursor_info) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="next"></param>
   virtual void takeFocus(CefRefPtr<CefBrowser>& browser, bool next) = 0;
 
