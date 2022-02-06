@@ -80,6 +80,50 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="url"></param>
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int frameId, const CefString& url) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="title"></param>
+  virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const CefString& title) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="text"></param>
+  /// <returns></returns>
+  virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const CefString& text) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="fullscreen"></param>
+  virtual void fullscreenModeChanged(CefRefPtr<CefBrowser>& browser, bool fullscreen) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="value"></param>
+  virtual void statusMessage(CefRefPtr<CefBrowser>& browser, const CefString& value) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="progress"></param>
+  virtual void loadingProgressChanged(CefRefPtr<CefBrowser>& browser, double progress) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="message"></param>
   /// <param name="level"></param>
   virtual void consoleMessage(CefRefPtr<CefBrowser>& browser, const std::string& message, int level) = 0;
@@ -91,7 +135,7 @@ public:
   /// <param name="cursor"></param>
   /// <param name="type"></param>
   /// <param name="custom_cursor_info"></param>
-  virtual void cursorChanged(CefRefPtr<CefBrowser> browser,
+  virtual bool cursorChanged(CefRefPtr<CefBrowser> browser,
                              CefCursorHandle cursor,
                              cef_cursor_type_t type,
                              const CefCursorInfo& custom_cursor_info) = 0;

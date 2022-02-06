@@ -13,6 +13,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefLoadHandler>
+CefViewBrowserClient::GetLoadHandler()
+{
+  return this;
+}
+
 void
 CefViewBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                            bool isLoading,

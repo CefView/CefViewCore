@@ -105,7 +105,7 @@ public:
                                         CefRefPtr<CefProcessMessage> message) override;
 
   // CefContextMenuHandler methods
-  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override { return this; }
+  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override;
   virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
@@ -117,7 +117,7 @@ public:
                                     EventFlags event_flags) override;
 
   // CefDisplayHandler methods
-  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
+  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override;
   virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) override;
   virtual void OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) override;
@@ -137,7 +137,7 @@ public:
                               const CefCursorInfo& custom_cursor_info) override;
 
   // CefDragHandler methods
-  virtual CefRefPtr<CefDragHandler> GetDragHandler() override { return this; }
+  virtual CefRefPtr<CefDragHandler> GetDragHandler() override;
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefDragData> dragData,
                            CefDragHandler::DragOperationsMask mask) override;
@@ -147,13 +147,13 @@ public:
                                          const std::vector<CefDraggableRegion>& regions) override;
 
   // CefFocusHandler methods
-  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() override { return this; }
+  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() override;
   void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) override;
   bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) override;
   void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
 
   // CefJSDialogHandler methods
-  virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override { return this; }
+  virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override;
   virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser,
                           const CefString& origin_url,
                           JSDialogType dialog_type,
@@ -169,14 +169,14 @@ public:
   virtual void OnResetDialogState(CefRefPtr<CefBrowser> browser) override;
 
   // CefKeyboardHandler methods
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override { return this; }
+  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override;
   virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                              const CefKeyEvent& event,
                              CefEventHandle os_event,
                              bool* is_keyboard_shortcut) override;
 
   // CefLifeSpanHandler methods:
-  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
+  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
   virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              const CefString& target_url,
@@ -194,7 +194,7 @@ public:
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
   // CefLoadHandler methods
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
+  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override;
   virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                     bool isLoading,
                                     bool canGoBack,
@@ -210,7 +210,7 @@ public:
                            const CefString& failedUrl) override;
 
   // CefRenderHandler
-  virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return this; }
+  virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override;
   virtual CefRefPtr<CefAccessibilityHandler> GetAccessibilityHandler() override;
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
   virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
@@ -244,7 +244,7 @@ public:
   virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
 
   // CefRequestHandler methods
-  virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
+  virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override;
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
@@ -271,10 +271,7 @@ public:
                                                                          bool is_navigation,
                                                                          bool is_download,
                                                                          const CefString& request_initiator,
-                                                                         bool& disable_default_handling) override
-  {
-    return this;
-  }
+                                                                         bool& disable_default_handling) override;
 
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,

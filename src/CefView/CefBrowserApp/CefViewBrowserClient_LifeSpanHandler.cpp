@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefLifeSpanHandler>
+CefViewBrowserClient::GetLifeSpanHandler()
+{
+  return this;
+}
+
 bool
 CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,

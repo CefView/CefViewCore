@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefRequestHandler>
+CefViewBrowserClient::GetRequestHandler()
+{
+  return this;
+}
+
 bool
 CefViewBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefFrame> frame,

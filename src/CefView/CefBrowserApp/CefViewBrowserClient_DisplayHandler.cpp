@@ -12,16 +12,30 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefDisplayHandler>
+CefViewBrowserClient::GetDisplayHandler()
+{
+  return this;
+}
+
 void
 CefViewBrowserClient::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->addressChanged(browser, frame->GetIdentifier(), url);
 }
 
 void
 CefViewBrowserClient::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->titleChanged(browser, title);
 }
 
 void
@@ -34,12 +48,21 @@ void
 CefViewBrowserClient::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->fullscreenModeChanged(browser, fullscreen);
 }
 
 bool
 CefViewBrowserClient::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->tooltipMessage(browser, text);
+
   return false;
 }
 
@@ -47,6 +70,10 @@ void
 CefViewBrowserClient::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->statusMessage(browser, value);
 }
 
 bool
@@ -80,6 +107,10 @@ void
 CefViewBrowserClient::OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, double progress)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->loadingProgressChanged(browser, progress);
 }
 
 bool
@@ -92,7 +123,7 @@ CefViewBrowserClient::OnCursorChange(CefRefPtr<CefBrowser> browser,
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->cursorChanged(browser, cursor, type, custom_cursor_info);
+    return delegate->cursorChanged(browser, cursor, type, custom_cursor_info);
 
   return false;
 }

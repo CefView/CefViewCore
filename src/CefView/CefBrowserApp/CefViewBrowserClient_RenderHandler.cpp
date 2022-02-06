@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefRenderHandler>
+CefViewBrowserClient::GetRenderHandler()
+{
+  return this;
+}
+
 CefRefPtr<CefAccessibilityHandler>
 CefViewBrowserClient::GetAccessibilityHandler()
 {

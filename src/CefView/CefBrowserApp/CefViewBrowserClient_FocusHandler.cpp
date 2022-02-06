@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefFocusHandler>
+CefViewBrowserClient::GetFocusHandler()
+{
+  return this;
+}
+
 void
 CefViewBrowserClient::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next)
 {

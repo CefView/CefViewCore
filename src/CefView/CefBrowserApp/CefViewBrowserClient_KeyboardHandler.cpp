@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefKeyboardHandler>
+CefViewBrowserClient::GetKeyboardHandler()
+{
+  return this;
+}
+
 bool
 CefViewBrowserClient::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                                     const CefKeyEvent& event,

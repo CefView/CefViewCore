@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefJSDialogHandler>
+CefViewBrowserClient::GetJSDialogHandler()
+{
+  return this;
+}
+
 bool
 CefViewBrowserClient::OnJSDialog(CefRefPtr<CefBrowser> browser,
                                  const CefString& origin_url,

@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefDragHandler>
+CefViewBrowserClient::GetDragHandler()
+{
+  return this;
+}
+
 bool
 CefViewBrowserClient::OnDragEnter(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefDragData> dragData,

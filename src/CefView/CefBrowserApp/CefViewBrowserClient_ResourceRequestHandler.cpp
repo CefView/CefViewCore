@@ -12,6 +12,18 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefResourceRequestHandler>
+CefViewBrowserClient::GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
+                                                CefRefPtr<CefFrame> frame,
+                                                CefRefPtr<CefRequest> request,
+                                                bool is_navigation,
+                                                bool is_download,
+                                                const CefString& request_initiator,
+                                                bool& disable_default_handling)
+{
+  return this;
+}
+
 CefResourceRequestHandler::ReturnValue
 CefViewBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,

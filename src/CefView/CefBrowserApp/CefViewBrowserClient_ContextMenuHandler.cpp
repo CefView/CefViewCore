@@ -12,6 +12,12 @@
 
 #include <Common/CefViewCoreLog.h>
 
+CefRefPtr<CefContextMenuHandler>
+CefViewBrowserClient::GetContextMenuHandler()
+{
+  return this;
+}
+
 void
 CefViewBrowserClient::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                           CefRefPtr<CefFrame> frame,
