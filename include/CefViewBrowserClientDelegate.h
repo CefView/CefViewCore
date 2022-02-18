@@ -88,14 +88,14 @@ public:
   /// <param name="browser"></param>
   /// <param name="frameId"></param>
   /// <param name="url"></param>
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int frameId, const CefString& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int frameId, const std::string& url) = 0;
 
   /// <summary>
   ///
   /// </summary>
   /// <param name="browser"></param>
   /// <param name="title"></param>
-  virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const CefString& title) = 0;
+  virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
 
   /// <summary>
   ///
@@ -103,7 +103,7 @@ public:
   /// <param name="browser"></param>
   /// <param name="text"></param>
   /// <returns></returns>
-  virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const CefString& text) = 0;
+  virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const std::string& text) = 0;
 
   /// <summary>
   ///
@@ -117,7 +117,7 @@ public:
   /// </summary>
   /// <param name="browser"></param>
   /// <param name="value"></param>
-  virtual void statusMessage(CefRefPtr<CefBrowser>& browser, const CefString& value) = 0;
+  virtual void statusMessage(CefRefPtr<CefBrowser>& browser, const std::string& value) = 0;
 
   /// <summary>
   ///
