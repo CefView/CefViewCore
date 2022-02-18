@@ -1,4 +1,4 @@
-﻿#include <CefViewBrowserClient.h>
+#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>
@@ -60,6 +60,10 @@ bool
 CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
+  
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->doClose(browser);
 
   // Allow the close. For windowed browsers this will result in the OS close
   // event being sent.

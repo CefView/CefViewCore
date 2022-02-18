@@ -1,4 +1,4 @@
-﻿//
+//
 //  CefViewBrowserHandlerDelegate.h
 //  CefView
 //
@@ -34,6 +34,11 @@ public:
   ///
   /// </summary>
   virtual ~CefViewBrowserClientDelegateInterface(){};
+  
+  /// <summary>
+  ///
+  /// </summary>
+  virtual bool doClose(CefRefPtr<CefBrowser> browser) = 0;
 
   /// <summary>
   ///
