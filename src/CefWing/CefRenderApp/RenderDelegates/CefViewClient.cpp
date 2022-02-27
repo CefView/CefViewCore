@@ -33,7 +33,7 @@ CefViewClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
                                               CefRefPtr<CefV8Value>& retval,
                                               CefString& exception)
 {
-  client_->ExecutedInvokeMethod(arguments);
+  client_->ExecuteInvokeMethod(arguments);
   retval = CefV8Value::CreateUndefined();
 }
 
@@ -166,7 +166,7 @@ CefViewClient::CefValueToV8Value(CefValue* cefValue)
       for (auto& key : cKeys) {
         auto cVal = cDict->GetValue(key);
         auto v8Val = CefValueToV8Value(cVal);
-        v8Val->SetValue(key, v8Val, V8_PROPERTY_ATTRIBUTE_NONE);
+        v8Value->SetValue(key, v8Val, V8_PROPERTY_ATTRIBUTE_NONE);
       }
     } break;
     case CefValueType::VTYPE_LIST: {
@@ -176,7 +176,7 @@ CefViewClient::CefValueToV8Value(CefValue* cefValue)
       for (int i = 0; i < cCount; i++) {
         auto cVal = cList->GetValue(i);
         auto v8Val = CefValueToV8Value(cVal);
-        v8Value->SetValue(i, v8Value);
+        v8Value->SetValue(i, v8Val);
       }
     } break;
     default:
@@ -207,6 +207,15 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
   else if (v8Value->IsArrayBuffer()) {
     // TO-DO
     // currently not supported
+  } else if (v8Value->IsArray()) {
+    auto s = v8Value->GetArrayLength();
+    auto cefList = CefListValue::Create();
+    for (int i = 0; i < s; i++) {
+      auto v8Val = v8Value->GetValue(i);
+      auto cefVal = V8ValueToCefValue(v8Val);
+      cefList->SetValue(i, cefVal);
+    }
+    cefValue->SetList(cefList);
   } else if (v8Value->IsObject()) {
     CefDictionaryValue::KeyList keys;
     v8Value->GetKeys(keys);
@@ -214,18 +223,9 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
     for (auto& key : keys) {
       auto v8Val = v8Value->GetValue(key);
       auto cefVal = V8ValueToCefValue(v8Val);
-      cefDict->SetValue(key, cefValue);
+      cefDict->SetValue(key, cefVal);
     }
     cefValue->SetDictionary(cefDict);
-  } else if (v8Value->IsArray()) {
-    auto s = v8Value->GetArrayLength();
-    auto cefList = CefListValue::Create();
-    for (int i = 0; i < s; i++) {
-      auto v8Val = v8Value->GetValue(i);
-      auto cefVal = V8ValueToCefValue(v8Val);
-      cefList->SetValue(i, cefValue);
-    }
-    cefValue->SetList(cefList);
   } else
     cefValue->SetNull();
 
@@ -233,7 +233,7 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
 }
 
 void
-CefViewClient::ExecutedInvokeMethod(const CefV8ValueList& arguments)
+CefViewClient::ExecuteInvokeMethod(const CefV8ValueList& arguments)
 {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
 

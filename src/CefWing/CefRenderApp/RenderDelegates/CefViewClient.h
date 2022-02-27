@@ -147,7 +147,7 @@ public:
   ///
   /// </summary>
   /// <param name="arguments"></param>
-  void ExecutedInvokeMethod(const CefV8ValueList& arguments);
+  void ExecuteInvokeMethod(const CefV8ValueList& arguments);
 
   /// <summary>
   ///
