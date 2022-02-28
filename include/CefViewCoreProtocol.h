@@ -43,16 +43,24 @@
 #define CEFVIEW_REMOVEEVENTLISTENER "removeEventListener"
 
 /// <summary>
+/// window.__report_js_result__(context, result)
+/// context must be double
+/// </summary>
+#define CEFVIEW_REPORTJSRESULT "__report_js_result__"
+
+/// <summary>
 /// this message is sent from render process to browser process
 /// and is processed in the Qt UI thread
 ///
 /// format
-/// msg.name
-///   msg.arg[0]: frame id
-///   msg.arg[1]: function name
-///   msg.arg[2~...]: function parameters
+///   msg.name
+///   msg.arg[0]: function name
+///   msg.arg[1~...]: function parameters
 /// </summary>
 #define INVOKEMETHOD_NOTIFY_MESSAGE "CefViewClient#InvokeMethodNotify"
+
+///
+#define REPORTJSRESULT_NOTIFY_MESSAGE "ReportJSResultNotify"
 
 /// <summary>
 /// this message is sent from browser process to render process
@@ -60,9 +68,8 @@
 ///
 /// format:
 ///   msg.name:
-///   msg.arg[0]: frame id
-///   msg.arg[1]: function name
-///   msg.arg[2~...]: function parameters
+///   msg.arg[0]: function name
+///   msg.arg[1~...]: function parameters
 /// </summary>
 #define TRIGGEREVENT_NOTIFY_MESSAGE "CefViewClient#TriggerEventNotify"
 

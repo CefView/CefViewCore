@@ -65,13 +65,11 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    /// <param name="function"></param>
     /// <param name="object"></param>
     /// <param name="arguments"></param>
     /// <param name="retval"></param>
     /// <param name="exception"></param>
-    void ExecuteInvokeMethod(const CefString& function,
-                             CefRefPtr<CefV8Value> object,
+    void ExecuteNativeMethod(CefRefPtr<CefV8Value> object,
                              const CefV8ValueList& arguments,
                              CefRefPtr<CefV8Value>& retval,
                              CefString& exception);
@@ -79,13 +77,11 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    /// <param name="function"></param>
     /// <param name="object"></param>
     /// <param name="arguments"></param>
     /// <param name="retval"></param>
     /// <param name="exception"></param>
-    void ExecuteAddEventListener(const CefString& function,
-                                 CefRefPtr<CefV8Value> object,
+    void ExecuteAddEventListener(CefRefPtr<CefV8Value> object,
                                  const CefV8ValueList& arguments,
                                  CefRefPtr<CefV8Value>& retval,
                                  CefString& exception);
@@ -93,16 +89,26 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    /// <param name="function"></param>
     /// <param name="object"></param>
     /// <param name="arguments"></param>
     /// <param name="retval"></param>
     /// <param name="exception"></param>
-    void ExecuteRemoveEventListener(const CefString& function,
-                                    CefRefPtr<CefV8Value> object,
+    void ExecuteRemoveEventListener(CefRefPtr<CefV8Value> object,
                                     const CefV8ValueList& arguments,
                                     CefRefPtr<CefV8Value>& retval,
                                     CefString& exception);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="object"></param>
+    /// <param name="arguments"></param>
+    /// <param name="retval"></param>
+    /// <param name="exception"></param>
+    void ExecuteReportJSResult(CefRefPtr<CefV8Value> object,
+                               const CefV8ValueList& arguments,
+                               CefRefPtr<CefV8Value>& retval,
+                               CefString& exception);
 
   private:
     /// <summary>
@@ -120,13 +126,12 @@ public:
   /// </summary>
   /// <param name="browser"></param>
   /// <param name="frame"></param>
-  CefViewClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame);
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <returns></returns>
-  CefRefPtr<CefV8Value> GetObject();
+  /// <param name="global"></param>
+  /// <param name="name"></param>
+  CefViewClient(CefRefPtr<CefBrowser> browser,
+                CefRefPtr<CefFrame> frame,
+                CefRefPtr<CefV8Value> global,
+                const std::string& name);
 
   /// <summary>
   ///
@@ -147,7 +152,13 @@ public:
   ///
   /// </summary>
   /// <param name="arguments"></param>
-  void ExecuteInvokeMethod(const CefV8ValueList& arguments);
+  void AsyncExecuteNativeMethod(const CefV8ValueList& arguments);
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="arguments"></param>
+  void AsyncExecuteReportJSResult(const CefV8ValueList& arguments);
 
   /// <summary>
   ///
@@ -175,7 +186,17 @@ private:
   /// <summary>
   ///
   /// </summary>
-  CefRefPtr<CefV8Value> object_;
+  std::string name_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  CefRefPtr<CefV8Value> bridgeObject_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  CefRefPtr<CefV8Value> reportJSResultFunction_;
 
   /// <summary>
   ///

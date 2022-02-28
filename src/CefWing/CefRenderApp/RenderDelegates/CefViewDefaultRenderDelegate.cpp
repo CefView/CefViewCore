@@ -40,11 +40,11 @@ RenderDelegate::OnContextCreated(CefRefPtr<CefViewRenderApp> app,
   if (it == frame_id_to_client_map_.end()) {
     // create and insert the CefViewClient Object into this frame.window object
     CefRefPtr<CefV8Value> objWindow = context->GetGlobal();
-    CefRefPtr<CefViewClient> objClient = new CefViewClient(browser, frame);
-    if (bridge_object_name_.empty()) {
-      bridge_object_name_ = CEFVIEW_OBJECT_NAME;
+    CefRefPtr<CefViewClient> objClient = new CefViewClient(browser, frame, objWindow, bridge_object_name_);
+    if (!objClient) {
+      log_error("Failed to create the client object");
+      return;
     }
-    objWindow->SetValue(bridge_object_name_, objClient->GetObject(), V8_PROPERTY_ATTRIBUTE_READONLY);
     frame_id_to_client_map_[frameId] = objClient;
   }
 }

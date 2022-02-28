@@ -88,7 +88,7 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
     return false;
 
   if (browser) {
-    std::vector<int64> frameIds;
+    std::vector<int64_t> frameIds;
     if (MAIN_FRAME == frame_id) {
       frameIds.push_back(browser->GetMainFrame()->GetIdentifier());
     } else if (ALL_FRAMES == frame_id) {
@@ -117,27 +117,22 @@ CefViewBrowserClient::ResponseQuery(const int64_t query, bool success, const Cef
 }
 
 bool
-CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
-                                            CefProcessId source_process,
-                                            CefRefPtr<CefProcessMessage> message)
+CefViewBrowserClient::InvokeMethod(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefProcessMessage> message)
 {
-  // validate the browser delegate
-  auto delegate = client_delegate_.lock();
-  if (!delegate || message->GetName() != INVOKEMETHOD_NOTIFY_MESSAGE)
-    return false;
-
   // validate the argument list
   CefRefPtr<CefListValue> arguments = message->GetArgumentList();
   if (!arguments || (arguments->GetSize() < 2))
     return false;
 
-  arguments = arguments->Copy();
-
-  // validate the frame id
-  if (CefValueType::VTYPE_INT != arguments->GetType(0))
+  // validate the delegate
+  auto delegate = client_delegate_.lock();
+  if (!delegate)
     return false;
-  int frameId = arguments->GetInt(0);
-  arguments->Remove(0);
+
+  // copy the arguments
+  arguments = arguments->Copy();
 
   // validate the method name
   std::string method;
@@ -147,8 +142,71 @@ CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
   if (method.empty())
     return false;
   arguments->Remove(0);
-  delegate->invokeMethodNotify(browser, frameId, method, arguments);
+
+  delegate->invokeMethodNotify(browser, frame->GetIdentifier(), method, arguments);
+
   return true;
+}
+
+int64_t
+CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
+                                         CefRefPtr<CefFrame> frame,
+                                         const CefString& code,
+                                         const CefString& url,
+                                         int64_t context)
+{
+  double contextId = static_cast<double>(context);
+  /*
+   * Javascript code:
+   *
+   * window.__report_js_result__(contextId, function() { ... })());
+   */
+  std::ostringstream codeWrapper;
+  codeWrapper << "window.__report_js_result__(" << contextId << ",function(){" << code << "}());";
+
+  frame->ExecuteJavaScript(codeWrapper.str().c_str(), url, 0);
+
+  return true;
+}
+
+bool
+CefViewBrowserClient::ReportJSResult(CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<CefFrame> frame,
+                                     CefRefPtr<CefProcessMessage> message)
+{
+  // validate the argument list
+  CefRefPtr<CefListValue> arguments = message->GetArgumentList();
+  if (!arguments || (arguments->GetSize() != 2))
+    return false;
+
+  // validate the delegate
+  auto delegate = client_delegate_.lock();
+  if (!delegate)
+    return false;
+
+  // get the JS result
+  auto context = arguments->GetDouble(0);
+  auto result = arguments->GetValue(1);
+
+  delegate->reportJSResult(browser, frame->GetIdentifier(), static_cast<int64_t>(context), result);
+
+  return true;
+}
+
+bool
+CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefProcessMessage> message)
+{
+  auto msgName = message->GetName();
+  if (msgName == INVOKEMETHOD_NOTIFY_MESSAGE) {
+    return InvokeMethod(browser, frame, message);
+  } else if (msgName == REPORTJSRESULT_NOTIFY_MESSAGE) {
+    return ReportJSResult(browser, frame, message);
+  } else {
+  }
+
+  return false;
 }
 
 bool
@@ -161,7 +219,7 @@ CefViewBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
   if (message_router_->OnProcessMessageReceived(browser, frame, source_process, message))
     return true;
 
-  if (DispatchNotifyRequest(browser, source_process, message))
+  if (DispatchNotifyRequest(browser, frame, message))
     return true;
 
   return false;
