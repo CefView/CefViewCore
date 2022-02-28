@@ -93,8 +93,18 @@ public:
 
   bool ResponseQuery(const int64_t query, bool success, const CefString& response, int error);
 
+  bool InvokeMethod(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefProcessMessage> message);
+
+  int64_t AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefFrame> frame,
+                             const CefString& code,
+                             const CefString& url,
+                             int64_t context);
+
+  bool ReportJSResult(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefProcessMessage> message);
+
   bool DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
-                             CefProcessId source_process,
+                             CefRefPtr<CefFrame> frame,
                              CefRefPtr<CefProcessMessage> message);
 
   //////////////////////////////////////////////////////////////////////////

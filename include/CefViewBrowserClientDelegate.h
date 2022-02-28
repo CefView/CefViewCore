@@ -1,4 +1,4 @@
-//
+﻿//
 //  CefViewBrowserHandlerDelegate.h
 //  CefView
 //
@@ -34,7 +34,7 @@ public:
   ///
   /// </summary>
   virtual ~CefViewBrowserClientDelegateInterface(){};
-  
+
   /// <summary>
   ///
   /// </summary>
@@ -88,7 +88,7 @@ public:
   /// <param name="browser"></param>
   /// <param name="frameId"></param>
   /// <param name="url"></param>
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int frameId, const std::string& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
 
   /// <summary>
   ///
@@ -178,7 +178,7 @@ public:
   /// <param name="query"></param>
   /// <param name="query_id"></param>
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
-                                   int frameId,
+                                   int64_t frameId,
                                    const std::string& query,
                                    const int64_t query_id) = 0;
 
@@ -190,9 +190,20 @@ public:
   /// <param name="method"></param>
   /// <param name="arguments"></param>
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
-                                  int frameId,
+                                  int64_t frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="result"></param>
+  virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
+                              int64_t frameId,
+                              int64_t contextId,
+                              const CefRefPtr<CefValue>& result) = 0;
 
   // Off screen rendering
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;

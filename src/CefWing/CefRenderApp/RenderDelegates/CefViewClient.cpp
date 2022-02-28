@@ -15,11 +15,13 @@ CefViewClient::V8Handler::Execute(const CefString& function,
                                   CefString& exception)
 {
   if (function == CEFVIEW_INVOKEMETHOD)
-    ExecuteInvokeMethod(function, object, arguments, retval, exception);
+    ExecuteNativeMethod(object, arguments, retval, exception);
   else if (function == CEFVIEW_ADDEVENTLISTENER)
-    ExecuteAddEventListener(function, object, arguments, retval, exception);
+    ExecuteAddEventListener(object, arguments, retval, exception);
   else if (function == CEFVIEW_REMOVEEVENTLISTENER)
-    ExecuteRemoveEventListener(function, object, arguments, retval, exception);
+    ExecuteRemoveEventListener(object, arguments, retval, exception);
+  else if (function == CEFVIEW_REPORTJSRESULT)
+    ExecuteReportJSResult(object, arguments, retval, exception);
   else
     return false;
 
@@ -27,19 +29,17 @@ CefViewClient::V8Handler::Execute(const CefString& function,
 }
 
 void
-CefViewClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
-                                              CefRefPtr<CefV8Value> object,
+CefViewClient::V8Handler::ExecuteNativeMethod(CefRefPtr<CefV8Value> object,
                                               const CefV8ValueList& arguments,
                                               CefRefPtr<CefV8Value>& retval,
                                               CefString& exception)
 {
-  client_->ExecuteInvokeMethod(arguments);
+  client_->AsyncExecuteNativeMethod(arguments);
   retval = CefV8Value::CreateUndefined();
 }
 
 void
-CefViewClient::V8Handler::ExecuteAddEventListener(const CefString& function,
-                                                  CefRefPtr<CefV8Value> object,
+CefViewClient::V8Handler::ExecuteAddEventListener(CefRefPtr<CefV8Value> object,
                                                   const CefV8ValueList& arguments,
                                                   CefRefPtr<CefV8Value>& retval,
                                                   CefString& exception)
@@ -56,18 +56,17 @@ CefViewClient::V8Handler::ExecuteAddEventListener(const CefString& function,
         client_->AddEventListener(eventName, listener);
         bRet = true;
       } else
-        exception = "Invalid parameters; parameter 2 should be a function";
+        exception = "Invalid arguments; argument 2 must be a function";
     } else
-      exception = "Invalid parameters; parameter 1 should be a string";
+      exception = "Invalid arguments; argument 1 must be a string";
   } else
-    exception = "Invalid parameters; expecting 2 parameters";
+    exception = "Invalid arguments; expecting 2 arguments";
 
   retval = CefV8Value::CreateBool(bRet);
 }
 
 void
-CefViewClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
-                                                     CefRefPtr<CefV8Value> object,
+CefViewClient::V8Handler::ExecuteRemoveEventListener(CefRefPtr<CefV8Value> object,
                                                      const CefV8ValueList& arguments,
                                                      CefRefPtr<CefV8Value>& retval,
                                                      CefString& exception)
@@ -83,43 +82,89 @@ CefViewClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
         listener.context_ = CefV8Context::GetCurrentContext();
         client_->RemoveEventListener(eventName, listener);
       } else
-        exception = "Invalid parameters; parameter 2 is expecting a function";
+        exception = "Invalid arguments; argument 2 must be a function";
     } else
-      exception = "Invalid parameters; parameter 1 is expecting a string";
+      exception = "Invalid arguments; argument 1 must be a string";
   } else
-    exception = "Invalid parameters; expecting 2 parameters";
+    exception = "Invalid arguments; expecting 2 arguments";
 
   retval = CefV8Value::CreateBool(bRet);
 }
 
+void
+CefViewClient::V8Handler::ExecuteReportJSResult(CefRefPtr<CefV8Value> object,
+                                                const CefV8ValueList& arguments,
+                                                CefRefPtr<CefV8Value>& retval,
+                                                CefString& exception)
+{
+  if (arguments.size() == 2) {
+    if (arguments[0]->IsDouble()) {
+      client_->AsyncExecuteReportJSResult(arguments);
+    } else
+      exception = "Invalid argument; argument 1 must be a double";
+  } else
+    exception = "Invalid argument; expecting 2 argument";
+
+  retval = CefV8Value::CreateUndefined();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
-CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
-  : object_(CefV8Value::CreateObject(nullptr, nullptr))
+CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefFrame> frame,
+                             CefRefPtr<CefV8Value> global,
+                             const std::string& name)
+  : name_(name.empty() ? CEFVIEW_OBJECT_NAME : name)
+  , bridgeObject_(nullptr)
+  , reportJSResultFunction_(nullptr)
   , browser_(browser)
   , frame_(frame)
   , v8Handler_(new V8Handler(this))
 {
-  // create function "InvokeMethod"
+  // create "reportJSResult" function and mount it on the global context(window)
+  reportJSResultFunction_ = CefV8Value::CreateFunction(CEFVIEW_REPORTJSRESULT, v8Handler_);
+  global->SetValue(CEFVIEW_REPORTJSRESULT,
+                   reportJSResultFunction_,
+                   static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTDELETE));
+
+  // create bridge object and mount it on the global context(window)
+  bridgeObject_ = CefV8Value::CreateObject(nullptr, nullptr);
+
+  // create function "invokeMethod"
   CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(CEFVIEW_INVOKEMETHOD, v8Handler_);
   // add this function to window object
-  object_->SetValue(CEFVIEW_INVOKEMETHOD, funcInvokeMethod, V8_PROPERTY_ATTRIBUTE_READONLY);
+  bridgeObject_->SetValue(CEFVIEW_INVOKEMETHOD,
+                          funcInvokeMethod,
+                          static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 
   // create function addEventListener
   CefRefPtr<CefV8Value> funcAddEventListener = CefV8Value::CreateFunction(CEFVIEW_ADDEVENTLISTENER, v8Handler_);
   // add this function to window object
-  object_->SetValue(CEFVIEW_ADDEVENTLISTENER, funcAddEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
+  bridgeObject_->SetValue(CEFVIEW_ADDEVENTLISTENER,
+                          funcAddEventListener,
+                          static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 
   // create function removeListener
   CefRefPtr<CefV8Value> funcRemoveEventListener = CefV8Value::CreateFunction(CEFVIEW_REMOVEEVENTLISTENER, v8Handler_);
   // add this function to window object
-  object_->SetValue(CEFVIEW_REMOVEEVENTLISTENER, funcRemoveEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
-}
+  bridgeObject_->SetValue(CEFVIEW_REMOVEEVENTLISTENER,
+                          funcRemoveEventListener,
+                          static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 
-CefRefPtr<CefV8Value>
-CefViewClient::GetObject()
-{
-  return object_;
+  // mount the client object to the global context(usually the window object)
+  global->SetValue(name_,
+                   bridgeObject_,
+                   static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 }
 
 CefRefPtr<CefV8Value>
@@ -233,20 +278,54 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
 }
 
 void
-CefViewClient::ExecuteInvokeMethod(const CefV8ValueList& arguments)
+CefViewClient::AsyncExecuteNativeMethod(const CefV8ValueList& arguments)
 {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
 
+  //** arguments(CefValueList)
+  //** +-------+
+  //** |0 name | <- the method name
+  //** |1 arg1 |
+  //** |2 arg2 |
+  //** |3 arg3 |
+  //** |4 arg4 |
+  //** | ...   |
+  //** | ...   |
+  //** | ...   |
+  //** | ...   |
+  //** +-------+
   CefRefPtr<CefListValue> args = msg->GetArgumentList();
-  int frameId = (int)frame_->GetIdentifier();
 
-  int idx = 0;
-  args->SetInt(idx++, frameId);
+  // push back all the arguments
   for (std::size_t i = 0; i < arguments.size(); i++) {
     auto cefValue = V8ValueToCefValue(arguments[i]);
-    args->SetValue(idx++, cefValue);
+    args->SetValue(i, cefValue);
   }
 
+  // send the message
+  if (browser_)
+    frame_->SendProcessMessage(PID_BROWSER, msg);
+}
+
+void
+CefViewClient::AsyncExecuteReportJSResult(const CefV8ValueList& arguments)
+{
+  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(REPORTJSRESULT_NOTIFY_MESSAGE);
+
+  //** arguments(CefValueList)
+  //** +_------+
+  //** |0 arg  | <- the context id
+  //** |1 arg  | <- the result value
+  //** +-------+
+  CefRefPtr<CefListValue> args = msg->GetArgumentList();
+
+  // push back the result value
+  for (std::size_t i = 0; i < arguments.size(); i++) {
+    auto cefValue = V8ValueToCefValue(arguments[i]);
+    args->SetValue(i, cefValue);
+  }
+
+  // send the message
   if (browser_)
     frame_->SendProcessMessage(PID_BROWSER, msg);
 }
@@ -309,7 +388,7 @@ CefViewClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefList
       v8ArgList.push_back(v8Value);
     }
 
-    listener.callback_->ExecuteFunction(object_, v8ArgList);
+    listener.callback_->ExecuteFunction(bridgeObject_, v8ArgList);
     listener.context_->Exit();
   }
 }
