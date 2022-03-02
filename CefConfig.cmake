@@ -1,7 +1,15 @@
 #
 # The link for downloading the CEF binary sdk 
 #
-set(CEF_SDK_VERSION "cef_binary_89.0.12+g2b76680+chromium-89.0.4389.90")
+set(CEF_SDK_VERSION 
+  # Old version (deprecated and incompatible)
+
+  # Current version
+  "89.0.12+g2b76680+chromium-89.0.4389.90"
+
+  # Newer version (need to adpat)
+  # "98.2.1+g29d6e22+chromium-98.0.4758.109"
+)
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Generally, there is NO NEED to modify the following config
@@ -21,11 +29,11 @@ endif()
 # set cef sdk package name
 set(CEF_SDK_WORKSPACE       "${CMAKE_CURRENT_SOURCE_DIR}/dep")
 
-set(CEF_SDK_PACKAGE_NAME    "${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}.tar.bz2")
+set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}.tar.bz2")
 set(CEF_SDK_DOWNLOAD_URL    "https://cef-builds.spotifycdn.com/${CEF_SDK_PACKAGE_NAME}")
 set(CEF_SDK_LOCAL_PACKAGE   "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
 
-set (CEF_SDK_EXTRACTED_DIR  "${CEF_SDK_WORKSPACE}/${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}")
+set (CEF_SDK_EXTRACTED_DIR  "${CEF_SDK_WORKSPACE}/cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}")
 
 message(STATUS "CEF_SDK_DOWNLOAD_URL: ${CEF_SDK_DOWNLOAD_URL}")
 message(STATUS "CEF_SDK_LOCAL_PACKAGE: ${CEF_SDK_LOCAL_PACKAGE}")

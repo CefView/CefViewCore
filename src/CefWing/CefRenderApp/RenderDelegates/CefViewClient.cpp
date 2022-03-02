@@ -210,8 +210,8 @@ CefViewClient::CefValueToV8Value(CefValue* cefValue)
       v8Value = CefV8Value::CreateObject(nullptr, nullptr);
       for (auto& key : cKeys) {
         auto cVal = cDict->GetValue(key);
-        auto v8Val = CefValueToV8Value(cVal);
-        v8Value->SetValue(key, v8Val, V8_PROPERTY_ATTRIBUTE_NONE);
+        auto v8Val = CefValueToV8Value(cVal.get());
+        v8Value->SetValue(key, v8Val.get(), V8_PROPERTY_ATTRIBUTE_NONE);
       }
     } break;
     case CefValueType::VTYPE_LIST: {
@@ -220,8 +220,8 @@ CefViewClient::CefValueToV8Value(CefValue* cefValue)
       v8Value = CefV8Value::CreateArray(static_cast<int>(cCount));
       for (int i = 0; i < cCount; i++) {
         auto cVal = cList->GetValue(i);
-        auto v8Val = CefValueToV8Value(cVal);
-        v8Value->SetValue(i, v8Val);
+        auto v8Val = CefValueToV8Value(cVal.get());
+        v8Value->SetValue(i, v8Val.get());
       }
     } break;
     default:
@@ -257,7 +257,7 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
     auto cefList = CefListValue::Create();
     for (int i = 0; i < s; i++) {
       auto v8Val = v8Value->GetValue(i);
-      auto cefVal = V8ValueToCefValue(v8Val);
+      auto cefVal = V8ValueToCefValue(v8Val.get());
       cefList->SetValue(i, cefVal);
     }
     cefValue->SetList(cefList);
@@ -267,8 +267,8 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
     auto cefDict = CefDictionaryValue::Create();
     for (auto& key : keys) {
       auto v8Val = v8Value->GetValue(key);
-      auto cefVal = V8ValueToCefValue(v8Val);
-      cefDict->SetValue(key, cefVal);
+      auto cefVal = V8ValueToCefValue(v8Val.get());
+      cefDict->SetValue(key, cefVal.get());
     }
     cefValue->SetDictionary(cefDict);
   } else
@@ -298,7 +298,7 @@ CefViewClient::AsyncExecuteNativeMethod(const CefV8ValueList& arguments)
 
   // push back all the arguments
   for (std::size_t i = 0; i < arguments.size(); i++) {
-    auto cefValue = V8ValueToCefValue(arguments[i]);
+    auto cefValue = V8ValueToCefValue(arguments[i].get());
     args->SetValue(i, cefValue);
   }
 
@@ -321,8 +321,8 @@ CefViewClient::AsyncExecuteReportJSResult(const CefV8ValueList& arguments)
 
   // push back the result value
   for (std::size_t i = 0; i < arguments.size(); i++) {
-    auto cefValue = V8ValueToCefValue(arguments[i]);
-    args->SetValue(i, cefValue);
+    auto cefValue = V8ValueToCefValue(arguments[i].get());
+    args->SetValue(i, cefValue.get());
   }
 
   // send the message
@@ -384,8 +384,8 @@ CefViewClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefList
     CefV8ValueList v8ArgList;
     for (size_t i = 0; i < args->GetSize(); i++) {
       auto cefValue = args->GetValue(i);
-      auto v8Value = CefValueToV8Value(cefValue);
-      v8ArgList.push_back(v8Value);
+      auto v8Value = CefValueToV8Value(cefValue.get());
+      v8ArgList.push_back(v8Value.get());
     }
 
     listener.callback_->ExecuteFunction(bridgeObject_, v8ArgList);
