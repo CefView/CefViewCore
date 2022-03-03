@@ -41,7 +41,12 @@ CefViewBrowserApp::RegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar
 //////////////////////////////////////////////////////////////////////////
 void
 CefViewBrowserApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line)
-{}
+{
+  auto delegate = app_delegate_.lock();
+
+  if (delegate)
+    delegate->onBeforeCommandLineProcessing(process_type, command_line);
+}
 
 void
 CefViewBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
