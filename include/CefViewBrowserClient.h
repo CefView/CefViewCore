@@ -270,7 +270,7 @@ public:
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                               const CefString& origin_url,
                               int64 new_size,
-                              CefRefPtr<CefRequestCallback> callback) override;
+                              CefRefPtr<CefCallback> callback) override;
 
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
 
@@ -286,7 +286,7 @@ public:
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
-                                           CefRefPtr<CefRequestCallback> callback) override;
+                                           CefRefPtr<CefCallback> callback) override;
 
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                                                            CefRefPtr<CefFrame> frame,

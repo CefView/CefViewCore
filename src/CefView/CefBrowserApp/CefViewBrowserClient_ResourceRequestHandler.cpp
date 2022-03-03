@@ -28,7 +28,7 @@ CefResourceRequestHandler::ReturnValue
 CefViewBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
-                                           CefRefPtr<CefRequestCallback> callback)
+                                           CefRefPtr<CefCallback> callback)
 {
   auto url = request->GetURL().ToString();
   logD("require resource: %s", url.c_str());

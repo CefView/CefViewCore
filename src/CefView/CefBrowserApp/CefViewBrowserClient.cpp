@@ -98,10 +98,12 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
     }
 
     for (auto id : frameIds) {
+      auto m = msg->Copy();
       auto frame = browser->GetFrame(id);
-      frame->SendProcessMessage(PID_RENDERER, msg);
-      return true;
+      frame->SendProcessMessage(PID_RENDERER, m);
     }
+
+    return true;
   }
 
   return false;
