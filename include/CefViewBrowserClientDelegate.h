@@ -52,8 +52,15 @@ public:
                             const std::string& targetUrl,
                             const std::string& targetFrameName,
                             CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+                            CefWindowInfo& windowInfo,
                             CefBrowserSettings& settings,
                             bool& DisableJavascriptAccess) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  virtual void onAfterCreate(CefRefPtr<CefBrowser>& browser) = 0;
 
   /// <summary>
   ///

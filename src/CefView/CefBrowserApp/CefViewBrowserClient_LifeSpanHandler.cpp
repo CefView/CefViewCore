@@ -48,6 +48,7 @@ CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                                     target_url.ToString(),
                                     target_frame_name.ToString(),
                                     target_disposition,
+                                    windowInfo,
                                     settings,
                                     disableJSAccess);
     if (no_javascript_access)
@@ -65,6 +66,10 @@ CefViewBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
   // If the browser is closing, return immediately to release the new created browser
   if (is_closing_)
     return;
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->onAfterCreate(browser);
 
   browser_map_[browser->GetIdentifier()] = browser;
 }
