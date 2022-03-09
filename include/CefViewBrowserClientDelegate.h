@@ -38,6 +38,26 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="targetUrl"></param>
+  /// <param name="targetFrameName"></param>
+  /// <param name="targetDisposition"></param>
+  /// <param name="windowInfo"></param>
+  /// <param name="settings"></param>
+  /// <param name="DisableJavascriptAccess"></param>
+  /// <returns></returns>
+  virtual bool onBeforPopup(CefRefPtr<CefBrowser>& browser,
+                            int64_t frameId,
+                            const std::string& targetUrl,
+                            const std::string& targetFrameName,
+                            CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+                            CefBrowserSettings& settings,
+                            bool& DisableJavascriptAccess) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   virtual bool doClose(CefRefPtr<CefBrowser> browser) = 0;
 
   /// <summary>

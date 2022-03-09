@@ -1,4 +1,4 @@
-#include <CefViewBrowserClient.h>
+﻿#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>
@@ -38,10 +38,23 @@ CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   if (is_closing_)
     return true;
 
-  // Redirect all popup page into the source frame forcefully
-  frame->LoadURL(target_url);
-  // Don't allow new window or tab
-  return true;
+  bool result = false;
+
+  auto delegate = client_delegate_.lock();
+  if (delegate) {
+    bool disableJSAccess = no_javascript_access ? *no_javascript_access : false;
+    result = delegate->onBeforPopup(browser,
+                                    frame->GetIdentifier(),
+                                    target_url.ToString(),
+                                    target_frame_name.ToString(),
+                                    target_disposition,
+                                    settings,
+                                    disableJSAccess);
+    if (no_javascript_access)
+      *no_javascript_access = disableJSAccess;
+  }
+
+  return result;
 }
 
 void
@@ -60,7 +73,7 @@ bool
 CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
-  
+
   auto delegate = client_delegate_.lock();
   if (delegate)
     return delegate->doClose(browser);
