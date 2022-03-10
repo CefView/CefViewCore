@@ -45,6 +45,12 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="command_line"></param>
+  virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="delay_ms"></param>
   virtual void onScheduleMessageLoopWork(int64_t delay_ms) = 0;
 };

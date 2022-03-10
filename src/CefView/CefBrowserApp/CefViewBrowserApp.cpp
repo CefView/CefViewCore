@@ -43,7 +43,6 @@ void
 CefViewBrowserApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line)
 {
   auto delegate = app_delegate_.lock();
-
   if (delegate)
     delegate->onBeforeCommandLineProcessing(process_type, command_line);
 }
@@ -68,9 +67,12 @@ CefViewBrowserApp::OnContextInitialized()
 void
 CefViewBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line)
 {
+  auto delegate = app_delegate_.lock();
+  if (delegate)
+    delegate->OnBeforeChildProcessLaunch(command_line);
+
   if (bridge_object_name_.empty())
     bridge_object_name_ = CEFVIEW_OBJECT_NAME;
-
   command_line->AppendSwitchWithValue(CEFVIEW_BRIDGE_OBJ_NAME_KEY, bridge_object_name_);
 }
 
