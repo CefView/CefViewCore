@@ -64,12 +64,14 @@ CefViewBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
   CEF_REQUIRE_UI_THREAD();
 
   // If the browser is closing, return immediately to release the new created browser
-  if (is_closing_)
+  if (is_closing_) {
+    browser->GetHost()->CloseBrowser(true);
     return;
+  }
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->onAfterCreate(browser);
+    delegate->onAfterCreate(browser);
 
   browser_map_[browser->GetIdentifier()] = browser;
 }
