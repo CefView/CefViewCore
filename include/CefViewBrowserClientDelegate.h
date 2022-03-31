@@ -70,6 +70,12 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="isLoading"></param>
   /// <param name="canGoBack"></param>
   /// <param name="canGoForward"></param>

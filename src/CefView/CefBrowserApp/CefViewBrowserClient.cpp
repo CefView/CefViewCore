@@ -17,26 +17,18 @@ CefViewBrowserClient::CefViewBrowserClient(CefViewBrowserClientDelegateInterface
   : is_closing_(false)
   , initial_navigation_(true)
   , client_delegate_(delegate)
-  , cefquery_handler_(new CefViewQueryHandler(delegate))
+  , cefquery_handler_(nullptr)
   , message_router_(nullptr)
   , resource_manager_(new CefResourceManager())
 {
   // Create the browser-side router for query handling.
   message_router_config_.js_query_function = CEFVIEW_QUERY_NAME;
   message_router_config_.js_cancel_function = CEFVIEW_QUERY_CANCEL_NAME;
-
-  // Register handlers with the router.
-  message_router_ = CefMessageRouterBrowserSide::Create(message_router_config_);
-  message_router_->AddHandler(cefquery_handler_.get(), false);
 }
 
 CefViewBrowserClient::~CefViewBrowserClient()
 {
   log_debug("CefViewBrowserClient::~CefViewBrowserClient()");
-
-  message_router_->RemoveHandler(cefquery_handler_.get());
-  message_router_ = nullptr;
-  cefquery_handler_ = nullptr;
 }
 
 void

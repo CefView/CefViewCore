@@ -69,6 +69,14 @@ CefViewBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     return;
   }
 
+  // Register handlers with the router.
+  if (browser_map_.empty()) {
+    message_router_ = CefMessageRouterBrowserSide::Create(message_router_config_);
+
+    cefquery_handler_ = new CefViewQueryHandler(client_delegate_);
+    message_router_->AddHandler(cefquery_handler_.get(), false);
+  }
+
   auto delegate = client_delegate_.lock();
   if (delegate)
     delegate->onAfterCreate(browser);
@@ -95,7 +103,17 @@ CefViewBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->OnBeforeClose(browser);
+
   message_router_->OnBeforeClose(browser);
 
   browser_map_.erase(browser->GetIdentifier());
+
+  if (browser_map_.empty()) {
+    message_router_->RemoveHandler(cefquery_handler_.get());
+    message_router_ = nullptr;
+    cefquery_handler_ = nullptr;
+  }
 }

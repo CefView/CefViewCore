@@ -46,6 +46,7 @@ private:
   bool initial_navigation_;
 
   std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
+
   CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
 
   // message router
