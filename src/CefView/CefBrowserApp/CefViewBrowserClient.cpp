@@ -13,14 +13,18 @@
 #include <CefViewCoreProtocol.h>
 #include <Common/CefViewCoreLog.h>
 
-CefViewBrowserClient::CefViewBrowserClient(CefViewBrowserClientDelegateInterface::RefPtr delegate)
+CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
+                                           CefViewBrowserClientDelegateInterface::RefPtr delegate)
   : is_closing_(false)
   , initial_navigation_(true)
+  , app_(app)
   , client_delegate_(delegate)
   , cefquery_handler_(nullptr)
   , message_router_(nullptr)
   , resource_manager_(new CefResourceManager())
 {
+  app_->CheckInClient(this);
+
   // Create the browser-side router for query handling.
   message_router_config_.js_query_function = CEFVIEW_QUERY_NAME;
   message_router_config_.js_cancel_function = CEFVIEW_QUERY_CANCEL_NAME;
@@ -29,6 +33,7 @@ CefViewBrowserClient::CefViewBrowserClient(CefViewBrowserClientDelegateInterface
 CefViewBrowserClient::~CefViewBrowserClient()
 {
   log_debug("CefViewBrowserClient::~CefViewBrowserClient()");
+  app_->CheckOutClient(this);
 }
 
 void

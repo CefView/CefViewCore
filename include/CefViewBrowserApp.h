@@ -12,6 +12,7 @@
 #pragma region std_headers
 #include <set>
 #include <string>
+#include <unordered_set>
 #pragma endregion std_headers
 
 #pragma region cef_headers
@@ -24,9 +25,12 @@ class CefViewBrowserApp
   : public CefApp
   , public CefBrowserProcessHandler
 {
+  IMPLEMENT_REFCOUNTING(CefViewBrowserApp);
+
 private:
   // The name of the bridge object
   std::string bridge_object_name_;
+  std::unordered_set<void*> client_set_;
 
   // The app delegate
   CefViewBrowserAppDelegateInterface::WeakPtr app_delegate_;
@@ -35,6 +39,12 @@ public:
   CefViewBrowserApp(const std::string& bridge_name, CefViewBrowserAppDelegateInterface::RefPtr delegate);
 
   ~CefViewBrowserApp();
+
+  void CheckInClient(void* ctx);
+
+  void CheckOutClient(void* ctx);
+
+  bool IsSafeToExit();
 
 private:
   // Registers custom schemes handler factories
@@ -66,10 +76,6 @@ private:
   virtual void OnScheduleMessagePumpWork(int64 delay_ms) override;
 
 #pragma endregion CefBrowserProcessHandler
-
-private:
-  // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(CefViewBrowserApp);
 };
 
 #endif

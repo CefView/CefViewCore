@@ -30,8 +30,11 @@ class CefViewQueryHandler
   : public CefBaseRefCounted
   , public CefMessageRouterBrowserSide::Handler
 {
+  IMPLEMENT_REFCOUNTING(CefViewQueryHandler);
+
 public:
   CefViewQueryHandler(CefViewBrowserClientDelegateInterface::WeakPtr delegate);
+
   ~CefViewQueryHandler();
 
   /// <summary>
@@ -84,8 +87,5 @@ private:
   ///
   /// </summary>
   std::mutex mtxCallbackMap_;
-
-private:
-  IMPLEMENT_REFCOUNTING(CefViewQueryHandler);
 };
 #endif

@@ -27,6 +27,24 @@ CefViewBrowserApp::~CefViewBrowserApp()
 }
 
 void
+CefViewBrowserApp::CheckInClient(void* ctx)
+{
+  client_set_.insert(ctx);
+}
+
+void
+CefViewBrowserApp::CheckOutClient(void* ctx)
+{
+  client_set_.erase(ctx);
+}
+
+bool
+CefViewBrowserApp::IsSafeToExit()
+{
+  return client_set_.empty();
+}
+
+void
 CefViewBrowserApp::RegisterCustomSchemesHandlerFactories()
 {
   CefViewDefaultSchemeHandler::RegisterSchemeHandlerFactory();

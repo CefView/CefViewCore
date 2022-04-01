@@ -89,6 +89,10 @@ CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
+  if (!browser->IsPopup()) {
+    is_closing_ = true;
+  }
+
   auto delegate = client_delegate_.lock();
   if (delegate)
     return delegate->doClose(browser);

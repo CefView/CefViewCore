@@ -24,6 +24,7 @@
 #include <include/wrapper/cef_resource_manager.h>
 #pragma endregion cef_headers
 
+#include <CefViewBrowserApp.h>
 #include <CefViewBrowserClientDelegate.h>
 #include <CefViewQueryHandler.h>
 
@@ -41,12 +42,15 @@ class CefViewBrowserClient
   , public CefResourceRequestHandler
   , public CefRenderHandler
 {
+  IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
+
 private:
   bool is_closing_;
   bool initial_navigation_;
 
   std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
 
+  CefRefPtr<CefViewBrowserApp> app_;
   CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
 
   // message router
@@ -67,11 +71,12 @@ public:
     ALL_FRAMES = (int64_t)-1,
   };
 
-  ///  /// <summary>
+  /// <summary>
   ///
   /// </summary>
+  /// <param name="app_"></param>
   /// <param name="delegate"></param>
-  CefViewBrowserClient(CefViewBrowserClientDelegateInterface::RefPtr delegate);
+  CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app, CefViewBrowserClientDelegateInterface::RefPtr delegate);
 
   /// <summary>
   ///
@@ -297,9 +302,5 @@ public:
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefRequest> request,
                                    bool& allow_os_execution) override;
-
-private:
-  // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 };
 #endif
