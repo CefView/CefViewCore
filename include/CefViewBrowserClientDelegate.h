@@ -251,6 +251,25 @@ public:
                        const void* buffer,
                        int width,
                        int height) = 0;
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  CefRenderHandler::PaintElementType type,
+                                  const CefRenderHandler::RectList& dirtyRects,
+                                  void* shared_handle) = 0;
+  virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefDragData> drag_data,
+                             CefRenderHandler::DragOperationsMask allowed_ops,
+                             int x,
+                             int y) = 0;
+  virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser, CefRenderHandler::DragOperation operation) = 0;
+  virtual void OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, double x, double y) = 0;
+  virtual void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
+                                            const CefRange& selected_range,
+                                            const CefRenderHandler::RectList& character_bounds) = 0;
+  virtual void OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
+                                      const CefString& selected_text,
+                                      const CefRange& selected_range) = 0;
+  virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser,
+                                          CefRenderHandler::TextInputMode input_mode) = 0;
 };
 
 #endif

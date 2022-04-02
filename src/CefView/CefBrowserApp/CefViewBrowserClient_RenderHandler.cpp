@@ -95,7 +95,11 @@ CefViewBrowserClient::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                          PaintElementType type,
                                          const RectList& dirtyRects,
                                          void* shared_handle)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->OnAcceleratedPaint(browser, type, dirtyRects, shared_handle);
+}
 
 bool
 CefViewBrowserClient::StartDragging(CefRefPtr<CefBrowser> browser,
@@ -104,29 +108,53 @@ CefViewBrowserClient::StartDragging(CefRefPtr<CefBrowser> browser,
                                     int x,
                                     int y)
 {
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->StartDragging(browser, drag_data, allowed_ops, x, y);
+
   return false;
 }
 
 void
 CefViewBrowserClient::UpdateDragCursor(CefRefPtr<CefBrowser> browser, DragOperation operation)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->UpdateDragCursor(browser, operation);
+}
 
 void
 CefViewBrowserClient::OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, double x, double y)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->OnScrollOffsetChanged(browser, x, y);
+}
 
 void
 CefViewBrowserClient::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
                                                    const CefRange& selected_range,
                                                    const RectList& character_bounds)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->OnImeCompositionRangeChanged(browser, selected_range, character_bounds);
+}
 
 void
 CefViewBrowserClient::OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
                                              const CefString& selected_text,
                                              const CefRange& selected_range)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->OnTextSelectionChanged(browser, selected_text, selected_range);
+}
 
 void
 CefViewBrowserClient::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode)
-{}
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->OnVirtualKeyboardRequested(browser, input_mode);
+}
