@@ -90,8 +90,8 @@ CefViewBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_
     delegate->OnBeforeChildProcessLaunch(command_line);
 
   if (bridge_object_name_.empty())
-    bridge_object_name_ = CEFVIEW_OBJECT_NAME;
-  command_line->AppendSwitchWithValue(CEFVIEW_BRIDGE_OBJ_NAME_KEY, bridge_object_name_);
+    bridge_object_name_ = kCefViewDefaultBridgeObjectName;
+  command_line->AppendSwitchWithValue(kCefViewBridgeObjectNameKey, bridge_object_name_);
 }
 
 void

@@ -26,5 +26,21 @@ CefViewBrowserClient::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
 {
   CEF_REQUIRE_UI_THREAD();
 
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->onPreKeyEvent(browser, event, os_event, is_keyboard_shortcut);
+
+  return false;
+}
+
+bool
+CefViewBrowserClient::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event)
+{
+  CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->onKeyEvent(browser, event, os_event);
+
   return false;
 }

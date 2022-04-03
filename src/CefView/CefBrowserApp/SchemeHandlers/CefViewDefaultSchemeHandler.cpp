@@ -108,12 +108,12 @@ bool
 RegisterScheme(CefRawPtr<CefSchemeRegistrar> registrar)
 {
   // register default scheme_name
-  return registrar->AddCustomScheme(CEFVIEW_SCHEMA, 0);
+  return registrar->AddCustomScheme(kCefViewSchema, 0);
 }
 
 bool
 RegisterSchemeHandlerFactory()
 {
-  return CefRegisterSchemeHandlerFactory(CEFVIEW_SCHEMA, "", new SchemeHandlerFactory());
+  return CefRegisterSchemeHandlerFactory(kCefViewSchema, "", new SchemeHandlerFactory());
 }
 } // namespace CefViewDefaultSchemeHandler

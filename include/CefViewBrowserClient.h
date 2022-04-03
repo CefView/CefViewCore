@@ -83,35 +83,80 @@ public:
   /// </summary>
   ~CefViewBrowserClient();
 
-  //////////////////////////////////////////////////////////////////////////
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns></returns>
+  int GetBrowserCount() { return static_cast<int>(browser_map_.size()); }
+
+  /// <summary>
+  ///
+  /// </summary>
+  void CloseAllBrowsers();
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="dir_path"></param>
+  /// <param name="url"></param>
+  /// <param name="priority"></param>
   void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="archive_path"></param>
+  /// <param name="url"></param>
+  /// <param name="password"></param>
+  /// <param name="priority"></param>
   void AddArchiveResourceProvider(const std::string& archive_path,
                                   const std::string& url,
                                   const std::string& password,
                                   int priority = 0);
 
-  void CloseAllBrowsers();
-
-  int GetBrowserCount() { return static_cast<int>(browser_map_.size()); }
-
   bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="query"></param>
+  /// <param name="success"></param>
+  /// <param name="response"></param>
+  /// <param name="error"></param>
+  /// <returns></returns>
   bool ResponseQuery(const int64_t query, bool success, const CefString& response, int error);
 
-  bool InvokeMethod(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefProcessMessage> message);
-
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frame"></param>
+  /// <param name="code"></param>
+  /// <param name="url"></param>
+  /// <param name="context"></param>
+  /// <returns></returns>
   int64_t AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              const CefString& code,
                              const CefString& url,
                              int64_t context);
 
-  bool ReportJSResult(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefProcessMessage> message);
-
-  bool DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
+protected:
+  bool DispatchRenderMessage(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              CefRefPtr<CefProcessMessage> message);
+
+  bool OnRenderFocusedNodeChangedMessage(CefRefPtr<CefBrowser> browser,
+                                         CefRefPtr<CefFrame> frame,
+                                         CefRefPtr<CefProcessMessage> message);
+
+  bool OnRenderInvokeMethodMessage(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefProcessMessage> message);
+
+  bool OnRenderReportJSResultMessage(CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<CefFrame> frame,
+                                     CefRefPtr<CefProcessMessage> message);
 
   //////////////////////////////////////////////////////////////////////////
   // CefClient methods:
@@ -190,6 +235,7 @@ public:
                              const CefKeyEvent& event,
                              CefEventHandle os_event,
                              bool* is_keyboard_shortcut) override;
+  virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event) override;
 
   // CefLifeSpanHandler methods:
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;

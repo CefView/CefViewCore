@@ -2,10 +2,8 @@
 #include "Common/CefViewCoreLog.h"
 #include "CefViewDefaultRenderDelegate.h"
 #include "CefViewClient.h"
+#include "CefViewCoreProtocol.h"
 #pragma endregion project_headers
-
-// Must match the value in client_handler.cc.
-const char kFocusedNodeChangedMessage[] = "ClientRenderer.FocusedNodeChanged";
 
 namespace CefViewDefaultRenderDelegate {
 void
@@ -22,8 +20,8 @@ void
 RenderDelegate::OnWebKitInitialized(CefRefPtr<CefViewRenderApp> app)
 {
   CefMessageRouterConfig config;
-  config.js_query_function = CEFVIEW_QUERY_NAME;
-  config.js_cancel_function = CEFVIEW_QUERY_CANCEL_NAME;
+  config.js_query_function = kCefViewQueryFuntionName;
+  config.js_cancel_function = kCefViewQueryCancelFunctionName;
   render_message_router_ = CefMessageRouterRendererSide::Create(config);
 }
 
@@ -74,7 +72,7 @@ RenderDelegate::OnFocusedNodeChanged(CefRefPtr<CefViewRenderApp> app,
   if (is_editable != last_node_is_editable_) {
     // Notify the browser of the change in focused element type.
     last_node_is_editable_ = is_editable;
-    CefRefPtr<CefProcessMessage> message = CefProcessMessage::Create(kFocusedNodeChangedMessage);
+    CefRefPtr<CefProcessMessage> message = CefProcessMessage::Create(kCefViewClientRenderFocusedNodeChangedMessage);
     message->GetArgumentList()->SetBool(0, is_editable);
     frame->SendProcessMessage(PID_BROWSER, message);
   }
@@ -104,7 +102,7 @@ RenderDelegate::OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser,
                                             CefProcessId source_process,
                                             CefRefPtr<CefProcessMessage> message)
 {
-  if (message->GetName() == TRIGGEREVENT_NOTIFY_MESSAGE) {
+  if (message->GetName() == kCefViewClientBrowserTriggerEventMessage) {
     CefRefPtr<CefListValue> args = message->GetArgumentList()->Copy();
     //** arguments(CefValueList)
     //** +------------+

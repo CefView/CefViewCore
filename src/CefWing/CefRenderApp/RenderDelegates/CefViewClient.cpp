@@ -14,13 +14,13 @@ CefViewClient::V8Handler::Execute(const CefString& function,
                                   CefRefPtr<CefV8Value>& retval,
                                   CefString& exception)
 {
-  if (function == CEFVIEW_INVOKEMETHOD)
+  if (function == kCefViewInvokeMethodFunctionName)
     ExecuteNativeMethod(object, arguments, retval, exception);
-  else if (function == CEFVIEW_ADDEVENTLISTENER)
+  else if (function == kCefViewAddEventListenerFunctionName)
     ExecuteAddEventListener(object, arguments, retval, exception);
-  else if (function == CEFVIEW_REMOVEEVENTLISTENER)
+  else if (function == kCefViewRemoveEventListenerFunctionName)
     ExecuteRemoveEventListener(object, arguments, retval, exception);
-  else if (function == CEFVIEW_REPORTJSRESULT)
+  else if (function == kCefViewReportJSResultFunctionName)
     ExecuteReportJSResult(object, arguments, retval, exception);
   else
     return false;
@@ -114,7 +114,7 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              CefRefPtr<CefV8Value> global,
                              const std::string& name)
-  : name_(name.empty() ? CEFVIEW_OBJECT_NAME : name)
+  : name_(name.empty() ? kCefViewDefaultBridgeObjectName : name)
   , bridgeObject_(nullptr)
   , reportJSResultFunction_(nullptr)
   , browser_(browser)
@@ -122,8 +122,8 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
   , v8Handler_(new V8Handler(this))
 {
   // create "reportJSResult" function and mount it on the global context(window)
-  reportJSResultFunction_ = CefV8Value::CreateFunction(CEFVIEW_REPORTJSRESULT, v8Handler_);
-  global->SetValue(CEFVIEW_REPORTJSRESULT,
+  reportJSResultFunction_ = CefV8Value::CreateFunction(kCefViewReportJSResultFunctionName, v8Handler_);
+  global->SetValue(kCefViewReportJSResultFunctionName,
                    reportJSResultFunction_,
                    static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                               V8_PROPERTY_ATTRIBUTE_DONTENUM |
@@ -133,27 +133,29 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
   bridgeObject_ = CefV8Value::CreateObject(nullptr, nullptr);
 
   // create function "invokeMethod"
-  CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(CEFVIEW_INVOKEMETHOD, v8Handler_);
+  CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(kCefViewInvokeMethodFunctionName, v8Handler_);
   // add this function to window object
-  bridgeObject_->SetValue(CEFVIEW_INVOKEMETHOD,
+  bridgeObject_->SetValue(kCefViewInvokeMethodFunctionName,
                           funcInvokeMethod,
                           static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 
   // create function addEventListener
-  CefRefPtr<CefV8Value> funcAddEventListener = CefV8Value::CreateFunction(CEFVIEW_ADDEVENTLISTENER, v8Handler_);
+  CefRefPtr<CefV8Value> funcAddEventListener =
+    CefV8Value::CreateFunction(kCefViewAddEventListenerFunctionName, v8Handler_);
   // add this function to window object
-  bridgeObject_->SetValue(CEFVIEW_ADDEVENTLISTENER,
+  bridgeObject_->SetValue(kCefViewAddEventListenerFunctionName,
                           funcAddEventListener,
                           static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTDELETE));
 
   // create function removeListener
-  CefRefPtr<CefV8Value> funcRemoveEventListener = CefV8Value::CreateFunction(CEFVIEW_REMOVEEVENTLISTENER, v8Handler_);
+  CefRefPtr<CefV8Value> funcRemoveEventListener =
+    CefV8Value::CreateFunction(kCefViewRemoveEventListenerFunctionName, v8Handler_);
   // add this function to window object
-  bridgeObject_->SetValue(CEFVIEW_REMOVEEVENTLISTENER,
+  bridgeObject_->SetValue(kCefViewRemoveEventListenerFunctionName,
                           funcRemoveEventListener,
                           static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTENUM |
@@ -280,7 +282,7 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
 void
 CefViewClient::AsyncExecuteNativeMethod(const CefV8ValueList& arguments)
 {
-  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
+  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(kCefViewClientRenderInvokeMethodMessage);
 
   //** arguments(CefValueList)
   //** +-------+
@@ -310,7 +312,7 @@ CefViewClient::AsyncExecuteNativeMethod(const CefV8ValueList& arguments)
 void
 CefViewClient::AsyncExecuteReportJSResult(const CefV8ValueList& arguments)
 {
-  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(REPORTJSRESULT_NOTIFY_MESSAGE);
+  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(kCefViewClientRenderReportJSResultMessage);
 
   //** arguments(CefValueList)
   //** +_------+

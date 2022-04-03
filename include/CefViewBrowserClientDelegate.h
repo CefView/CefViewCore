@@ -38,6 +38,57 @@ public:
   /// <summary>
   ///
   /// </summary>
+  /// <param name="url"></param>
+  virtual void processUrlRequest(const std::string& url) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="query"></param>
+  /// <param name="query_id"></param>
+  virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
+                                   int64_t frameId,
+                                   const std::string& query,
+                                   const int64_t query_id) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="focusOnEditableNode"></param>
+  virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
+                                          int64_t frameId,
+                                          bool focusOnEditableNode) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browserId"></param>
+  /// <param name="frameId"></param>
+  /// <param name="method"></param>
+  /// <param name="arguments"></param>
+  virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
+                                  int64_t frameId,
+                                  const std::string& method,
+                                  const CefRefPtr<CefListValue>& arguments) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="result"></param>
+  virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
+                              int64_t frameId,
+                              int64_t contextId,
+                              const CefRefPtr<CefValue>& result) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
   /// <param name="browser"></param>
   /// <param name="frameId"></param>
   /// <param name="targetUrl"></param>
@@ -178,6 +229,13 @@ public:
                              cef_cursor_type_t type,
                              const CefCursorInfo& custom_cursor_info) = 0;
 
+  virtual bool onPreKeyEvent(CefRefPtr<CefBrowser> browser,
+                             const CefKeyEvent& event,
+                             CefEventHandle os_event,
+                             bool* is_keyboard_shortcut) = 0;
+
+  virtual bool onKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event) = 0;
+
   /// <summary>
   ///
   /// </summary>
@@ -196,47 +254,6 @@ public:
   /// </summary>
   /// <param name="browser"></param>
   virtual void gotFocus(CefRefPtr<CefBrowser>& browser) = 0;
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="url"></param>
-  virtual void processUrlRequest(const std::string& url) = 0;
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="browser"></param>
-  /// <param name="frameId"></param>
-  /// <param name="query"></param>
-  /// <param name="query_id"></param>
-  virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
-                                   int64_t frameId,
-                                   const std::string& query,
-                                   const int64_t query_id) = 0;
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="browserId"></param>
-  /// <param name="frameId"></param>
-  /// <param name="method"></param>
-  /// <param name="arguments"></param>
-  virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
-                                  int64_t frameId,
-                                  const std::string& method,
-                                  const CefRefPtr<CefListValue>& arguments) = 0;
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="browser"></param>
-  /// <param name="frameId"></param>
-  /// <param name="result"></param>
-  virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
-                              int64_t frameId,
-                              int64_t contextId,
-                              const CefRefPtr<CefValue>& result) = 0;
 
   // Off screen rendering
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;

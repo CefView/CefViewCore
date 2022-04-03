@@ -26,14 +26,24 @@ CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
   app_->CheckInClient(this);
 
   // Create the browser-side router for query handling.
-  message_router_config_.js_query_function = CEFVIEW_QUERY_NAME;
-  message_router_config_.js_cancel_function = CEFVIEW_QUERY_CANCEL_NAME;
+  message_router_config_.js_query_function = kCefViewQueryFuntionName;
+  message_router_config_.js_cancel_function = kCefViewQueryCancelFunctionName;
 }
 
 CefViewBrowserClient::~CefViewBrowserClient()
 {
   log_debug("CefViewBrowserClient::~CefViewBrowserClient()");
   app_->CheckOutClient(this);
+}
+
+void
+CefViewBrowserClient::CloseAllBrowsers()
+{
+  auto browsers = browser_map_;
+  for (auto& kv : browsers) {
+    kv.second->StopLoad();
+    kv.second->GetHost()->CloseBrowser(true);
+  }
 }
 
 void
@@ -64,16 +74,6 @@ CefViewBrowserClient::AddArchiveResourceProvider(const std::string& archive_path
 
   std::string identifier;
   resource_manager_->AddArchiveProvider(url, archive_path, password, 0, identifier);
-}
-
-void
-CefViewBrowserClient::CloseAllBrowsers()
-{
-  auto browsers = browser_map_;
-  for (auto& kv : browsers) {
-    kv.second->StopLoad();
-    kv.second->GetHost()->CloseBrowser(true);
-  }
 }
 
 bool
@@ -115,10 +115,72 @@ CefViewBrowserClient::ResponseQuery(const int64_t query, bool success, const Cef
   return false;
 }
 
+int64_t
+CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
+                                         CefRefPtr<CefFrame> frame,
+                                         const CefString& code,
+                                         const CefString& url,
+                                         int64_t context)
+{
+  double contextId = static_cast<double>(context);
+  /*
+   * Javascript code:
+   *
+   * window.__report_js_result__(contextId, function() { ... })());
+   */
+  std::ostringstream codeWrapper;
+  codeWrapper << "window.__report_js_result__(" << contextId << ",function(){" << code << "}());";
+
+  frame->ExecuteJavaScript(codeWrapper.str().c_str(), url, 0);
+
+  return true;
+}
+
 bool
-CefViewBrowserClient::InvokeMethod(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefProcessMessage> message)
+CefViewBrowserClient::DispatchRenderMessage(CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefProcessMessage> message)
+{
+  auto msgName = message->GetName();
+  if (msgName == kCefViewClientRenderFocusedNodeChangedMessage) {
+    return OnRenderFocusedNodeChangedMessage(browser, frame, message);
+  } else if (msgName == kCefViewClientRenderInvokeMethodMessage) {
+    return OnRenderInvokeMethodMessage(browser, frame, message);
+  } else if (msgName == kCefViewClientRenderReportJSResultMessage) {
+    return OnRenderReportJSResultMessage(browser, frame, message);
+  } else {
+  }
+
+  return false;
+}
+
+bool
+CefViewBrowserClient::OnRenderFocusedNodeChangedMessage(CefRefPtr<CefBrowser> browser,
+                                                        CefRefPtr<CefFrame> frame,
+                                                        CefRefPtr<CefProcessMessage> message)
+{
+  auto delegate = client_delegate_.lock();
+  if (!delegate)
+    return false;
+
+  // validate the argument list
+  CefRefPtr<CefListValue> arguments = message->GetArgumentList();
+  if (!arguments || (arguments->GetSize() < 1))
+    return false;
+
+  if (CefValueType::VTYPE_BOOL != arguments->GetType(0))
+    return false;
+
+  bool focusOnEditableField = message->GetArgumentList()->GetBool(0);
+  delegate->focusedEditableNodeChanged(browser, frame->GetIdentifier(), focusOnEditableField);
+
+  return true;
+}
+
+bool
+CefViewBrowserClient::OnRenderInvokeMethodMessage(CefRefPtr<CefBrowser> browser,
+                                                  CefRefPtr<CefFrame> frame,
+                                                  CefRefPtr<CefProcessMessage> message)
 {
   // validate the argument list
   CefRefPtr<CefListValue> arguments = message->GetArgumentList();
@@ -147,31 +209,10 @@ CefViewBrowserClient::InvokeMethod(CefRefPtr<CefBrowser> browser,
   return true;
 }
 
-int64_t
-CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
-                                         CefRefPtr<CefFrame> frame,
-                                         const CefString& code,
-                                         const CefString& url,
-                                         int64_t context)
-{
-  double contextId = static_cast<double>(context);
-  /*
-   * Javascript code:
-   *
-   * window.__report_js_result__(contextId, function() { ... })());
-   */
-  std::ostringstream codeWrapper;
-  codeWrapper << "window.__report_js_result__(" << contextId << ",function(){" << code << "}());";
-
-  frame->ExecuteJavaScript(codeWrapper.str().c_str(), url, 0);
-
-  return true;
-}
-
 bool
-CefViewBrowserClient::ReportJSResult(CefRefPtr<CefBrowser> browser,
-                                     CefRefPtr<CefFrame> frame,
-                                     CefRefPtr<CefProcessMessage> message)
+CefViewBrowserClient::OnRenderReportJSResultMessage(CefRefPtr<CefBrowser> browser,
+                                                    CefRefPtr<CefFrame> frame,
+                                                    CefRefPtr<CefProcessMessage> message)
 {
   // validate the argument list
   CefRefPtr<CefListValue> arguments = message->GetArgumentList();
@@ -193,22 +234,6 @@ CefViewBrowserClient::ReportJSResult(CefRefPtr<CefBrowser> browser,
 }
 
 bool
-CefViewBrowserClient::DispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
-                                            CefRefPtr<CefFrame> frame,
-                                            CefRefPtr<CefProcessMessage> message)
-{
-  auto msgName = message->GetName();
-  if (msgName == INVOKEMETHOD_NOTIFY_MESSAGE) {
-    return InvokeMethod(browser, frame, message);
-  } else if (msgName == REPORTJSRESULT_NOTIFY_MESSAGE) {
-    return ReportJSResult(browser, frame, message);
-  } else {
-  }
-
-  return false;
-}
-
-bool
 CefViewBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                                CefRefPtr<CefFrame> frame,
                                                CefProcessId source_process,
@@ -218,7 +243,7 @@ CefViewBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
   if (message_router_->OnProcessMessageReceived(browser, frame, source_process, message))
     return true;
 
-  if (DispatchNotifyRequest(browser, frame, message))
+  if (DispatchRenderMessage(browser, frame, message))
     return true;
 
   return false;

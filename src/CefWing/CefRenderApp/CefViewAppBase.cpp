@@ -45,10 +45,10 @@ CefViewAppBase::GetProcessType(CefRefPtr<CefCommandLine> command_line)
 std::string
 CefViewAppBase::GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line)
 {
-  if (!command_line->HasSwitch(CEFVIEW_BRIDGE_OBJ_NAME_KEY))
+  if (!command_line->HasSwitch(kCefViewBridgeObjectNameKey))
     return "";
 
-  const std::string& name = command_line->GetSwitchValue(CEFVIEW_BRIDGE_OBJ_NAME_KEY);
+  const std::string& name = command_line->GetSwitchValue(kCefViewBridgeObjectNameKey);
   logI("bridge object name: %d", name.c_str());
   return name;
 }

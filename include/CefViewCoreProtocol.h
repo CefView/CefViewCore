@@ -5,48 +5,56 @@
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_SCHEMA "CefView"
+#define kCefViewSchema "CefView"
 
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_QUERY_NAME "CefViewQuery"
+#define kCefViewQueryFuntionName "CefViewQuery"
 
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_QUERY_CANCEL_NAME "CefViewQueryCancel"
+#define kCefViewQueryCancelFunctionName "CefViewQueryCancel"
 
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_BRIDGE_OBJ_NAME_KEY "bridge-obj-name"
+#define kCefViewBridgeObjectNameKey "bridge-obj-name"
 
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_OBJECT_NAME "CefViewClient"
+#define kCefViewDefaultBridgeObjectName "CefViewClient"
 
 /// <summary>
 /// CEFVIEWClient.invokeMethod("method_name", ...)
 /// </summary>
-#define CEFVIEW_INVOKEMETHOD "invokeMethod"
+#define kCefViewInvokeMethodFunctionName "invokeMethod"
 
 /// <summary>
 /// CEFVIEWClient.addEventListener(type, listener)
 /// </summary>
-#define CEFVIEW_ADDEVENTLISTENER "addEventListener"
+#define kCefViewAddEventListenerFunctionName "addEventListener"
 
 /// <summary>
 /// CEFVIEWClient.removeEventListener(type, listener)
 /// </summary>
-#define CEFVIEW_REMOVEEVENTLISTENER "removeEventListener"
+#define kCefViewRemoveEventListenerFunctionName "removeEventListener"
 
 /// <summary>
-/// window.__report_js_result__(context, result)
-/// context must be double
+/// this message is sent from render process to browser process
+/// and is processed in the Qt UI thread
+///
 /// </summary>
-#define CEFVIEW_REPORTJSRESULT "__report_js_result__"
+#define kCefViewClientRenderFocusedNodeChangedMessage "CefViewClientRender.FocusedNodeChanged"
+
+/// <summary>
+/// this message is sent from render process to browser process
+/// and is processed in the Qt UI thread
+///
+/// </summary>
+#define kCefViewClientRenderReportJSResultMessage "CefViewClientRender.ReportJSResult"
 
 /// <summary>
 /// this message is sent from render process to browser process
@@ -57,10 +65,7 @@
 ///   msg.arg[0]: function name
 ///   msg.arg[1~...]: function parameters
 /// </summary>
-#define INVOKEMETHOD_NOTIFY_MESSAGE "CefViewClient#InvokeMethodNotify"
-
-///
-#define REPORTJSRESULT_NOTIFY_MESSAGE "ReportJSResultNotify"
+#define kCefViewClientRenderInvokeMethodMessage "CefViewClientRender.InvokeMethod"
 
 /// <summary>
 /// this message is sent from browser process to render process
@@ -71,26 +76,40 @@
 ///   msg.arg[0]: function name
 ///   msg.arg[1~...]: function parameters
 /// </summary>
-#define TRIGGEREVENT_NOTIFY_MESSAGE "CefViewClient#TriggerEventNotify"
+#define kCefViewClientBrowserTriggerEventMessage "CefViewClientBrowser.TriggerEvent"
+
+/// <summary>
+/// window.__report_js_result__(context, result)
+/// context must be double
+/// </summary>
+#define kCefViewReportJSResultFunctionName "__report_js_result__"
 
 /// <summary>
 ///
 /// </summary>
-#define RENDER_PROCESS_NAME "CefViewWing"
+#define kCefViewRenderProcessName "CefViewWing"
 
 /// <summary>
 ///
 /// </summary>
-#define RESOURCE_DIRECTORY_NAME "resources"
+#define kCefViewResourceDirectoryName "resources"
 
 /// <summary>
 ///
 /// </summary>
-#define LOCALES_DIRECTORY_NAME "locales"
+#define kCefViewLocalesDirectoryName "locales"
 
 /// <summary>
 ///
 /// </summary>
-#define CEFVIEW_USER_AGENT "CefView/1.0 (macOS; en-us)"
+#if defined(OS_WINDOWS)
+#define kCefViewDefaultUserAgent "CefView/1.0 (Windows; en-us)"
+#elif defined(OS_MACOS)
+#define kCefViewDefaultUserAgent "CefView/1.0 (macOS; en-us)"
+#elif defined(OS_LINUX)
+#define kCefViewDefaultUserAgent "CefView/1.0 (Linux; en-us)"
+#else
+#define kCefViewDefaultUserAgent "CefView/1.0 (Unknown; en-us)"
+#endif
 
 #endif
