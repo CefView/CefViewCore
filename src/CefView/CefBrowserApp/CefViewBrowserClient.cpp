@@ -184,7 +184,7 @@ CefViewBrowserClient::OnRenderInvokeMethodMessage(CefRefPtr<CefBrowser> browser,
 {
   // validate the argument list
   CefRefPtr<CefListValue> arguments = message->GetArgumentList();
-  if (!arguments || (arguments->GetSize() < 2))
+  if (!arguments || (arguments->GetSize() < 1))
     return false;
 
   // validate the delegate
