@@ -86,6 +86,16 @@ public:
                               int64_t contextId,
                               const CefRefPtr<CefValue>& result) = 0;
 
+  virtual void onBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefContextMenuParams> params,
+                                   CefRefPtr<CefMenuModel> model) = 0;
+  virtual bool onContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    CefRefPtr<CefContextMenuParams> params,
+                                    int command_id,
+                                    CefContextMenuHandler::EventFlags event_flags) = 0;
+
   /// <summary>
   ///
   /// </summary>

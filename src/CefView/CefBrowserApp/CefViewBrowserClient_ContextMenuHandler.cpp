@@ -26,7 +26,9 @@ CefViewBrowserClient::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
 {
   CEF_REQUIRE_UI_THREAD();
 
-  model->Clear();
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->onBeforeContextMenu(browser, frame, params, model);
 }
 
 bool
@@ -37,6 +39,10 @@ CefViewBrowserClient::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                            EventFlags event_flags)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->onContextMenuCommand(browser, frame, params, command_id, event_flags);
 
   return false;
 }
