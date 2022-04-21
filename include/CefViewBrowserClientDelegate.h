@@ -266,37 +266,42 @@ public:
   virtual void gotFocus(CefRefPtr<CefBrowser>& browser) = 0;
 
   // Off screen rendering
-  virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
-  virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
-  virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY) = 0;
-  virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) = 0;
-  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) = 0;
-  virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) = 0;
+  virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) { return false; };
+  virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect){};
+  virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY)
+  {
+    return false;
+  };
+  virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) { return false; };
+  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show){};
+  virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect){};
   virtual void OnPaint(CefRefPtr<CefBrowser> browser,
                        CefRenderHandler::PaintElementType type,
                        const CefRenderHandler::RectList& dirtyRects,
                        const void* buffer,
                        int width,
-                       int height) = 0;
+                       int height){};
   virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   CefRenderHandler::PaintElementType type,
                                   const CefRenderHandler::RectList& dirtyRects,
-                                  void* shared_handle) = 0;
+                                  void* shared_handle){};
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              CefRenderHandler::DragOperationsMask allowed_ops,
                              int x,
-                             int y) = 0;
-  virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser, CefRenderHandler::DragOperation operation) = 0;
-  virtual void OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, double x, double y) = 0;
+                             int y)
+  {
+    return false;
+  };
+  virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser, CefRenderHandler::DragOperation operation){};
+  virtual void OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, double x, double y){};
   virtual void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
                                             const CefRange& selected_range,
-                                            const CefRenderHandler::RectList& character_bounds) = 0;
+                                            const CefRenderHandler::RectList& character_bounds){};
   virtual void OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
                                       const CefString& selected_text,
-                                      const CefRange& selected_range) = 0;
-  virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser,
-                                          CefRenderHandler::TextInputMode input_mode) = 0;
+                                      const CefRange& selected_range){};
+  virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, CefRenderHandler::TextInputMode input_mode){};
 };
 
 #endif
