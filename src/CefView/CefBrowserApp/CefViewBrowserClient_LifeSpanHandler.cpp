@@ -43,14 +43,14 @@ CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   auto delegate = client_delegate_.lock();
   if (delegate) {
     bool disableJSAccess = no_javascript_access ? *no_javascript_access : false;
-    result = delegate->onBeforPopup(browser,
-                                    frame->GetIdentifier(),
-                                    target_url.ToString(),
-                                    target_frame_name.ToString(),
-                                    target_disposition,
-                                    windowInfo,
-                                    settings,
-                                    disableJSAccess);
+    result = delegate->onBeforePopup(browser,
+                                     frame->GetIdentifier(),
+                                     target_url.ToString(),
+                                     target_frame_name.ToString(),
+                                     target_disposition,
+                                     windowInfo,
+                                     settings,
+                                     disableJSAccess);
     if (no_javascript_access)
       *no_javascript_access = disableJSAccess;
   }

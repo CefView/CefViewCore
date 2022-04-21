@@ -108,14 +108,14 @@ public:
   /// <param name="settings"></param>
   /// <param name="DisableJavascriptAccess"></param>
   /// <returns></returns>
-  virtual bool onBeforPopup(CefRefPtr<CefBrowser>& browser,
-                            int64_t frameId,
-                            const std::string& targetUrl,
-                            const std::string& targetFrameName,
-                            CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
-                            CefWindowInfo& windowInfo,
-                            CefBrowserSettings& settings,
-                            bool& DisableJavascriptAccess) = 0;
+  virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
+                             int64_t frameId,
+                             const std::string& targetUrl,
+                             const std::string& targetFrameName,
+                             CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+                             CefWindowInfo& windowInfo,
+                             CefBrowserSettings& settings,
+                             bool& DisableJavascriptAccess) = 0;
 
   /// <summary>
   ///
