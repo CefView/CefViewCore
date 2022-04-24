@@ -171,11 +171,17 @@ protected:
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
                                    CefRefPtr<CefMenuModel> model) override;
+  virtual bool RunContextMenu(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame,
+                              CefRefPtr<CefContextMenuParams> params,
+                              CefRefPtr<CefMenuModel> model,
+                              CefRefPtr<CefRunContextMenuCallback> callback) override;
   virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefContextMenuParams> params,
                                     int command_id,
                                     EventFlags event_flags) override;
+  virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame) override;
 
   // CefDisplayHandler methods
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override;

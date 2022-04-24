@@ -90,11 +90,17 @@ public:
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
                                    CefRefPtr<CefMenuModel> model) = 0;
+  virtual bool onRunContextMenu(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefContextMenuParams> params,
+                                CefRefPtr<CefMenuModel> model,
+                                CefRefPtr<CefRunContextMenuCallback> callback) = 0;
   virtual bool onContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefContextMenuParams> params,
                                     int command_id,
                                     CefContextMenuHandler::EventFlags event_flags) = 0;
+  virtual void onContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame) = 0;
 
   /// <summary>
   ///
