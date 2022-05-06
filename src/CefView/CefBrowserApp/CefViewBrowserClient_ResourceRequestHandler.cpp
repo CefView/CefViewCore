@@ -1,4 +1,4 @@
-﻿#include <CefViewBrowserClient.h>
+#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>
@@ -31,7 +31,7 @@ CefViewBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefCallback> callback)
 {
   auto url = request->GetURL().ToString();
-  logD("require resource: %s", url.c_str());
+  // logD("require resource: %s", url.c_str());
   return resource_manager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 
