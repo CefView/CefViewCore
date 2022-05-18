@@ -12,6 +12,7 @@
 #pragma endregion cef_headers
 
 #include <Common/CefViewCoreLog.h>
+#include <Common/CefViewDebug.h>
 
 CefRefPtr<CefLoadHandler>
 CefViewBrowserClient::GetLoadHandler()
@@ -25,6 +26,9 @@ CefViewBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                            bool canGoBack,
                                            bool canGoForward)
 {
+  logD("CefViewBrowserClient::OnLoadingStateChange, browser=%s, isLoading=%d, canGoBack=%d, canGoForward=%d",
+                      toString(browser).c_str(), isLoading, canGoBack, canGoForward);
+
   CEF_REQUIRE_UI_THREAD();
 
   if (!isLoading && initial_navigation_) {
@@ -41,19 +45,25 @@ CefViewBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   TransitionType transition_type)
 {
+  logD("CefViewBrowserClient::OnLoadStart, browser=%s, frame=%s, transition_type=%d",
+                    toString(browser).c_str(), toString(frame).c_str(), (int)transition_type);
+
   CEF_REQUIRE_UI_THREAD();
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadStart(browser);
+    delegate->loadStart(browser, frame, (int)transition_type);
 }
 
 void
 CefViewBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
+  logD("CefViewBrowserClient::OnLoadEnd, browser=%s, frame=%s, httpStatusCode=%d",
+                    toString(browser).c_str(), toString(frame).c_str(), httpStatusCode);
+
   CEF_REQUIRE_UI_THREAD();
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadEnd(browser, httpStatusCode);
+    delegate->loadEnd(browser, frame, httpStatusCode);
 }
 
 void
@@ -63,6 +73,9 @@ CefViewBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser,
                                   const CefString& errorText,
                                   const CefString& failedUrl)
 {
+  logD("CefViewBrowserClient::OnLoadError, browser=%s, frame=%s, errorCode=%d, errorText=%s, failedUrl=%s",
+                    toString(browser).c_str(), toString(frame).c_str(), errorCode, errorText.c_str(), failedUrl.c_str());
+
   CEF_REQUIRE_UI_THREAD();
   if (errorCode == ERR_ABORTED)
     return;
@@ -74,10 +87,11 @@ CefViewBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser,
   auto msg = errorText.ToString();
   auto url = failedUrl.ToString();
 
+  //handled的值能不能传递进来，取决于最外层的信号槽的连接方式。
   bool handled = false;
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadError(browser, errorCode, msg, url, handled);
+    delegate->loadError(browser, frame, errorCode, msg, url, handled);
 
   if (handled)
     return;
