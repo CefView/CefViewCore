@@ -154,21 +154,30 @@ public:
   /// <summary>
   ///
   /// </summary>
-  virtual void loadStart(CefRefPtr<CefBrowser>& browser) = 0;
+  /// <param name="browser"></param>
+  /// <param name="frame"></param>
+  /// <param name="transition_type"></param>
+  virtual void loadStart(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame>& frame, int transition_type) = 0;
 
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frame"></param>
   /// <param name="httpStatusCode"></param>
-  virtual void loadEnd(CefRefPtr<CefBrowser>& browser, int httpStatusCode) = 0;
+  virtual void loadEnd(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame>& frame, int httpStatusCode) = 0;
 
   /// <summary>
   ///
   /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frame"></param>
   /// <param name="errorCode"></param>
   /// <param name="errorMsg"></param>
   /// <param name="failedUrl"></param>
+  /// <param name="handled"></param>
   virtual void loadError(CefRefPtr<CefBrowser>& browser,
+                         CefRefPtr<CefFrame>& frame,
                          int errorCode,
                          const std::string& errorMsg,
                          const std::string& failedUrl,

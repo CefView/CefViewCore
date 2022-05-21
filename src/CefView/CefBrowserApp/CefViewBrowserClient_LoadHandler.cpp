@@ -44,7 +44,7 @@ CefViewBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadStart(browser);
+    delegate->loadStart(browser, frame, transition_type);
 }
 
 void
@@ -53,7 +53,7 @@ CefViewBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFram
   CEF_REQUIRE_UI_THREAD();
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadEnd(browser, httpStatusCode);
+    delegate->loadEnd(browser, frame, httpStatusCode);
 }
 
 void
@@ -77,7 +77,7 @@ CefViewBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser,
   bool handled = false;
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->loadError(browser, errorCode, msg, url, handled);
+    delegate->loadError(browser, frame, errorCode, msg, url, handled);
 
   if (handled)
     return;
