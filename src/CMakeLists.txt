@@ -82,7 +82,7 @@ if (OS_LINUX)
   SET_LIBRARY_TARGET_PROPERTIES(CefViewCore)
 
   add_dependencies(CefViewCore
-   libcef_lib
+    libcef_lib
     libcef_dll_wrapper
   )
 
