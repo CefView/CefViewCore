@@ -18,23 +18,35 @@ set(CEF_SDK_VERSION
 # Download CEF binary package
 #
 if(OS_WINDOWS)
-  set(CEF_SDK_PLATFORM "windows64")
+  set(CEF_SDK_PLATFORM "windows")
 elseif (OS_LINUX)
-  set(CEF_SDK_PLATFORM "linux64")
+  set(CEF_SDK_PLATFORM "linux")
 elseif(OS_MACOS)
-  set(CEF_SDK_PLATFORM "macosx64")
+  set(CEF_SDK_PLATFORM "macosx")
 else()
-  message(FATAL_ERROR "Unsupported plaftorm")
+  message(FATAL_ERROR "Unsupported Operating System")
+endif()
+
+if(PROJECT_ARCH STREQUAL "x86_64")
+  set(CEF_SDK_ARCH "64")
+elseif(PROJECT_ARCH STREQUAL "x86")
+  set(CEF_SDK_ARCH "32")
+elseif(PROJECT_ARCH STREQUAL "arm64")
+  set(CEF_SDK_ARCH "arm64")
+elseif(PROJECT_ARCH STREQUAL "arm")
+  set(CEF_SDK_ARCH "arm")
+else()
+  message(FATAL_ERROR "Unsupported Processor Architecture")
 endif()
 
 # set cef sdk package name
 set(CEF_SDK_WORKSPACE       "${CMAKE_CURRENT_SOURCE_DIR}/dep")
 
-set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}.tar.bz2")
+set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}.tar.bz2")
 set(CEF_SDK_DOWNLOAD_URL    "https://cef-builds.spotifycdn.com/${CEF_SDK_PACKAGE_NAME}")
 set(CEF_SDK_LOCAL_PACKAGE   "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
 
-set (CEF_SDK_EXTRACTED_DIR  "${CEF_SDK_WORKSPACE}/cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}")
+set (CEF_SDK_EXTRACTED_DIR  "${CEF_SDK_WORKSPACE}/cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
 
 message(STATUS "CEF_SDK_DOWNLOAD_URL: ${CEF_SDK_DOWNLOAD_URL}")
 message(STATUS "CEF_SDK_LOCAL_PACKAGE: ${CEF_SDK_LOCAL_PACKAGE}")

@@ -1,1 +1,0 @@
-cmake -G -A x64 -S . -B .build.win -DUSE_SANDBOX=ON

@@ -7,32 +7,49 @@ project(CefViewCore)
 option(USE_SANDBOX      "Enable CEF Sandbox"                  OFF)
 option(STATIC_CRT       "Use MultiThreaded linkage for MSVC"  OFF)
 
+# Determine the project architecture.
+if(NOT DEFINED PROJECT_ARCH)
+  if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
+    set(PROJECT_ARCH "arm64")
+  elseif(CMAKE_SIZEOF_VOID_P MATCHES 8)
+    set(PROJECT_ARCH "x86_64")
+  else()
+    set(PROJECT_ARCH "x86")
+  endif()
+endif()
+
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
   set(OS_MACOS 1)
   set(OS_POSIX 1)
   add_definitions(-DOS_MACOS=1 -DOS_POSIX=1)
+
+  # Target architecture.
+  if(PROJECT_ARCH STREQUAL "x86_64")
+    set(CMAKE_OSX_ARCHITECTURES "x86_64")
+  elseif(PROJECT_ARCH STREQUAL "arm64")
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+  else()
+    set(CMAKE_OSX_ARCHITECTURES "i386")
+  endif()
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   set(OS_LINUX 1)
   set(OS_POSIX 1)
   add_definitions(-DOS_LINUX=1 -DOS_POSIX=1)
   add_compile_options(-Wno-unknown-pragmas)
+
+  # Target architecture.
+  if(PROJECT_ARCH STREQUAL "x86_64")
+    # x86 64-bit architecture.
+    add_compile_options(-m64 -march=x86-64)
+    add_link_options(-m64)
+  elseif(PROJECT_ARCH STREQUAL "x86")
+    # x86 32-bit architecture.
+    add_compile_options(-m32)
+    add_link_options(-m32)
+  endif()
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(OS_WINDOWS 1)
   add_definitions(-DOS_WINDOWS=1)
-endif()
-
-# Determine the project architecture.
-if(NOT DEFINED PROJECT_ARCH)
-  if(CMAKE_SIZEOF_VOID_P MATCHES 8)
-    set(PROJECT_ARCH "x86_64")
-  else()
-    set(PROJECT_ARCH "x86")
-  endif()
-
-  if(OS_MACOSX)
-    # PROJECT_ARCH should be specified on Mac OS X.
-    message(WARNING "No PROJECT_ARCH value specified, using ${PROJECT_ARCH}")
-  endif()
 endif()
 
 # Only generate Debug and Release configuration types.

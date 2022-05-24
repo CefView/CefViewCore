@@ -1,0 +1,1 @@
+cmake -S . -B .build\win.x86_64 -A x64 -DPROJECT_ARCH=x86_64 -DUSE_SANDBOX=ON
