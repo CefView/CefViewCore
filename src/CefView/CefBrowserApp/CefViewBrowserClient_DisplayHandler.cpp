@@ -11,6 +11,7 @@
 #pragma endregion cef_headers
 
 #include <Common/CefViewCoreLog.h>
+#include <FaviconDownload/CefViewFaviconDownloadCallback.h>
 
 CefRefPtr<CefDisplayHandler>
 CefViewBrowserClient::GetDisplayHandler()
@@ -42,6 +43,16 @@ void
 CefViewBrowserClient::OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    delegate->faviconURLChanged(browser, icon_urls);
+
+  //下载favicon
+  if (!icon_urls.empty() && delegate->downloadFavicon()) {
+    browser->GetHost()->DownloadImage(icon_urls[0], true, 16, false,
+                                      new CefViewFaviconDownloadCallback(delegate));
+  }
 }
 
 void
