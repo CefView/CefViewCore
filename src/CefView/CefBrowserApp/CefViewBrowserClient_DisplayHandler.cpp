@@ -50,7 +50,7 @@ CefViewBrowserClient::OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const st
 
   //下载favicon
   if (!icon_urls.empty() && delegate->downloadFavicon()) {
-    browser->GetHost()->DownloadImage(icon_urls[0], true, 16, false,
+    browser->GetHost()->DownloadImage(icon_urls[0], true, 128, false,
                                       new CefViewFaviconDownloadCallback(delegate));
   }
 }
