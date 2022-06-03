@@ -210,6 +210,29 @@ public:
   ///
   /// </summary>
   /// <param name="browser"></param>
+  /// <param name="icon_urls"></param>
+  virtual void faviconURLChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  virtual bool downloadFavicon()
+  {
+    return true;
+  };
+
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="title"></param>
+  virtual void faviconChanged(CefRefPtr<CefImage> image) = 0;
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
   /// <param name="text"></param>
   /// <returns></returns>
   virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const std::string& text) = 0;
