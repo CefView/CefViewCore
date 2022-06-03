@@ -53,4 +53,4 @@ jobs:
 
       - name: Build
         # Build your program with the given configuration
-        run: xcodebuild -project ${{github.workspace}}/build/QCefView.xcodeproj -configuration ${{env.BUILD_TYPE}}
+        run: xcodebuild -project ${{github.workspace}}/build/CefViewCore.xcodeproj -configuration ${{env.BUILD_TYPE}}
