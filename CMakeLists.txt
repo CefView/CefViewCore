@@ -135,8 +135,7 @@ set(CefViewCore_INCLUDE_PATH
 )
 
 if(OS_MACOS)
-  # CEF Helper app suffixes.
-  # Format is "<name suffix>:<target suffix>:<plist suffix>".
+  # CEF Helper app suffixes, format: "<name suffix>:<target suffix>:<plist suffix>"
   set(CEF_HELPER_APP_SUFFIXES
     "::"
     " (GPU):_gpu:.gpu"
