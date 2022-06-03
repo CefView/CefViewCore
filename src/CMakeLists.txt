@@ -334,15 +334,7 @@ if (OS_MACOS)
     list(APPEND CefViewWing_LIBS cef_sandbox_lib)
   endif()
 
-  # CEF Helper app suffixes.
-  # Format is "<name suffix>:<target suffix>:<plist suffix>".
-  set(CEF_HELPER_APP_SUFFIXES
-    "::"
-    " (GPU):_gpu:.gpu"
-    " (Plugin):_plugin:.plugin"
-    " (Renderer):_renderer:.renderer")
-
-      # Create the multiple Helper app bundle targets.
+  # Create the multiple Helper app bundle targets.
   foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
     # Convert to a list and extract the suffix values.
     string(REPLACE ":" ";" _suffix_list ${_suffix_list})
@@ -390,7 +382,6 @@ if (OS_MACOS)
 
     # Add the Helper as a dependency of the main executable target.
     add_dependencies(CefViewCore ${_helper_target})
-
   endforeach()
 
   # copy cef binary files to the output folder

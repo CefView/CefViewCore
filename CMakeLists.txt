@@ -134,9 +134,27 @@ set(CefViewCore_INCLUDE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
+if(OS_MACOS)
+  # CEF Helper app suffixes.
+  # Format is "<name suffix>:<target suffix>:<plist suffix>".
+  set(CEF_HELPER_APP_SUFFIXES
+    "::"
+    " (GPU):_gpu:.gpu"
+    " (Plugin):_plugin:.plugin"
+    " (Renderer):_renderer:.renderer"
+  )
+endif()
+
 add_subdirectory(src)
+
+if(OS_MACOS)
+    set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
+else()
+    set(CefViewCore_HELPER_TARGETS "CefViewWing")
+endif()
 
 get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
 if(IS_CURRENT_IN_SUBDIRECTORY)
   set(CefViewCore_EXPORT_INCLUDE_PATH ${CefViewCore_INCLUDE_PATH} PARENT_SCOPE)
+  set(CefViewCore_HELPER_APP_TARGETS ${CefViewCore_HELPER_TARGETS} PARENT_SCOPE)
 endif()
