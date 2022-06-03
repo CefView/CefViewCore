@@ -46,12 +46,13 @@ CefViewBrowserClient::OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const st
   CEF_REQUIRE_UI_THREAD();
 
   auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (delegate) {
     delegate->faviconURLChanged(browser, icon_urls);
 
-  // download favicon
-  if (!icon_urls.empty() && delegate->downloadFavicon()) {
-    browser->GetHost()->DownloadImage(icon_urls[0], true, 128, false, new CefViewFaviconDownloadCallback(delegate));
+    // download only the first favicon
+    if (!icon_urls.empty() && delegate->downloadFavicon()) {
+      browser->GetHost()->DownloadImage(icon_urls[0], true, 128, false, new CefViewFaviconDownloadCallback(delegate));
+    }
   }
 }
 
