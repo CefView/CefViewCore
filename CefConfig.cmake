@@ -22,7 +22,7 @@ if(OS_WINDOWS)
 elseif (OS_LINUX)
   set(CEF_SDK_PLATFORM "linux")
 elseif(OS_MACOS)
-  set(CEF_SDK_PLATFORM "macosx")
+  set(CEF_SDK_PLATFORM "macos")
 else()
   message(FATAL_ERROR "Unsupported Operating System")
 endif()
@@ -42,35 +42,45 @@ endif()
 # set cef sdk package name
 set(CEF_SDK_WORKSPACE       "${CMAKE_CURRENT_SOURCE_DIR}/dep")
 
-set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}.tar.bz2")
-set(CEF_SDK_DOWNLOAD_URL    "https://cef-builds.spotifycdn.com/${CEF_SDK_PACKAGE_NAME}")
-set(CEF_SDK_LOCAL_PACKAGE   "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
-
-set (CEF_SDK_EXTRACTED_DIR  "${CEF_SDK_WORKSPACE}/cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
-
-message(STATUS "CEF_SDK_DOWNLOAD_URL: ${CEF_SDK_DOWNLOAD_URL}")
-message(STATUS "CEF_SDK_LOCAL_PACKAGE: ${CEF_SDK_LOCAL_PACKAGE}")
+if (OS_MACOS AND PROJECT_ARCH STREQUAL "x86_64")
+  # macosx64
+  set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}x${CEF_SDK_ARCH}")
+else()
+  set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
+endif()
 
 # Scan extracted sdk dir
+set(CEF_SDK_EXTRACTED_DIR "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
 file(GLOB CEF_SDK_DIR "${CEF_SDK_EXTRACTED_DIR}")
 
 # Extract CEF binary package
 if (NOT EXISTS ${CEF_SDK_DIR})
-  message(STATUS "CEF SDK dir does not exist, extracting new one....")
+  set(CEF_LOCAL_PACKAGE_PATH "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}.tar.bz2")
 
-  # if no cef local package then download it
-  if(NOT EXISTS "${CEF_SDK_LOCAL_PACKAGE}")
-    message(STATUS "CEF SDK package not found, start downloading....")
+  # if no local cef sdk package file then download it
+  if(NOT EXISTS "${CEF_LOCAL_PACKAGE_PATH}")
+    set(CEF_SDK_DOWNLOAD_URL "https://cef-builds.spotifycdn.com/${CEF_SDK_PACKAGE_NAME}.tar.bz2")
+    message(STATUS "Downloading CEF binary SDK from ${CEF_SDK_DOWNLOAD_URL}")
     file(DOWNLOAD 
       "${CEF_SDK_DOWNLOAD_URL}"   # URL 
-      "${CEF_SDK_LOCAL_PACKAGE}"  # Local Path
+      "${CEF_LOCAL_PACKAGE_PATH}"  # Local Path
       SHOW_PROGRESS 
-      TLS_VERIFY ON)
+      TLS_VERIFY ON
+      STATUS DOWNLOAD_RESULT
+    )
+    list(GET DOWNLOAD_RESULT 0 DOWNLOAD_RESULT_CODE)
+    list(GET DOWNLOAD_RESULT 1 DOWNLOAD_RESULT_MESSAGE)
+    if (NOT DOWNLOAD_RESULT_CODE EQUAL 0)
+      file(REMOVE "${CEF_LOCAL_PACKAGE_PATH}")
+      message(FATAL_ERROR "Failed to download CEF binary SDK, ERROR:[${DOWNLOAD_RESULT_CODE}]${DOWNLOAD_RESULT_MESSAGE}")
+    endif()
   endif()
+
+  message(STATUS "Extracting CEF binary SDK from ${CEF_LOCAL_PACKAGE_PATH}")
 
   # Extract
   file(ARCHIVE_EXTRACT
-    INPUT "${CEF_SDK_LOCAL_PACKAGE}"
+    INPUT "${CEF_LOCAL_PACKAGE_PATH}"
     DESTINATION "${CEF_SDK_WORKSPACE}"
   )
 
