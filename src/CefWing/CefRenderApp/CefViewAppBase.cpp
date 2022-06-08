@@ -1,4 +1,4 @@
-﻿//
+//
 //  CefWingAppBase.cpp
 //  CeViewfWing
 //
@@ -49,6 +49,6 @@ CefViewAppBase::GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line)
     return "";
 
   const std::string& name = command_line->GetSwitchValue(kCefViewBridgeObjectNameKey);
-  logI("bridge object name: %d", name.c_str());
+  logI("bridge object name: %s", name.c_str());
   return name;
 }
