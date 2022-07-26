@@ -28,7 +28,7 @@ CefViewBrowserClient::GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& 
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->GetRootScreenRect(browser, rect);
+    return delegate->getRootScreenRect(browser, rect);
 
   return false;
 }
@@ -38,7 +38,7 @@ CefViewBrowserClient::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->GetViewRect(browser, rect);
+    return delegate->getViewRect(browser, rect);
 }
 
 bool
@@ -46,7 +46,7 @@ CefViewBrowserClient::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, i
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->GetScreenPoint(browser, viewX, viewY, screenX, screenY);
+    return delegate->getScreenPoint(browser, viewX, viewY, screenX, screenY);
 
   return false;
 }
@@ -56,7 +56,7 @@ CefViewBrowserClient::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->GetScreenInfo(browser, screen_info);
+    return delegate->getScreenInfo(browser, screen_info);
 
   return false;
 }
@@ -66,7 +66,7 @@ CefViewBrowserClient::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnPopupShow(browser, show);
+    return delegate->onPopupShow(browser, show);
 }
 
 void
@@ -74,7 +74,7 @@ CefViewBrowserClient::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& 
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnPopupSize(browser, rect);
+    return delegate->onPopupSize(browser, rect);
 }
 
 void
@@ -87,7 +87,7 @@ CefViewBrowserClient::OnPaint(CefRefPtr<CefBrowser> browser,
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnPaint(browser, type, dirtyRects, buffer, width, height);
+    return delegate->onPaint(browser, type, dirtyRects, buffer, width, height);
 }
 
 void
@@ -98,7 +98,7 @@ CefViewBrowserClient::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->OnAcceleratedPaint(browser, type, dirtyRects, shared_handle);
+    delegate->onAcceleratedPaint(browser, type, dirtyRects, shared_handle);
 }
 
 bool
@@ -110,7 +110,7 @@ CefViewBrowserClient::StartDragging(CefRefPtr<CefBrowser> browser,
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->StartDragging(browser, drag_data, allowed_ops, x, y);
+    return delegate->startDragging(browser, drag_data, allowed_ops, x, y);
 
   return false;
 }
@@ -120,7 +120,7 @@ CefViewBrowserClient::UpdateDragCursor(CefRefPtr<CefBrowser> browser, DragOperat
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->UpdateDragCursor(browser, operation);
+    delegate->updateDragCursor(browser, operation);
 }
 
 void
@@ -128,7 +128,7 @@ CefViewBrowserClient::OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, doubl
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnScrollOffsetChanged(browser, x, y);
+    return delegate->onScrollOffsetChanged(browser, x, y);
 }
 
 void
@@ -138,7 +138,7 @@ CefViewBrowserClient::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnImeCompositionRangeChanged(browser, selected_range, character_bounds);
+    return delegate->onImeCompositionRangeChanged(browser, selected_range, character_bounds);
 }
 
 void
@@ -148,7 +148,7 @@ CefViewBrowserClient::OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnTextSelectionChanged(browser, selected_text, selected_range);
+    return delegate->onTextSelectionChanged(browser, selected_text, selected_range);
 }
 
 void
@@ -156,5 +156,5 @@ CefViewBrowserClient::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, 
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->OnVirtualKeyboardRequested(browser, input_mode);
+    return delegate->onVirtualKeyboardRequested(browser, input_mode);
 }

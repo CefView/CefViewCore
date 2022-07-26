@@ -41,6 +41,7 @@ class CefViewBrowserClient
   , public CefRequestHandler
   , public CefResourceRequestHandler
   , public CefRenderHandler
+  , public CefDownloadHandler
 {
   IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 
@@ -354,5 +355,16 @@ protected:
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefRequest> request,
                                    bool& allow_os_execution) override;
+
+  // CefDownloadHandler
+  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
+  void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDownloadItem> download_item,
+                        const CefString& suggested_name,
+                        CefRefPtr<CefBeforeDownloadCallback> callback) override;
+
+  void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<CefDownloadItem> download_item,
+                         CefRefPtr<CefDownloadItemCallback> callback) override;
 };
 #endif
