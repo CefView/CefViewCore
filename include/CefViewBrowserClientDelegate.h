@@ -187,7 +187,7 @@ public:
   {}
   virtual void onTextSelectionChanged(CefRefPtr<CefBrowser> browser,
                                       const CefString& selected_text,
-                                      const CefRange& selected_range){};
+                                      const CefRange& selected_range){}
 
   virtual void onVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, CefRenderHandler::TextInputMode input_mode) {}
   
@@ -206,7 +206,7 @@ public:
                                                                    CefRefPtr<CefResponse> response)
   {
     return nullptr;
-  };
+  }
 };
 
 #endif
