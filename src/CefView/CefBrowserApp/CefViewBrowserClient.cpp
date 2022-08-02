@@ -225,7 +225,7 @@ CefViewBrowserClient::OnRenderReportJSResultMessage(CefRefPtr<CefBrowser> browse
     return false;
 
   // get the JS result
-  auto context = arguments->GetDouble(0);
+  auto context = arguments->GetInt(0);
   auto result = arguments->GetValue(1);
 
   delegate->reportJSResult(browser, frame->GetIdentifier(), static_cast<int64_t>(context), result);
