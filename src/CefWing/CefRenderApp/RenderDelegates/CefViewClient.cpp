@@ -363,8 +363,10 @@ CefViewClient::RemoveEventListener(const CefString& name, const EventListener& l
   if (itListenerList != eventListenerListMap_.end()) {
     EventListenerList& eventListenerList = itListenerList->second;
     for (auto itListener = eventListenerList.begin(); itListener != eventListenerList.end(); itListener++) {
-      if (itListener->callback_->IsSame(listener.callback_))
+      if (itListener->callback_->IsSame(listener.callback_)) {
         eventListenerList.erase(itListener);
+        break;
+      }
     }
   }
 }
