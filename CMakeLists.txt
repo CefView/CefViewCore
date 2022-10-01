@@ -1,11 +1,11 @@
-# 
+#
 # The main config file for CefViewCore
 #
 cmake_minimum_required(VERSION 3.19.1)
 project(CefViewCore)
 
-option(USE_SANDBOX      "Enable CEF Sandbox"                  OFF)
-option(STATIC_CRT       "Use MultiThreaded linkage for MSVC"  OFF)
+option(USE_SANDBOX "Enable CEF Sandbox" OFF)
+option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
 
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
@@ -54,7 +54,8 @@ endif()
 
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
-if (NOT CMAKE_BUILD_TYPE)
+
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
@@ -74,20 +75,21 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
 
 # Config the CEF
-###############################################################
+# ##############################################################
 include(CefConfig.cmake)
 
-if (${CMAKE_VERSION} GREATER "3.11")
+if(${CMAKE_VERSION} GREATER "3.11")
   cmake_policy(SET CMP0074 NEW)
 endif()
 
-if (${CMAKE_VERSION} GREATER "3.12")
+if(${CMAKE_VERSION} GREATER "3.12")
   cmake_policy(SET CMP0077 NEW)
 endif()
 
-if (OS_WINDOWS)
+if(OS_WINDOWS)
   add_link_options(/DEBUG)
-  if (USE_SANDBOX)
+
+  if(USE_SANDBOX)
     # cef_sandbox.lib is MT already, must keep the same with it
     set(CEF_RUNTIME_LIBRARY_FLAG "/MT" CACHE STRING "Use static runtime")
     add_compile_options("/MT$<$<CONFIG:Debug>:d>")
@@ -97,7 +99,7 @@ if (OS_WINDOWS)
     set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
     add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
   endif()
-else ()
+else()
   add_compile_options(
     "-g"
     "$<$<CONFIG:DEBUG>:-O0>"
@@ -115,19 +117,20 @@ find_package(CEF REQUIRED)
 # Add libcef dll wrapper
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 
-if(USE_SANDBOX AND (OS_WINDOWS OR OS_MACOS))
+if(USE_SANDBOX AND(OS_WINDOWS OR OS_MACOS))
   add_definitions(-DCEF_USE_SANDBOX)
+
   # message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}" )
   # Logical target used to link the cef_sandbox library.
   ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
 endif()
 
 PRINT_CEF_CONFIG()
-###############################################################
 
+# ##############################################################
 set(CMAKE_SUPPRESS_REGENERATION TRUE)
 
-###############################################################
+# ##############################################################
 set(CefViewCore_INCLUDE_PATH
   "${CEF_INCLUDE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Shared"
@@ -147,13 +150,16 @@ endif()
 add_subdirectory(src)
 
 if(OS_MACOS)
-    set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
+  set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
 else()
-    set(CefViewCore_HELPER_TARGETS "CefViewWing")
+  set(CefViewCore_HELPER_TARGETS "CefViewWing")
 endif()
 
 get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
+
 if(IS_CURRENT_IN_SUBDIRECTORY)
   set(CefViewCore_EXPORT_INCLUDE_PATH ${CefViewCore_INCLUDE_PATH} PARENT_SCOPE)
   set(CefViewCore_HELPER_APP_TARGETS ${CefViewCore_HELPER_TARGETS} PARENT_SCOPE)
+  set(CefViewCore_CEF_BINARY_DIR ${CEF_BINARY_DIR} PARENT_SCOPE)
+  set(CefViewCore_CEF_RESOURCE_DIR ${CEF_RESOURCE_DIR} PARENT_SCOPE)
 endif()
