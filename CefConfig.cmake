@@ -2,7 +2,6 @@
 # The link for downloading the CEF binary sdk
 #
 set(CEF_SDK_VERSION
-
   # Old version (deprecated and incompatible)
   # "89.0.12+g2b76680+chromium-89.0.4389.90"
 
