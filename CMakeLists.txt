@@ -7,6 +7,8 @@ project(CefViewCore)
 option(USE_SANDBOX "Enable CEF Sandbox" OFF)
 option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
 
+get_directory_property(CefViewCore_HAS_PARENT_DIRECTORY PARENT_DIRECTORY)
+
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
   if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
@@ -70,9 +72,12 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
+if(NOT CefViewCore_HAS_PARENT_DIRECTORY)
+  message(STATUS "CefViewCore is not in subdirectory, put all output together")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/bin)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
+endif()
 
 # Config the CEF
 # ##############################################################
@@ -155,9 +160,7 @@ else()
   set(CefViewCore_HELPER_TARGETS "CefViewWing")
 endif()
 
-get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
-
-if(IS_CURRENT_IN_SUBDIRECTORY)
+if(CefViewCore_HAS_PARENT_DIRECTORY)
   set(CefViewCore_EXPORT_INCLUDE_PATH ${CefViewCore_INCLUDE_PATH} PARENT_SCOPE)
   set(CefViewCore_HELPER_APP_TARGETS ${CefViewCore_HELPER_TARGETS} PARENT_SCOPE)
   set(CefViewCore_CEF_BINARY_DIR ${CEF_BINARY_DIR} PARENT_SCOPE)
