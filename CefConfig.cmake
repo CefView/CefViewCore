@@ -2,24 +2,25 @@
 # The link for downloading the CEF binary sdk
 #
 set(CEF_SDK_VERSION
-  # Old version (deprecated and incompatible)
-  # "89.0.12+g2b76680+chromium-89.0.4389.90"
 
-  # Current version
-  "106.1.0+g30ad805+chromium-106.0.5249.119"
+  # "99.2.15+g71e9523+chromium-99.0.4844.84"  # GOOD
+  # "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
+  # "104.4.18+g2587cf2+chromium-104.0.5112.81" # GOOD
+  "104.4.26+g4180781+chromium-104.0.5112.102" # GOOD
 
-  # Newer version (need to adpat)
-  # --
+  # "105.3.25+g0ca6a9e+chromium-105.0.5195.54" # BAD
+  # "105.3.28+g002805e+chromium-105.0.5195.54" # BAD
+  # "107.1.9+g1f0a21a+chromium-107.0.5304.110" # BAD
 )
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Generally, there is NO NEED to modify the following config
 #
 # Download CEF binary package
 #
 if(OS_WINDOWS)
   set(CEF_SDK_PLATFORM "windows")
-elseif (OS_LINUX)
+elseif(OS_LINUX)
   set(CEF_SDK_PLATFORM "linux")
 elseif(OS_MACOS)
   set(CEF_SDK_PLATFORM "macos")
@@ -40,13 +41,13 @@ else()
 endif()
 
 # set cef sdk package name
-set(CEF_SDK_WORKSPACE       "${CMAKE_CURRENT_SOURCE_DIR}/dep")
+set(CEF_SDK_WORKSPACE "${CMAKE_CURRENT_SOURCE_DIR}/dep")
 
-if (OS_MACOS AND PROJECT_ARCH STREQUAL "x86_64")
+if(OS_MACOS AND PROJECT_ARCH STREQUAL "x86_64")
   # macosx64
-  set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}x${CEF_SDK_ARCH}")
+  set(CEF_SDK_PACKAGE_NAME "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}x${CEF_SDK_ARCH}")
 else()
-  set(CEF_SDK_PACKAGE_NAME    "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
+  set(CEF_SDK_PACKAGE_NAME "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
 endif()
 
 # Scan extracted sdk dir
@@ -54,23 +55,24 @@ set(CEF_SDK_EXTRACTED_DIR "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
 file(GLOB CEF_SDK_DIR "${CEF_SDK_EXTRACTED_DIR}")
 
 # Extract CEF binary package
-if (NOT EXISTS ${CEF_SDK_DIR})
+if(NOT EXISTS ${CEF_SDK_DIR})
   set(CEF_LOCAL_PACKAGE_PATH "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}.tar.bz2")
 
   # if no local cef sdk package file then download it
   if(NOT EXISTS "${CEF_LOCAL_PACKAGE_PATH}")
     set(CEF_SDK_DOWNLOAD_URL "https://cef-builds.spotifycdn.com/${CEF_SDK_PACKAGE_NAME}.tar.bz2")
     message(STATUS "Downloading CEF binary SDK from ${CEF_SDK_DOWNLOAD_URL}")
-    file(DOWNLOAD 
-      "${CEF_SDK_DOWNLOAD_URL}"   # URL 
-      "${CEF_LOCAL_PACKAGE_PATH}"  # Local Path
-      SHOW_PROGRESS 
+    file(DOWNLOAD
+      "${CEF_SDK_DOWNLOAD_URL}" # URL
+      "${CEF_LOCAL_PACKAGE_PATH}" # Local Path
+      SHOW_PROGRESS
       TLS_VERIFY ON
       STATUS DOWNLOAD_RESULT
     )
     list(GET DOWNLOAD_RESULT 0 DOWNLOAD_RESULT_CODE)
     list(GET DOWNLOAD_RESULT 1 DOWNLOAD_RESULT_MESSAGE)
-    if (NOT DOWNLOAD_RESULT_CODE EQUAL 0)
+
+    if(NOT DOWNLOAD_RESULT_CODE EQUAL 0)
       file(REMOVE "${CEF_LOCAL_PACKAGE_PATH}")
       message(FATAL_ERROR "Failed to download CEF binary SDK, ERROR:[${DOWNLOAD_RESULT_CODE}]${DOWNLOAD_RESULT_MESSAGE}")
     endif()
