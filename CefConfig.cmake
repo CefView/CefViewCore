@@ -4,13 +4,13 @@
 set(CEF_SDK_VERSION
 
   # "99.2.15+g71e9523+chromium-99.0.4844.84"  # GOOD
-  # "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
-  # "104.4.18+g2587cf2+chromium-104.0.5112.81" # GOOD
-  "104.4.26+g4180781+chromium-104.0.5112.102" # GOOD
+  "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
 
-  # "105.3.25+g0ca6a9e+chromium-105.0.5195.54" # BAD
-  # "105.3.28+g002805e+chromium-105.0.5195.54" # BAD
-  # "107.1.9+g1f0a21a+chromium-107.0.5304.110" # BAD
+  # "104.4.18+g2587cf2+chromium-104.0.5112.81"  # BAD   # crash on macOS debug mode
+  # "104.4.26+g4180781+chromium-104.0.5112.102" # BAD   # crash on macOS debug mode
+  # "105.3.25+g0ca6a9e+chromium-105.0.5195.54"  # BAD   # debugbreak debu mode
+  # "105.3.28+g002805e+chromium-105.0.5195.54"  # BAD   # debugbreak debu mode
+  # "107.1.9+g1f0a21a+chromium-107.0.5304.110"  # BAD   # debugbreak debu mode
 )
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
