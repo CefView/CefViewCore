@@ -1,4 +1,4 @@
-﻿#include <CefViewBrowserClient.h>
+#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>
@@ -43,6 +43,7 @@ CefViewBrowserClient::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
   return false; // return true to cancel this navigation.
 }
 
+#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 110
 bool
 CefViewBrowserClient::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                      const CefString& origin_url,
@@ -58,6 +59,7 @@ CefViewBrowserClient::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 
   return true;
 }
+#endif
 
 void
 CefViewBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status)

@@ -1,4 +1,4 @@
-﻿//
+//
 //  CefViewCoreLog.cpp
 //  CefViewCore
 //
@@ -18,7 +18,9 @@ std::string toString(CefRefPtr<CefBrowser> browser)
     msg += "( ";
     msg += "CefBrowser:";
     msg += ", ptr=" + std::to_string((int64)browser.get());
+#if CEF_VERSION_MAJOR > 91
     msg += ", IsValid=" + std::to_string(browser->IsValid());
+#endif
     msg += ", GetHost=" + std::to_string((int64)browser->GetHost().get());
     msg += ", CanGoBack=" + std::to_string(browser->CanGoBack());
     msg += ", CanGoForward=" + std::to_string(browser->CanGoForward());

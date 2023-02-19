@@ -24,6 +24,7 @@ CefViewBrowserClient::GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
   return this;
 }
 
+#if CEF_VERSION_MAJOR > 91
 CefResourceRequestHandler::ReturnValue
 CefViewBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
@@ -34,6 +35,7 @@ CefViewBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
   // logD("require resource: %s", url.c_str());
   return resource_manager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
+#endif
 
 CefRefPtr<CefResourceHandler>
 CefViewBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,

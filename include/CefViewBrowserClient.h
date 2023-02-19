@@ -1,4 +1,4 @@
-﻿//
+//
 //  CefViewBrowserHandler.h
 //  CefView
 //
@@ -325,11 +325,12 @@ protected:
                                 const CefString& target_url,
                                 CefRequestHandler::WindowOpenDisposition target_disposition,
                                 bool user_gesture) override;
-
+#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 110
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                               const CefString& origin_url,
                               int64 new_size,
                               CefRefPtr<CefCallback> callback) override;
+#endif
 
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
 
@@ -341,12 +342,13 @@ protected:
                                                                          bool is_download,
                                                                          const CefString& request_initiator,
                                                                          bool& disable_default_handling) override;
-
+#if CEF_VERSION_MAJOR > 91
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
                                            CefRefPtr<CefCallback> callback) override;
-
+#endif
+    
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                                                            CefRefPtr<CefFrame> frame,
                                                            CefRefPtr<CefRequest> request) override;
