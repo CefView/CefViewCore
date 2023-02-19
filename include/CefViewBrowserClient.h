@@ -19,6 +19,7 @@
 #pragma endregion std_headers
 
 #pragma region cef_headers
+#include <include/cef_version.h>
 #include <include/cef_client.h>
 #include <include/wrapper/cef_message_router.h>
 #include <include/wrapper/cef_resource_manager.h>
