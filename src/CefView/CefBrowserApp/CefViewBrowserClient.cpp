@@ -126,10 +126,13 @@ CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
   /*
    * Javascript code:
    *
-   * window.__report_js_result__(contextId, function() { ... })());
+   * window.__cefview_report_js_result__(contextId, function() { ... })());
    */
   std::ostringstream codeWrapper;
-  codeWrapper << "window.__report_js_result__(" << contextId << ",function(){" << code << "}());";
+  codeWrapper << "window." << kCefViewReportJSResultFunctionName << "(" //
+              << contextId << " "                                       //
+              << ", function(){" << code << " }()"                      //
+              << ");";
 
   frame->ExecuteJavaScript(codeWrapper.str().c_str(), url, 0);
 

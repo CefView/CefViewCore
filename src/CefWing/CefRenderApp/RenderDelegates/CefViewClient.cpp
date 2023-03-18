@@ -5,7 +5,8 @@
 
 CefViewClient::V8Handler::V8Handler(CefViewClient* client)
   : client_(client)
-{}
+{
+}
 
 bool
 CefViewClient::V8Handler::Execute(const CefString& function,
@@ -241,14 +242,28 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
     return cefValue;
   }
 
+  /**
+   * The IsDouble, IsInt and IsUint methods return a boolean value indicating whether the CefV8Value instance is an
+   * target type or can be converted to the target type.If the value can be converted to the target type, the methods
+   * will attempt to do so and return true. If the value is not the target type or cannot be converted to the target
+   * type, the method will return false.
+   *
+   * this means, if we pass 1.0 as input then:
+   *    IsDoube() -> true
+   *    IsUnint() -> true
+   *    IsInt() -> true
+   * so we need to keep the testing order, Double - Uint - Int
+   */
   if (v8Value->IsNull() || v8Value->IsUndefined())
     cefValue->SetNull();
   else if (v8Value->IsBool())
     cefValue->SetBool(v8Value->GetBoolValue());
+  else if (v8Value->IsDouble())
+    cefValue->SetDouble(v8Value->GetDoubleValue());
+  else if (v8Value->IsUInt())
+    cefValue->SetDouble(v8Value->GetUIntValue());
   else if (v8Value->IsInt())
     cefValue->SetInt(v8Value->GetIntValue());
-  else if (v8Value->IsUInt() || v8Value->IsDouble())
-    cefValue->SetDouble(v8Value->GetDoubleValue());
   else if (v8Value->IsString())
     cefValue->SetString(v8Value->GetStringValue());
   else if (v8Value->IsArrayBuffer()) {

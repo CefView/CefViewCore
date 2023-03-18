@@ -79,10 +79,10 @@
 #define kCefViewClientBrowserTriggerEventMessage "CefViewClientBrowser.TriggerEvent"
 
 /// <summary>
-/// window.__report_js_result__(context, result)
+/// window.__cefview_report_js_result__(context, result)
 /// context must be double
 /// </summary>
-#define kCefViewReportJSResultFunctionName "__report_js_result__"
+#define kCefViewReportJSResultFunctionName "__cefview_report_js_result__"
 
 /// <summary>
 ///
