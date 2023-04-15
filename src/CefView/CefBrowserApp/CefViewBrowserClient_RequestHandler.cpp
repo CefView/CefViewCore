@@ -1,4 +1,4 @@
-#include <CefViewBrowserClient.h>
+﻿#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>

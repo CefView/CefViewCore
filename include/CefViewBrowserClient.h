@@ -1,4 +1,4 @@
-//
+﻿//
 //  CefViewBrowserHandler.h
 //  CefView
 //
@@ -343,12 +343,15 @@ protected:
                                                                          bool is_download,
                                                                          const CefString& request_initiator,
                                                                          bool& disable_default_handling) override;
-#if CEF_VERSION_MAJOR > 91
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
-                                           CefRefPtr<CefCallback> callback) override;
+#if CEF_VERSION_MAJOR > 91
+                                           CefRefPtr<CefCallback> callback
+#else
+                                           CefRefPtr<CefRequestCallback> callback
 #endif
+                                           ) override;
     
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                                                            CefRefPtr<CefFrame> frame,
