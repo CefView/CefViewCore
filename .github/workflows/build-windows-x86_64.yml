@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/build-windows-x86_64.yml'
       - 'CMakeLists.txt'
       - 'CefConfig.cmake'
       - 'include/**'
