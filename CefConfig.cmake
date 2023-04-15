@@ -3,7 +3,7 @@
 #
 set(CEF_SDK_VERSION
 
-  # "89.0.12+g2b76680+chromium-89.0.4389.90 "
+  # "89.0.12+g2b76680+chromium-89.0.4389.90"
   # "91.1.23+g04c8d56+chromium-91.0.4472.164" # GOOD
   # "95.7.12+g99c4ac0+chromium-95.0.4638.54" # GOOD
   # "99.2.15+g71e9523+chromium-99.0.4844.84"  # GOOD
