@@ -14,7 +14,8 @@ CreateBrowserDelegate(CefViewRenderApp::RenderDelegateSet& delegates, const std:
 
 RenderDelegate::RenderDelegate(const std::string& bridge_name)
   : bridge_object_name_(bridge_name)
-{}
+{
+}
 
 void
 RenderDelegate::OnWebKitInitialized(CefRefPtr<CefViewRenderApp> app)
@@ -31,12 +32,19 @@ RenderDelegate::OnContextCreated(CefRefPtr<CefViewRenderApp> app,
                                  CefRefPtr<CefFrame> frame,
                                  CefRefPtr<CefV8Context> context)
 {
+  // [Javascript Context]
+  // V8 context for this frame has been initialized already,
+  // but the script of the page hasn't been executed now
   render_message_router_->OnContextCreated(browser, frame, context);
 
+  // log this event
+  frame->ExecuteJavaScript("console.info('[JSRuntime]:frame context created')", frame->GetURL(), 0);
+
+  // binding bridge object and functions
   int64 frameId = frame->GetIdentifier();
   auto it = frame_id_to_client_map_.find(frameId);
   if (it == frame_id_to_client_map_.end()) {
-    // create and insert the CefViewClient Object into this frame.window object
+    // create and insert the bridge Object into this frame.window object
     CefRefPtr<CefV8Value> objWindow = context->GetGlobal();
     CefRefPtr<CefViewClient> objClient = new CefViewClient(browser, frame, objWindow, bridge_object_name_);
     if (!objClient) {

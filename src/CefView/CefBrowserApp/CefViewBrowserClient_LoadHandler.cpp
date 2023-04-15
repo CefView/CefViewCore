@@ -41,7 +41,16 @@ CefViewBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   TransitionType transition_type)
 {
+  logScope();
+
   CEF_REQUIRE_UI_THREAD();
+
+  // [Javascript Context]
+  // from now on, you can send Javascript to the frame, but they will not be executed immediately,
+  // the script will be executed right after the initialization of V8 context for this frame,
+  // that means the scripts you write here will be scheduled.
+  frame->ExecuteJavaScript("console.info('[JSRuntime]:frame context is ready')", frame->GetURL(), 0);
+
   auto delegate = client_delegate_.lock();
   if (delegate)
     delegate->loadStart(browser, frame, transition_type);
@@ -50,6 +59,8 @@ CefViewBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser,
 void
 CefViewBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
+  logScope();
+
   CEF_REQUIRE_UI_THREAD();
   auto delegate = client_delegate_.lock();
   if (delegate)

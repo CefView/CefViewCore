@@ -122,14 +122,6 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
   , frame_(frame)
   , v8Handler_(new V8Handler(this))
 {
-  // create "reportJSResult" function and mount it on the global context(window)
-  reportJSResultFunction_ = CefV8Value::CreateFunction(kCefViewReportJSResultFunctionName, v8Handler_);
-  global->SetValue(kCefViewReportJSResultFunctionName,
-                   reportJSResultFunction_,
-                   static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
-                                                              V8_PROPERTY_ATTRIBUTE_DONTENUM |
-                                                              V8_PROPERTY_ATTRIBUTE_DONTDELETE));
-
   // create bridge object and mount it on the global context(window)
   bridgeObject_ = CefV8Value::CreateObject(nullptr, nullptr);
 
@@ -168,6 +160,19 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
                    static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                               V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                               V8_PROPERTY_ATTRIBUTE_DONTDELETE));
+  frame_->ExecuteJavaScript("console.info('[JSRuntime]:window." + name_ + " [object] created');", frame_->GetURL(), 0);
+
+  // create "__cefview_report_js_result__" function and mount it on the global context(window)
+  reportJSResultFunction_ = CefV8Value::CreateFunction(kCefViewReportJSResultFunctionName, v8Handler_);
+  global->SetValue(kCefViewReportJSResultFunctionName,
+                   reportJSResultFunction_,
+                   static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                              V8_PROPERTY_ATTRIBUTE_DONTDELETE));
+  frame_->ExecuteJavaScript("console.info('[JSRuntime]:window." kCefViewReportJSResultFunctionName
+                            " [function] created');",
+                            frame_->GetURL(),
+                            0);
 }
 
 CefRefPtr<CefV8Value>
