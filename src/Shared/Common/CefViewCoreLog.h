@@ -51,7 +51,6 @@ public:
 #define logI(format, ...) log_info(format, ##__VA_ARGS__)
 #define logE(format, ...) log_error(format, ##__VA_ARGS__)
 #define logF(format, ...) log_fatal(format, ##__VA_ARGS__)
-#define logScope(message, ...)
 #define logScope()
 #endif
 
