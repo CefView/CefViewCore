@@ -219,7 +219,6 @@ if (OS_WINDOWS)
     # embed the manifest file
     COMMAND mt.exe 
       -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\" 
-      -inputresource:\"$<TARGET_FILE:CefViewWing>\" 
       -outputresource:\"$<TARGET_FILE:CefViewWing>\"
 
     # copy cef binary files
