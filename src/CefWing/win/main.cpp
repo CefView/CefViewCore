@@ -27,7 +27,9 @@ int
 CefViewWingMain(HINSTANCE hInstance)
 {
   logI("CefViewWing is launching....");
+#if CEF_VERSION_MAJOR < 112
   CefEnableHighDPISupport();
+#endif
 
   void* sandbox_info = NULL;
 #if defined(CEF_USE_SANDBOX)
