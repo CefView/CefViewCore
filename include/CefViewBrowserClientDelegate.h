@@ -76,7 +76,7 @@ public:
 
   virtual bool doClose(CefRefPtr<CefBrowser> browser) = 0;
 
-  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
+  virtual void onBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
 
   // load handler
   virtual void loadingStateChanged(CefRefPtr<CefBrowser>& browser,
