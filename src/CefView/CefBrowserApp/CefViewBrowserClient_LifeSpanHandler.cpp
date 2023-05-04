@@ -109,7 +109,7 @@ CefViewBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->OnBeforeClose(browser);
+    delegate->onBeforeClose(browser);
 
   message_router_->OnBeforeClose(browser);
 
