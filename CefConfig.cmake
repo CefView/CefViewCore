@@ -7,7 +7,7 @@ set(CEF_SDK_VERSION
   # "91.1.23+g04c8d56+chromium-91.0.4472.164" # GOOD
   # "95.7.12+g99c4ac0+chromium-95.0.4638.54" # GOOD
   # "99.2.15+g71e9523+chromium-99.0.4844.84"  # GOOD
-  "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
+  # "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
 
   # "104.4.18+g2587cf2+chromium-104.0.5112.81"  # BAD   # crash on macOS - debug mode
   # "104.4.26+g4180781+chromium-104.0.5112.102" # BAD   # crash on macOS - debug mode
@@ -15,6 +15,9 @@ set(CEF_SDK_VERSION
   # "105.3.28+g002805e+chromium-105.0.5195.54"  # BAD   # debugbreak - debug mode
   # "107.1.9+g1f0a21a+chromium-107.0.5304.110"  # BAD   # debugbreak - debug mode
   # "110.0.26+g732747f+chromium-110.0.5481.97"  # BAD   # TO-BE-FIXED
+
+  #
+  "113.3.1+g525fa10+chromium-113.0.5672.128"
 )
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
