@@ -54,3 +54,34 @@ CefViewBrowserClient::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                           CefRefPtr<CefRequest> request,
                                           bool& allow_os_execution)
 {}
+
+void
+CefViewBrowserClient::OnResourceLoadComplete(CefRefPtr<CefBrowser> browser,
+                                             CefRefPtr<CefFrame> frame,
+                                             CefRefPtr<CefRequest> request,
+                                             CefRefPtr<CefResponse> response,
+                                             URLRequestStatus status,
+                                             int64 received_content_length)
+{
+    auto delegate = client_delegate_.lock();
+    if (delegate)
+    {
+      delegate->onResourceLoadComplete(browser, frame, request, response, status, received_content_length);
+    }
+}
+
+
+CefRefPtr<CefResponseFilter>
+CefViewBrowserClient::GetResourceResponseFilter(CefRefPtr<CefBrowser> browser,
+                                                CefRefPtr<CefFrame> frame,
+                                                CefRefPtr<CefRequest> request,
+                                                CefRefPtr<CefResponse> response)
+{
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+  {
+    return delegate->onGetResourceResponseFilter(browser, frame, request, response);
+  }
+
+  return nullptr;
+}

@@ -143,6 +143,20 @@ public:
                              const CefString& url,
                              int64_t context);
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frame"></param>
+  /// <param name="request"></param>
+  /// <param name="response"></param>
+  /// <returns></returns>
+  virtual CefRefPtr<CefResponseFilter> GetResourceResponseFilter(CefRefPtr<CefBrowser> browser,
+                                                                 CefRefPtr<CefFrame> frame,
+                                                                 CefRefPtr<CefRequest> request,
+                                                                 CefRefPtr<CefResponse> response) override;
+
+
 protected:
   bool DispatchRenderMessage(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
@@ -357,6 +371,13 @@ protected:
                                                            CefRefPtr<CefFrame> frame,
                                                            CefRefPtr<CefRequest> request) override;
 
+  virtual void OnResourceLoadComplete(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefRequest> request,
+                                      CefRefPtr<CefResponse> response,
+                                      URLRequestStatus status,
+                                      int64 received_content_length) override;
+
   virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefRequest> request,
@@ -364,6 +385,7 @@ protected:
 
   // CefDownloadHandler
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
+  
   void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefDownloadItem> download_item,
                         const CefString& suggested_name,

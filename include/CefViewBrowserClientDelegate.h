@@ -187,9 +187,26 @@ public:
   {}
   virtual void onTextSelectionChanged(CefRefPtr<CefBrowser> browser,
                                       const CefString& selected_text,
-                                      const CefRange& selected_range)
-  {}
+                                      const CefRange& selected_range){}
+
   virtual void onVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, CefRenderHandler::TextInputMode input_mode) {}
+  
+  //CefResourceRequestHandler
+  virtual void onResourceLoadComplete(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefRequest> request,
+                                      CefRefPtr<CefResponse> response,
+                                      CefResourceRequestHandler::URLRequestStatus status,
+                                      int64 received_content_length)
+  {}
+  
+  virtual CefRefPtr<CefResponseFilter> onGetResourceResponseFilter(CefRefPtr<CefBrowser> browser,
+                                                                   CefRefPtr<CefFrame> frame,
+                                                                   CefRefPtr<CefRequest> request,
+                                                                   CefRefPtr<CefResponse> response)
+  {
+    return nullptr;
+  }
 };
 
 #endif
