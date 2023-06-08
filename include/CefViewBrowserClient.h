@@ -32,7 +32,9 @@
 class CefViewBrowserClient
   : public CefClient
   , public CefContextMenuHandler
+  , public CefDialogHandler
   , public CefDisplayHandler
+  , public CefDownloadHandler
   , public CefDragHandler
   , public CefFocusHandler
   , public CefJSDialogHandler
@@ -42,7 +44,6 @@ class CefViewBrowserClient
   , public CefRequestHandler
   , public CefResourceRequestHandler
   , public CefRenderHandler
-  , public CefDownloadHandler
 {
   IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 
@@ -160,14 +161,16 @@ protected:
                                      CefRefPtr<CefFrame> frame,
                                      CefRefPtr<CefProcessMessage> message);
 
-  //////////////////////////////////////////////////////////////////////////
   // CefClient methods:
+#pragma region CefContextMenuHandler
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message) override;
+#pragma endregion
 
   // CefContextMenuHandler methods
+#pragma region CefContextMenuHandler
   virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override;
   virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
@@ -184,8 +187,21 @@ protected:
                                     int command_id,
                                     EventFlags event_flags) override;
   virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame) override;
+#pragma endregion
+
+  // CefDialogHandler
+#pragma region CefDialogHandler
+  virtual CefRefPtr<CefDialogHandler> GetDialogHandler() override;
+  virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+                            FileDialogMode mode,
+                            const CefString& title,
+                            const CefString& default_file_path,
+                            const std::vector<CefString>& accept_filters,
+                            CefRefPtr<CefFileDialogCallback> callback) override;
+#pragma endregion
 
   // CefDisplayHandler methods
+#pragma region CefDisplayHandler
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override;
   virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) override;
@@ -204,8 +220,23 @@ protected:
                               CefCursorHandle cursor,
                               cef_cursor_type_t type,
                               const CefCursorInfo& custom_cursor_info) override;
+#pragma endregion
+
+  // CefDownloadHandler
+#pragma region CefDownloadHandler
+  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
+  void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDownloadItem> download_item,
+                        const CefString& suggested_name,
+                        CefRefPtr<CefBeforeDownloadCallback> callback) override;
+
+  void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<CefDownloadItem> download_item,
+                         CefRefPtr<CefDownloadItemCallback> callback) override;
+#pragma endregion
 
   // CefDragHandler methods
+#pragma region CefDragHandler
   virtual CefRefPtr<CefDragHandler> GetDragHandler() override;
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefDragData> dragData,
@@ -214,14 +245,18 @@ protected:
   virtual void OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          const std::vector<CefDraggableRegion>& regions) override;
+#pragma endregion
 
   // CefFocusHandler methods
+#pragma region CefFocusHandler
   virtual CefRefPtr<CefFocusHandler> GetFocusHandler() override;
   void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) override;
   bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) override;
   void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
+#pragma endregion
 
   // CefJSDialogHandler methods
+#pragma region CefJSDialogHandler
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override;
   virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser,
                           const CefString& origin_url,
@@ -236,16 +271,20 @@ protected:
                                     bool is_reload,
                                     CefRefPtr<CefJSDialogCallback> callback) override;
   virtual void OnResetDialogState(CefRefPtr<CefBrowser> browser) override;
+#pragma endregion
 
   // CefKeyboardHandler methods
+#pragma region CefKeyboardHandler
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override;
   virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                              const CefKeyEvent& event,
                              CefEventHandle os_event,
                              bool* is_keyboard_shortcut) override;
   virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event) override;
+#pragma endregion
 
   // CefLifeSpanHandler methods:
+#pragma region CefLifeSpanHandler
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
   virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
@@ -262,8 +301,10 @@ protected:
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
+#pragma endregion
 
   // CefLoadHandler methods
+#pragma region CefLoadHandler
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override;
   virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                     bool isLoading,
@@ -278,8 +319,10 @@ protected:
                            ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) override;
+#pragma endregion
 
   // CefRenderHandler
+#pragma region CefRenderHandler
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override;
   virtual CefRefPtr<CefAccessibilityHandler> GetAccessibilityHandler() override;
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
@@ -312,8 +355,10 @@ protected:
                                       const CefString& selected_text,
                                       const CefRange& selected_range) override;
   virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
+#pragma endregion
 
   // CefRequestHandler methods
+#pragma region CefRequestHandler
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override;
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
@@ -334,8 +379,10 @@ protected:
 #endif
 
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
+#pragma endregion
 
   // CefResourceRequestHandler
+#pragma region CefResourceRequestHandler
   virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
                                                                          CefRefPtr<CefFrame> frame,
                                                                          CefRefPtr<CefRequest> request,
@@ -343,6 +390,7 @@ protected:
                                                                          bool is_download,
                                                                          const CefString& request_initiator,
                                                                          bool& disable_default_handling) override;
+
   virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
@@ -352,7 +400,7 @@ protected:
                                            CefRefPtr<CefRequestCallback> callback
 #endif
                                            ) override;
-    
+
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                                                            CefRefPtr<CefFrame> frame,
                                                            CefRefPtr<CefRequest> request) override;
@@ -361,16 +409,6 @@ protected:
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefRequest> request,
                                    bool& allow_os_execution) override;
-
-  // CefDownloadHandler
-  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
-  void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefDownloadItem> download_item,
-                        const CefString& suggested_name,
-                        CefRefPtr<CefBeforeDownloadCallback> callback) override;
-
-  void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
-                         CefRefPtr<CefDownloadItem> download_item,
-                         CefRefPtr<CefDownloadItemCallback> callback) override;
+#pragma endregion
 };
 #endif
