@@ -80,6 +80,12 @@ public:
 
     // display handler
 #pragma region DisplayHandler
+  virtual bool onDragEnter(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefDragData> dragData,
+                           CefDragHandler::DragOperationsMask mask)
+  {
+    return true;
+  }
   virtual void draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
                                       const std::vector<CefDraggableRegion>& regions) = 0;
 

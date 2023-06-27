@@ -25,10 +25,9 @@ CefViewBrowserClient::OnDragEnter(CefRefPtr<CefBrowser> browser,
 {
   CEF_REQUIRE_UI_THREAD();
 
-  // Forbid dragging of URLs and files.
-  if ((mask & DRAG_OPERATION_LINK) && !dragData->IsFragment()) {
-    return true;
-  }
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->onDragEnter(browser, dragData, mask);
 
   return true;
 }
