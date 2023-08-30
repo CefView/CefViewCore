@@ -95,13 +95,6 @@ public:
 
   virtual void faviconURLChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) = 0;
 
-  virtual bool downloadFavicon()
-  {
-    return true;
-  }
-
-  virtual void faviconChanged(CefRefPtr<CefImage> image) = 0;
-
   virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const std::string& text) = 0;
 
   virtual void fullscreenModeChanged(CefRefPtr<CefBrowser>& browser, bool fullscreen) = 0;
