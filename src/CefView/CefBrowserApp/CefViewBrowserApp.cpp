@@ -95,7 +95,7 @@ CefViewBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_
 }
 
 void
-CefViewBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms)
+CefViewBrowserApp::OnScheduleMessagePumpWork(int64_t delay_ms)
 {
   auto delegate = app_delegate_.lock();
 

@@ -73,7 +73,7 @@ private:
 
   virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
 
-  virtual void OnScheduleMessagePumpWork(int64 delay_ms) override;
+  virtual void OnScheduleMessagePumpWork(int64_t delay_ms) override;
 
 #pragma endregion CefBrowserProcessHandler
 };
