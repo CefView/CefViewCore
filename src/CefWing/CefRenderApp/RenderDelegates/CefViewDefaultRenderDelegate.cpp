@@ -41,7 +41,7 @@ RenderDelegate::OnContextCreated(CefRefPtr<CefViewRenderApp> app,
   frame->ExecuteJavaScript("console.info('[JSRuntime]:frame context created')", frame->GetURL(), 0);
 
   // binding bridge object and functions
-  int64 frameId = frame->GetIdentifier();
+  auto frameId = frame->GetIdentifier();
   auto it = frame_id_to_client_map_.find(frameId);
   if (it == frame_id_to_client_map_.end()) {
     // create and insert the bridge Object into this frame.window object
@@ -63,7 +63,7 @@ RenderDelegate::OnContextReleased(CefRefPtr<CefViewRenderApp> app,
 {
   render_message_router_->OnContextReleased(browser, frame, context);
 
-  int64 frameId = frame->GetIdentifier();
+  auto frameId = frame->GetIdentifier();
   auto it = frame_id_to_client_map_.find(frameId);
   if (it != frame_id_to_client_map_.end()) {
     frame_id_to_client_map_.erase(it);
@@ -151,7 +151,7 @@ RenderDelegate::ExecuteEventListener(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefListValue> args)
 {
   if (browser && frame) {
-    int64 frameId = frame->GetIdentifier();
+    auto frameId = frame->GetIdentifier();
     auto it = frame_id_to_client_map_.find(frameId);
     if (it != frame_id_to_client_map_.end()) {
       const CefRefPtr<CefViewClient>& objClient = it->second;

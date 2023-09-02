@@ -44,7 +44,7 @@ SchemeHandler::Open(CefRefPtr<CefRequest> request, bool& handle_request, CefRefP
 }
 
 void
-SchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response, int64& response_length, CefString& redirectUrl)
+SchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response, int64_t& response_length, CefString& redirectUrl)
 {
   CEF_REQUIRE_IO_THREAD();
   DCHECK(!data_.empty());
@@ -55,7 +55,7 @@ SchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response, int64& respon
 }
 
 bool
-SchemeHandler::Skip(int64 bytes_to_skip, int64& bytes_skipped, CefRefPtr<CefResourceSkipCallback> callback)
+SchemeHandler::Skip(int64_t bytes_to_skip, int64_t& bytes_skipped, CefRefPtr<CefResourceSkipCallback> callback)
 {
   bytes_skipped = 0;
 

@@ -9,7 +9,7 @@ CefViewQueryHandler::~CefViewQueryHandler() {}
 bool
 CefViewQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
-                             int64 query_id,
+                             int64_t query_id,
                              const CefString& request,
                              bool persistent,
                              CefRefPtr<Callback> callback)
@@ -29,7 +29,7 @@ CefViewQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
 }
 
 void
-CefViewQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id)
+CefViewQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id)
 {
   mtxCallbackMap_.lock();
   auto it = mapCallback_.find(query_id);

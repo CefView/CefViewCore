@@ -27,7 +27,7 @@ class RenderDelegate : public CefViewRenderApp::RenderDelegate
   /// <summary>
   ///
   /// </summary>
-  typedef std::unordered_map<int64, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
+  typedef std::unordered_map<int64_t, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
 
 public:
   /// <summary>

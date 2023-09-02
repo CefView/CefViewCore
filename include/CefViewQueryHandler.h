@@ -49,7 +49,7 @@ public:
   /// <returns></returns>
   virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
-                       int64 query_id,
+                       int64_t query_id,
                        const CefString& request,
                        bool persistent,
                        CefRefPtr<Callback> callback) override;
@@ -60,7 +60,7 @@ public:
   /// <param name="browser"></param>
   /// <param name="frame"></param>
   /// <param name="query_id"></param>
-  virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id) override;
+  virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id) override;
 
   /// <summary>
   ///
@@ -81,7 +81,7 @@ private:
   /// <summary>
   ///
   /// </summary>
-  std::map<int64, CefRefPtr<Callback>> mapCallback_;
+  std::map<int64_t, CefRefPtr<Callback>> mapCallback_;
 
   /// <summary>
   ///
