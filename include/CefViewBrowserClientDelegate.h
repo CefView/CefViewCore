@@ -43,7 +43,7 @@ public:
 
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
                               int64_t frameId,
-                              int64_t contextId,
+                              const std::string& context,
                               const CefRefPtr<CefValue>& result) = 0;
 
   // context menu handler
