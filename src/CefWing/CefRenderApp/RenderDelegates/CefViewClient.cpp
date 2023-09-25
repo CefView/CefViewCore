@@ -261,19 +261,28 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
    *   logD("isUnint: %d", isUnint);    // true
    *   auto isInt = v->IsInt();
    *   logD("isInt: %d", isInt);        // true
+   *
+   *   auto v = CefV8Value::CreateDouble(0.1);
+   *   auto isDouble = v->IsDouble();
+   *   logD("isDouble: %d", isDouble);  // true
+   *   auto isUnint = v->IsUInt();
+   *   logD("isUnint: %d", isUnint);    // false
+   *   auto isInt = v->IsInt();
+   *   logD("isInt: %d", isInt);        // false
    * 
-   * so we need to keep the testing order, Double - Uint - Int
+   * so we need to keep the testing order, IsInt/IsUint - IsDouble
+   * since there is no Uint type in JavaScript, we just ignore it.
+   * Please refer to this test souce:
+   * https://github.com/svn2github/cef/blob/master/tests/cefclient/binding_test.cpp
    */
   if (v8Value->IsNull() || v8Value->IsUndefined())
     cefValue->SetNull();
   else if (v8Value->IsBool())
     cefValue->SetBool(v8Value->GetBoolValue());
-  else if (v8Value->IsDouble())
-    cefValue->SetDouble(v8Value->GetDoubleValue());
-  else if (v8Value->IsUInt())
-    cefValue->SetDouble(v8Value->GetUIntValue());
   else if (v8Value->IsInt())
     cefValue->SetInt(v8Value->GetIntValue());
+  else if (v8Value->IsDouble())
+    cefValue->SetDouble(v8Value->GetDoubleValue());
   else if (v8Value->IsString())
     cefValue->SetString(v8Value->GetStringValue());
   else if (v8Value->IsArrayBuffer()) {
