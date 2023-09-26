@@ -120,18 +120,18 @@ CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          const CefString& code,
                                          const CefString& url,
-                                         int64_t context)
+                                         const CefString& context)
 {
-  double contextId = static_cast<double>(context);
   /*
    * Javascript code:
    *
-   * window.__cefview_report_js_result__(contextId, function() { ... })());
+   * window.__cefview_report_js_result__(context, function() { ... })());
    */
   std::ostringstream codeWrapper;
-  codeWrapper << "window." << kCefViewReportJSResultFunctionName << "(" //
-              << contextId << " "                                       //
-              << ", function(){" << code << " }()"                      //
+  codeWrapper << "window." << kCefViewReportJSResultFunctionName //
+              << "("                                             //
+              << "\"" << context << "\", "                       //
+              << "function(){" << code << " }()"                 //
               << ");";
 
   frame->ExecuteJavaScript(codeWrapper.str().c_str(), url, 0);
@@ -227,11 +227,18 @@ CefViewBrowserClient::OnRenderReportJSResultMessage(CefRefPtr<CefBrowser> browse
   if (!delegate)
     return false;
 
-  // get the JS result
-  auto context = arguments->GetDouble(0);
+  // get context
+  std::string context;
+  if (CefValueType::VTYPE_STRING != arguments->GetType(0))
+    return false;
+  context = arguments->GetString(0).ToString();
+  if (context.empty())
+    return false;
+
+  // get script result
   auto result = arguments->GetValue(1);
 
-  delegate->reportJSResult(browser, frame->GetIdentifier(), static_cast<int64_t>(context), result);
+  delegate->reportJSResult(browser, frame->GetIdentifier(), context, result);
 
   return true;
 }

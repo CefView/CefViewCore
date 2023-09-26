@@ -99,7 +99,7 @@ CefViewClient::V8Handler::ExecuteReportJSResult(CefRefPtr<CefV8Value> object,
                                                 CefString& exception)
 {
   if (arguments.size() == 2) {
-    if (arguments[0]->IsDouble()) {
+    if (arguments[0]->IsString()) {
       client_->AsyncExecuteReportJSResult(arguments);
     } else
       exception = "Invalid argument; argument 1 must be a double";
@@ -253,10 +253,15 @@ CefViewClient::V8ValueToCefValue(CefV8Value* v8Value)
    * will attempt to do so and return true. If the value is not the target type or cannot be converted to the target
    * type, the method will return false.
    *
-   * this means, if we pass 1.0 as input then:
-   *    IsDoube() -> true
-   *    IsUnint() -> true
-   *    IsInt() -> true
+   * For example the code below:
+   *   auto v = CefV8Value::CreateInt(1000);
+   *   auto isDouble = v->IsDouble();
+   *   logD("isDouble: %d", isDouble);  // true
+   *   auto isUnint = v->IsUInt();
+   *   logD("isUnint: %d", isUnint);    // true
+   *   auto isInt = v->IsInt();
+   *   logD("isInt: %d", isInt);        // true
+   * 
    * so we need to keep the testing order, Double - Uint - Int
    */
   if (v8Value->IsNull() || v8Value->IsUndefined())
@@ -336,7 +341,7 @@ CefViewClient::AsyncExecuteReportJSResult(const CefV8ValueList& arguments)
 
   //** arguments(CefValueList)
   //** +_------+
-  //** |0 arg  | <- the context id
+  //** |0 arg  | <- the context (string)
   //** |1 arg  | <- the result value
   //** +-------+
   CefRefPtr<CefListValue> args = msg->GetArgumentList();

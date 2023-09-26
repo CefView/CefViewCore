@@ -142,7 +142,7 @@ public:
                              CefRefPtr<CefFrame> frame,
                              const CefString& code,
                              const CefString& url,
-                             int64_t context);
+                             const CefString& context);
 
 protected:
   bool DispatchRenderMessage(CefRefPtr<CefBrowser> browser,
