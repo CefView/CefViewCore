@@ -80,15 +80,6 @@ public:
 
     // display handler
 #pragma region DisplayHandler
-  virtual bool onDragEnter(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefDragData> dragData,
-                           CefDragHandler::DragOperationsMask mask)
-  {
-    return true;
-  }
-  virtual void draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
-                                      const std::vector<CefDraggableRegion>& regions) = 0;
-
   virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
 
   virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
@@ -121,6 +112,19 @@ public:
   virtual void onDownloadUpdated(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefDownloadItem> download_item,
                                  CefRefPtr<CefDownloadItemCallback> callback) = 0;
+#pragma endregion
+
+#pragma region GetDragHandler
+  // drag hander
+  virtual bool onDragEnter(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefDragData> dragData,
+                           CefDragHandler::DragOperationsMask mask)
+  {
+    return true;
+  }
+
+  virtual void draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
+                                      const std::vector<CefDraggableRegion>& regions) = 0;
 #pragma endregion
 
   // life span handler
