@@ -16,6 +16,7 @@
 CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
                                            CefViewBrowserClientDelegateInterface::RefPtr delegate)
   : is_closing_(false)
+  , close_by_native_(false)
   , initial_navigation_(true)
   , app_(app)
   , client_delegate_(delegate)
@@ -39,6 +40,7 @@ CefViewBrowserClient::~CefViewBrowserClient()
 void
 CefViewBrowserClient::CloseAllBrowsers()
 {
+  close_by_native_ = true;
   auto browsers = browser_map_;
   for (auto& kv : browsers) {
     kv.second->StopLoad();
