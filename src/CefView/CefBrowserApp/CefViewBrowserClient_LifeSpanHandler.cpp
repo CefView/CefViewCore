@@ -89,17 +89,29 @@ CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
-  if (!browser->IsPopup()) {
-    is_closing_ = true;
+  bool ignoreClose = false;
+
+  if (browser->IsPopup()) {
+    return ignoreClose;
   }
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->doClose(browser);
+  {
+    if (close_by_native_) {
+      // close by native
+      ignoreClose = delegate->doClose(browser);
+    } else {
+      // close request from web
+      ignoreClose = delegate->requestClose(browser);
+    }
+  }
 
-  // Allow the close. For windowed browsers this will result in the OS close
-  // event being sent.
-  return false;
+  if (!ignoreClose) {
+    is_closing_ = true;
+  }
+
+  return ignoreClose;
 }
 
 void

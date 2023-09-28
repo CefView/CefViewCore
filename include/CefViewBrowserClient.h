@@ -49,6 +49,7 @@ class CefViewBrowserClient
 
 private:
   bool is_closing_;
+  bool close_by_native_;
   bool initial_navigation_;
 
   std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;

@@ -141,6 +141,8 @@ public:
 
   virtual bool doClose(CefRefPtr<CefBrowser> browser) = 0;
 
+  virtual bool requestClose(CefRefPtr<CefBrowser> browser) = 0;
+
   virtual void onBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
 #pragma endregion
 
