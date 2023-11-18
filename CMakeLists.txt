@@ -7,6 +7,8 @@ project(CefViewCore)
 option(USE_SANDBOX "Enable CEF Sandbox" OFF)
 option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
   if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
@@ -76,7 +78,28 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/
 
 # Config the CEF
 # ##############################################################
-include(CefConfig.cmake)
+message(STATUS "Detecting CEF_SDK_VERSION: ${CEF_SDK_VERSION}")
+
+if(NOT CEF_SDK_VERSION)
+  # "89.0.12+g2b76680+chromium-89.0.4389.90"    # GOOD
+  # "91.1.23+g04c8d56+chromium-91.0.4472.164"   # GOOD
+  # "95.7.12+g99c4ac0+chromium-95.0.4638.54"    # GOOD
+  # "99.2.15+g71e9523+chromium-99.0.4844.84"    # GOOD
+  # "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
+  # "104.4.18+g2587cf2+chromium-104.0.5112.81"  # BAD   # crash on macOS - debug mode
+  # "104.4.26+g4180781+chromium-104.0.5112.102" # BAD   # crash on macOS - debug mode
+  # "105.3.25+g0ca6a9e+chromium-105.0.5195.54"  # BAD   # debugbreak - debug mode
+  # "105.3.28+g002805e+chromium-105.0.5195.54"  # BAD   # debugbreak - debug mode
+  # "107.1.9+g1f0a21a+chromium-107.0.5304.110"  # BAD   # debugbreak - debug mode
+  # "110.0.26+g732747f+chromium-110.0.5481.97"  # BAD   # TO-BE-FIXED
+  set(DEFAULT_CEF_SDK_VER "113.3.1+g525fa10+chromium-113.0.5672.128")
+  message(STATUS
+    "CEF_SDK_VERSION is empty, use default version ${DEFAULT_CEF_SDK_VER}\n"
+    "You can change the version by adding -DCEF_SDK_VERSION=xxx to commandline for generation")
+  set(CEF_SDK_VERSION ${DEFAULT_CEF_SDK_VER} CACHE STRING " Cef binary SDK version " FORCE)
+endif()
+
+include(DownloadCef)
 
 if(${CMAKE_VERSION} GREATER "3.11")
   cmake_policy(SET CMP0074 NEW)
@@ -107,11 +130,9 @@ else()
   )
 endif()
 
-# Set CEF root dir and append it to CMAKE_MODULE_PATH
+# Append CEF root dir to CMAKE_MODULE_PATH
 set(CEF_ROOT "${CEF_SDK_DIR}")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
-
-# Find the CEF package
+list(APPEND CMAKE_MODULE_PATH "${CEF_ROOT}/cmake")
 find_package(CEF REQUIRED)
 
 # Add libcef dll wrapper
