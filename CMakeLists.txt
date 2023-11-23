@@ -76,6 +76,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib)
 
+# set CefView Helper Process Name
+if(NOT CEFVIEW_WING_NAME)
+  set(DEFAULT_CEFVIEW_WING_NAME "CefViewWing")
+  message(STATUS
+    "CEFVIEW_WING_NAME is empty, use default version ${DEFAULT_CEFVIEW_WING_NAME}\n"
+    "You can change the name by adding -DCEFVIEW_WING_NAME=xxx to commandline for generation")
+  set(CEFVIEW_WING_NAME ${DEFAULT_CEFVIEW_WING_NAME} CACHE STRING "CefViewWing Helper Process Name" FORCE)
+endif()
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewWingProcessName.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewWingProcessName.h"
+  @ONLY
+)
+
 # Config the CEF
 # ##############################################################
 message(STATUS "Detecting CEF_SDK_VERSION: ${CEF_SDK_VERSION}")
@@ -96,7 +111,7 @@ if(NOT CEF_SDK_VERSION)
   message(STATUS
     "CEF_SDK_VERSION is empty, use default version ${DEFAULT_CEF_SDK_VER}\n"
     "You can change the version by adding -DCEF_SDK_VERSION=xxx to commandline for generation")
-  set(CEF_SDK_VERSION ${DEFAULT_CEF_SDK_VER} CACHE STRING " Cef binary SDK version " FORCE)
+  set(CEF_SDK_VERSION ${DEFAULT_CEF_SDK_VER} CACHE STRING "Cef binary SDK version" FORCE)
 endif()
 
 include(DownloadCef)
@@ -171,14 +186,15 @@ endif()
 add_subdirectory(src)
 
 if(OS_MACOS)
-  set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
+  set(CefViewCore_HELPER_TARGETS "${CEFVIEW_WING_NAME};${CEFVIEW_WING_NAME}_gpu;${CEFVIEW_WING_NAME}_plugin;${CEFVIEW_WING_NAME}_renderer")
 else()
-  set(CefViewCore_HELPER_TARGETS "CefViewWing")
+  set(CefViewCore_HELPER_TARGETS "${CEFVIEW_WING_NAME}")
 endif()
 
 get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
 
 if(IS_CURRENT_IN_SUBDIRECTORY)
+  set(CEFVIEW_WING_NAME ${CEFVIEW_WING_NAME} PARENT_SCOPE)
   set(CefViewCore_EXPORT_INCLUDE_PATH ${CefViewCore_INCLUDE_PATH} PARENT_SCOPE)
   set(CefViewCore_HELPER_APP_TARGETS ${CefViewCore_HELPER_TARGETS} PARENT_SCOPE)
   set(CefViewCore_CEF_BINARY_DIR ${CEF_BINARY_DIR} PARENT_SCOPE)

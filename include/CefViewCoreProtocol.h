@@ -87,11 +87,6 @@
 /// <summary>
 ///
 /// </summary>
-#define kCefViewRenderProcessName "CefViewWing"
-
-/// <summary>
-///
-/// </summary>
 #define kCefViewResourceDirectoryName "resources"
 
 /// <summary>
