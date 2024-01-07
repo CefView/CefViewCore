@@ -5,3 +5,4 @@ dep/*.bz2
 .DS_Store
 dep/cef_binary_*
 .build
+include/CefViewWingProcessName.h

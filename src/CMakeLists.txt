@@ -166,11 +166,24 @@ if(OS_WINDOWS)
     FILES ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
+  if(EXISTS ${CEFVIEW_WING_ICON})
+    # Config resource file
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/win/resource.rc.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/resource.rc"
+      @ONLY
+    )
+    set(CefViewWing_WIN_RESOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
+  else()
+    set(CefViewWing_WIN_RESOURCE_FILE "")
+  endif()
+
   # Create Helper executable target.
   add_executable(${CEFVIEW_WING_NAME} WIN32
     ${CefViewCore_SHARED_SRC_FILES}
     ${CefViewWing_SRC_FILES}
     ${CefViewWing_PLATFORM_SRC_FILES}
+    ${CefViewWing_WIN_RESOURCE_FILE}
   )
 
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEFVIEW_WING_NAME})

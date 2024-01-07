@@ -25,6 +25,11 @@
 /// <summary>
 ///
 /// </summary>
+#define kCefViewWindowsJobNameKey "windows-job-name"
+
+/// <summary>
+///
+/// </summary>
 #define kCefViewDefaultBridgeObjectName "CefViewClient"
 
 /// <summary>

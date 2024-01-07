@@ -18,10 +18,12 @@
 #pragma endregion win_headers
 
 #pragma region project_heasers
+#include <Common/CefViewCoreLog.h>
+#include <CefViewCoreProtocol.h>
+
 #include "../CefRenderApp/CefViewAppBase.h"
 #include "../CefRenderApp/CefViewOtherApp.h"
 #include "../CefRenderApp/CefViewRenderApp.h"
-#include <Common/CefViewCoreLog.h>
 #pragma endregion project_heasers
 
 int
@@ -54,6 +56,20 @@ CefViewWingMain(HINSTANCE hInstance)
   } else {
     logI("Parse process unknown, exit");
     return 1;
+  }
+
+  // assign current process to window job
+  if (command_line->HasSwitch(kCefViewWindowsJobNameKey)) {
+    auto job_name = command_line->GetSwitchValue(kCefViewWindowsJobNameKey);
+    HANDLE job_handle = ::OpenJobObjectA(JOB_OBJECT_ASSIGN_PROCESS, FALSE, job_name.ToString().c_str());
+    if (job_handle) {
+      if (!::AssignProcessToJobObject(job_handle, ::GetCurrentProcess())) {
+        logE("Failed to assign current process to windows job object: %d", ::GetLastError());
+      }
+      ::CloseHandle(job_handle);
+    } else {
+      logE("Failed to open windows job object: %d", ::GetLastError());
+    }
   }
 
   // Execute the secondary process.
