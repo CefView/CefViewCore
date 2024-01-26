@@ -167,11 +167,18 @@ if(OS_WINDOWS)
   )
 
   if(EXISTS ${CEFVIEW_WING_ICON})
+    # Copy icon file to binary dir
+    configure_file(
+      "${CEFVIEW_WING_ICON}"
+      "${CMAKE_CURRENT_BINARY_DIR}/app.ico"
+      COPYONLY
+    )
+
     # Config resource file
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/win/resource.rc.in"
       "${CMAKE_CURRENT_BINARY_DIR}/resource.rc"
-      @ONLY
+      COPYONLY
     )
     set(CefViewWing_WIN_RESOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
   else()
