@@ -43,7 +43,7 @@ CefViewBrowserClient::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
   return false; // return true to cancel this navigation.
 }
 
-#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 110
+#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 109
 bool
 CefViewBrowserClient::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                      const CefString& origin_url,

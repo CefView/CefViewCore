@@ -372,7 +372,7 @@ protected:
                                 const CefString& target_url,
                                 CefRequestHandler::WindowOpenDisposition target_disposition,
                                 bool user_gesture) override;
-#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 110
+#if CEF_VERSION_MAJOR > 91 && CEF_VERSION_MAJOR < 109
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                               const CefString& origin_url,
                               int64 new_size,
