@@ -6,7 +6,7 @@
 //
 
 #include "CefViewDebug.h"
-
+#include <include/cef_version.h>
 #include <string>
 
 std::string toString(CefRefPtr<CefBrowser> browser)
