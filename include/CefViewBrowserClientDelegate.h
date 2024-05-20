@@ -13,6 +13,7 @@
 #include <string>
 
 #include <include/cef_client.h>
+#include <include/cef_version.h>
 
 /// <summary>
 ///
@@ -27,6 +28,26 @@ public:
 
   virtual void processUrlRequest(const std::string& url) = 0;
 
+#if CEF_VERSION_MAJOR >= 122
+  virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
+                                   const std::string& frameId,
+                                   const std::string& query,
+                                   const int64_t query_id) = 0;
+
+  virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
+                                          const std::string& frameId,
+                                          bool focusOnEditableNode) = 0;
+
+  virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
+                                  const std::string& frameId,
+                                  const std::string& method,
+                                  const CefRefPtr<CefListValue>& arguments) = 0;
+
+  virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
+                              const std::string& frameId,
+                              const std::string& context,
+                              const CefRefPtr<CefValue>& result) = 0;
+#else
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
                                    int64_t frameId,
                                    const std::string& query,
@@ -45,6 +66,7 @@ public:
                               int64_t frameId,
                               const std::string& context,
                               const CefRefPtr<CefValue>& result) = 0;
+#endif
 
   // context menu handler
 #pragma region ContextMenuHandler
@@ -80,7 +102,11 @@ public:
 
     // display handler
 #pragma region DisplayHandler
+#if CEF_VERSION_MAJOR >= 122
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const std::string& frameId, const std::string& url) = 0;
+#else
   virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
+#endif
 
   virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
 
@@ -129,6 +155,16 @@ public:
 
   // life span handler
 #pragma region LifeSpanHandler
+#if CEF_VERSION_MAJOR >= 122
+  virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
+                             const std::string& frameId,
+                             const std::string& targetUrl,
+                             const std::string& targetFrameName,
+                             CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+                             CefWindowInfo& windowInfo,
+                             CefBrowserSettings& settings,
+                             bool& DisableJavascriptAccess) = 0;
+#else
   virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
                              int64_t frameId,
                              const std::string& targetUrl,
@@ -137,6 +173,8 @@ public:
                              CefWindowInfo& windowInfo,
                              CefBrowserSettings& settings,
                              bool& DisableJavascriptAccess) = 0;
+#endif
+
   virtual void onAfterCreate(CefRefPtr<CefBrowser>& browser) = 0;
 
   virtual bool doClose(CefRefPtr<CefBrowser> browser) = 0;
@@ -209,12 +247,21 @@ public:
                        int height)
   {
   }
+#if CEF_VERSION_MAJOR >= 122
+  virtual void onAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  CefRenderHandler::PaintElementType type,
+                                  const CefRenderHandler::RectList& dirtyRects,
+                                  const CefAcceleratedPaintInfo& info)
+  {
+  }
+#else
   virtual void onAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   CefRenderHandler::PaintElementType type,
                                   const CefRenderHandler::RectList& dirtyRects,
                                   void* shared_handle)
   {
   }
+#endif
   virtual bool startDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              CefRenderHandler::DragOperationsMask allowed_ops,

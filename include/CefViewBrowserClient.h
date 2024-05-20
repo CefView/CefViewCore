@@ -338,10 +338,17 @@ protected:
                        const void* buffer,
                        int width,
                        int height) override;
+#if CEF_VERSION_MAJOR >= 122
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  PaintElementType type,
+                                  const RectList& dirtyRects,
+                                  const CefAcceleratedPaintInfo& info) override;
+#else
   virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   PaintElementType type,
                                   const RectList& dirtyRects,
                                   void* shared_handle) override;
+#endif
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              CefRenderHandler::DragOperationsMask allowed_ops,
@@ -378,8 +385,14 @@ protected:
                               int64 new_size,
                               CefRefPtr<CefCallback> callback) override;
 #endif
-
+#if CEF_VERSION_MAJOR >= 122
+  virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                         TerminationStatus status,
+                                         int error_code,
+                                         const CefString& error_string) override;
+#else
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
+#endif
 #pragma endregion
 
   // CefResourceRequestHandler

@@ -61,8 +61,16 @@ CefViewBrowserClient::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 }
 #endif
 
+#if CEF_VERSION_MAJOR >= 122
+void
+CefViewBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                                TerminationStatus status,
+                                                int error_code,
+                                                const CefString& error_string)
+#else
 void
 CefViewBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status)
+#endif
 {
   CEF_REQUIRE_UI_THREAD();
 
