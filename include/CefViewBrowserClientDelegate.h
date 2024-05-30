@@ -14,6 +14,8 @@
 
 #include <include/cef_client.h>
 
+#include <CefViewCoreGlobal.h>
+
 /// <summary>
 ///
 /// </summary>
@@ -28,21 +30,21 @@ public:
   virtual void processUrlRequest(const std::string& url) = 0;
 
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
-                                   int64_t frameId,
+                                   const CefFrameId& frameId,
                                    const std::string& query,
                                    const int64_t query_id) = 0;
 
   virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
-                                          int64_t frameId,
+                                          const CefFrameId& frameId,
                                           bool focusOnEditableNode) = 0;
 
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
-                                  int64_t frameId,
+                                  const CefFrameId& frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
 
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
-                              int64_t frameId,
+                              const CefFrameId& frameId,
                               const std::string& context,
                               const CefRefPtr<CefValue>& result) = 0;
 
@@ -78,9 +80,9 @@ public:
   };
 #pragma endregion
 
-    // display handler
+  // display handler
 #pragma region DisplayHandler
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const std::string& url) = 0;
 
   virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
 
@@ -130,7 +132,7 @@ public:
   // life span handler
 #pragma region LifeSpanHandler
   virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
-                             int64_t frameId,
+                             const CefFrameId& frameId,
                              const std::string& targetUrl,
                              const std::string& targetFrameName,
                              CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
@@ -186,19 +188,13 @@ public:
 
   // Off screen rendering
 #pragma region RenderHandler
-  virtual bool getRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
-  {
-    return false;
-  }
+  virtual bool getRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) { return false; }
   virtual void getViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {}
   virtual bool getScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY)
   {
     return false;
   }
-  virtual bool getScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info)
-  {
-    return false;
-  }
+  virtual bool getScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) { return false; }
   virtual void onPopupShow(CefRefPtr<CefBrowser> browser, bool show) {}
   virtual void onPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {}
   virtual void onPaint(CefRefPtr<CefBrowser> browser,

@@ -25,6 +25,7 @@
 #include <include/wrapper/cef_resource_manager.h>
 #pragma endregion cef_headers
 
+#include <CefViewCoreGlobal.h>
 #include <CefViewBrowserApp.h>
 #include <CefViewBrowserClientDelegate.h>
 #include <CefViewQueryHandler.h>
@@ -69,11 +70,12 @@ public:
   /// <summary>
   ///
   /// </summary>
-  enum
-  {
-    MAIN_FRAME = (int64_t)0,
-    ALL_FRAMES = (int64_t)-1,
-  };
+  const static CefFrameId MAIN_FRAME;
+
+  /// <summary>
+  ///
+  /// </summary>
+  const static CefFrameId ALL_FRAMES;
 
   /// <summary>
   ///
@@ -118,7 +120,7 @@ public:
                                   const std::string& password,
                                   int priority = 0);
 
-  bool TriggerEvent(CefRefPtr<CefBrowser> browser, const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
+  bool TriggerEvent(CefRefPtr<CefBrowser> browser, const CefFrameId& frame_id, const CefRefPtr<CefProcessMessage> msg);
 
   /// <summary>
   ///
