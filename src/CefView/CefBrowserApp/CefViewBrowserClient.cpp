@@ -13,6 +13,14 @@
 #include <CefViewCoreProtocol.h>
 #include <Common/CefViewCoreLog.h>
 
+#if CEF_VERSION_MAJOR < 122
+const CefFrameId CefViewBrowserClient::MAIN_FRAME = 0;
+const CefFrameId CefViewBrowserClient::ALL_FRAMES = -1;
+#else
+const CefFrameId CefViewBrowserClient::MAIN_FRAME = "0";
+const CefFrameId CefViewBrowserClient::ALL_FRAMES = "-1";
+#endif
+
 CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
                                            CefViewBrowserClientDelegateInterface::RefPtr delegate)
   : is_closing_(false)
@@ -80,14 +88,14 @@ CefViewBrowserClient::AddArchiveResourceProvider(const std::string& archive_path
 
 bool
 CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
-                                   const int64_t frame_id,
+                                   const CefFrameId& frame_id,
                                    const CefRefPtr<CefProcessMessage> msg)
 {
   if (msg->GetName().empty())
     return false;
 
   if (browser) {
-    std::vector<int64_t> frameIds;
+    std::vector<CefFrameId> frameIds;
     if (MAIN_FRAME == frame_id) {
       frameIds.push_back(browser->GetMainFrame()->GetIdentifier());
     } else if (ALL_FRAMES == frame_id) {
@@ -98,7 +106,7 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
 
     for (auto id : frameIds) {
       auto m = msg->Copy();
-      auto frame = browser->GetFrame(id);
+      auto frame = browser->GetFrameByIdentifier(id);
       frame->SendProcessMessage(PID_RENDERER, m);
     }
 

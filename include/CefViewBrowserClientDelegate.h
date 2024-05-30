@@ -15,6 +15,8 @@
 #include <include/cef_version.h>
 #include <include/cef_client.h>
 
+#include <CefViewCoreGlobal.h>
+
 /// <summary>
 ///
 /// </summary>
@@ -29,21 +31,21 @@ public:
   virtual void processUrlRequest(const std::string& url) = 0;
 
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
-                                   int64_t frameId,
+                                   const CefFrameId& frameId,
                                    const std::string& query,
                                    const int64_t query_id) = 0;
 
   virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
-                                          int64_t frameId,
+                                          const CefFrameId& frameId,
                                           bool focusOnEditableNode) = 0;
 
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
-                                  int64_t frameId,
+                                  const CefFrameId& frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
 
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
-                              int64_t frameId,
+                              const CefFrameId& frameId,
                               const std::string& context,
                               const CefRefPtr<CefValue>& result) = 0;
 
@@ -84,7 +86,7 @@ public:
 
   // display handler
 #pragma region DisplayHandler
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const std::string& url) = 0;
 
   virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
 
@@ -134,7 +136,7 @@ public:
   // life span handler
 #pragma region LifeSpanHandler
   virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
-                             int64_t frameId,
+                             const CefFrameId& frameId,
                              const std::string& targetUrl,
                              const std::string& targetFrameName,
                              CefLifeSpanHandler::WindowOpenDisposition targetDisposition,

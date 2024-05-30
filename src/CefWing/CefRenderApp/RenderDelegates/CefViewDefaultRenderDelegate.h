@@ -8,6 +8,8 @@
 #pragma endregion cef_headers
 
 #pragma region project_headers
+#include <CefViewCoreGlobal.h>
+
 #include "../CefViewRenderApp.h"
 #include "CefViewClient.h"
 #pragma endregion project_headers
@@ -27,7 +29,7 @@ class RenderDelegate : public CefViewRenderApp::RenderDelegate
   /// <summary>
   ///
   /// </summary>
-  typedef std::unordered_map<int64_t, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
+  typedef std::unordered_map<CefFrameId, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
 
 public:
   /// <summary>
