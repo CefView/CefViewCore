@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include <include/cef_version.h>
 #include <include/cef_client.h>
 
 /// <summary>
