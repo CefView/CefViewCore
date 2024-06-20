@@ -72,13 +72,16 @@ public:
                             const CefString& title,
                             const CefString& default_file_path,
                             const std::vector<CefString>& accept_filters,
+#if CEF_VERSION_MAJOR < 102
+                            int selected_accept_filter,
+#endif
                             CefRefPtr<CefFileDialogCallback> callback)
   {
     return false;
   };
 #pragma endregion
 
-    // display handler
+  // display handler
 #pragma region DisplayHandler
   virtual void addressChanged(CefRefPtr<CefBrowser>& browser, int64_t frameId, const std::string& url) = 0;
 
@@ -186,19 +189,13 @@ public:
 
   // Off screen rendering
 #pragma region RenderHandler
-  virtual bool getRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
-  {
-    return false;
-  }
+  virtual bool getRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) { return false; }
   virtual void getViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {}
   virtual bool getScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int& screenX, int& screenY)
   {
     return false;
   }
-  virtual bool getScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info)
-  {
-    return false;
-  }
+  virtual bool getScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) { return false; }
   virtual void onPopupShow(CefRefPtr<CefBrowser> browser, bool show) {}
   virtual void onPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {}
   virtual void onPaint(CefRefPtr<CefBrowser> browser,

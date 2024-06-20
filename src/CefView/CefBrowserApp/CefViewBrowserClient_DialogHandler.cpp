@@ -24,11 +24,22 @@ CefViewBrowserClient::OnFileDialog(CefRefPtr<CefBrowser> browser,
                                    const CefString& title,
                                    const CefString& default_file_path,
                                    const std::vector<CefString>& accept_filters,
+#if CEF_VERSION_MAJOR < 102
+                                   int selected_accept_filter,
+#endif
                                    CefRefPtr<CefFileDialogCallback> callback)
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
-    return delegate->onFileDialog(browser, mode, title, default_file_path, accept_filters, callback);
+    return delegate->onFileDialog(browser,
+                                  mode,
+                                  title,
+                                  default_file_path,
+                                  accept_filters,
+#if CEF_VERSION_MAJOR < 102
+                                  selected_accept_filter,
+#endif
+                                  callback);
 
   return false;
 }

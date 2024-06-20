@@ -198,6 +198,9 @@ protected:
                             const CefString& title,
                             const CefString& default_file_path,
                             const std::vector<CefString>& accept_filters,
+#if CEF_VERSION_MAJOR < 102
+                            int selected_accept_filter,
+#endif
                             CefRefPtr<CefFileDialogCallback> callback) override;
 #pragma endregion
 
