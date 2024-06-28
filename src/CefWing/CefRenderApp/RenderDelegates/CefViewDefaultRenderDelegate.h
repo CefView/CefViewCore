@@ -4,6 +4,7 @@
 #pragma endregion
 
 #pragma region cef_headers
+#include <include/cef_version.h>
 #include <include/wrapper/cef_message_router.h>
 #pragma endregion cef_headers
 
@@ -27,7 +28,11 @@ class RenderDelegate : public CefViewRenderApp::RenderDelegate
   /// <summary>
   ///
   /// </summary>
+#if CEF_VERSION_MAJOR >= 122
+  typedef std::unordered_map<std::string, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
+#else
   typedef std::unordered_map<int64_t, CefRefPtr<CefViewClient>> FrameID2CefClientMap;
+#endif
 
 public:
   /// <summary>

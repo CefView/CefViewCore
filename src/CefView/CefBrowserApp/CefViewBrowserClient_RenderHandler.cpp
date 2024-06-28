@@ -89,12 +89,19 @@ CefViewBrowserClient::OnPaint(CefRefPtr<CefBrowser> browser,
   if (delegate)
     return delegate->onPaint(browser, type, dirtyRects, buffer, width, height);
 }
-
+#if CEF_VERSION_MAJOR >= 122
+void
+CefViewBrowserClient::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                         PaintElementType type,
+                                         const RectList& dirtyRects,
+                                         const CefAcceleratedPaintInfo& shared_handle)
+#else
 void
 CefViewBrowserClient::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                          PaintElementType type,
                                          const RectList& dirtyRects,
                                          void* shared_handle)
+#endif
 {
   auto delegate = client_delegate_.lock();
   if (delegate)
