@@ -39,9 +39,14 @@ else()
   set(CEF_SDK_PACKAGE_NAME "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
 endif()
 
-# Scan extracted sdk dir
-set(CEF_SDK_EXTRACTED_DIR "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
-file(GLOB CEF_SDK_DIR "${CEF_SDK_EXTRACTED_DIR}")
+if(NOT CUSTOM_CEF_SDK_DIR)
+  # Scan extracted sdk dir
+  set(CEF_SDK_EXTRACTED_DIR "${CEF_SDK_WORKSPACE}/${CEF_SDK_PACKAGE_NAME}")
+  file(GLOB CEF_SDK_DIR "${CEF_SDK_EXTRACTED_DIR}")
+else()
+  message("Custom Cef path: ${CUSTOM_CEF_SDK_DIR}")
+  set(CEF_SDK_DIR "${CUSTOM_CEF_SDK_DIR}")
+endif()
 
 # Extract CEF binary package
 if(NOT EXISTS ${CEF_SDK_DIR})
