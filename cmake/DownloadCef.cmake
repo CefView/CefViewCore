@@ -2,6 +2,7 @@
 # Generally, there is NO NEED to modify the following config
 #
 # Download CEF binary package
+# https://cef-builds.spotifycdn.com/index.html
 #
 if(NOT CEF_SDK_VERSION)
   message(FATAL_ERROR "CEF_SDK_VERSION is missing!")
