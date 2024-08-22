@@ -1,4 +1,4 @@
-﻿#include <CefViewBrowserClient.h>
+#include <CefViewBrowserClient.h>
 
 #pragma region std_headers
 #include <sstream>
@@ -106,7 +106,12 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
 
     for (auto id : frameIds) {
       auto m = msg->Copy();
+#if CEF_VERSION_MAJOR > 121
       auto frame = browser->GetFrameByIdentifier(id);
+#else
+      auto frame = browser->GetFrame(id);
+#endif
+      
       frame->SendProcessMessage(PID_RENDERER, m);
     }
 

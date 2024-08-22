@@ -111,6 +111,7 @@ if(NOT CEF_SDK_VERSION)
   # "119.4.4+g5d1e039+chromium-119.0.6045.199"  # GOOD
   # "120.1.6+gf08b1fd+chromium-120.0.6099.71"   # GOOD
   # "121.3.15+g4d3b0b4+chromium-121.0.6167.184" # GOOD
+  # "122.1.7+gdd187af+chromium-122.0.6261.29"
   set(DEFAULT_CEF_SDK_VER "119.4.4+g5d1e039+chromium-119.0.6045.199")
   message(STATUS
     "CEF_SDK_VERSION is empty, use default version ${DEFAULT_CEF_SDK_VER}\n"
