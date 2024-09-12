@@ -82,6 +82,7 @@ CefViewClient::V8Handler::ExecuteRemoveEventListener(CefRefPtr<CefV8Value> objec
         listener.callback_ = arguments[1];
         listener.context_ = CefV8Context::GetCurrentContext();
         client_->RemoveEventListener(eventName, listener);
+        bRet = true;
       } else
         exception = "Invalid arguments; argument 2 must be a function";
     } else
