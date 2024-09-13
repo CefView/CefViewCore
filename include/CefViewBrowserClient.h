@@ -195,15 +195,33 @@ protected:
   // CefDialogHandler
 #pragma region CefDialogHandler
   virtual CefRefPtr<CefDialogHandler> GetDialogHandler() override;
+
+#if CEF_VERSION_MAJOR < 102
   virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
                             FileDialogMode mode,
                             const CefString& title,
                             const CefString& default_file_path,
                             const std::vector<CefString>& accept_filters,
-#if CEF_VERSION_MAJOR < 102
                             int selected_accept_filter,
-#endif
                             CefRefPtr<CefFileDialogCallback> callback) override;
+#elif CEF_VERSION_MAJOR < 126
+  virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+                            FileDialogMode mode,
+                            const CefString& title,
+                            const CefString& default_file_path,
+                            const std::vector<CefString>& accept_filters,
+                            CefRefPtr<CefFileDialogCallback> callback) override;
+#else
+  virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+                            FileDialogMode mode,
+                            const CefString& title,
+                            const CefString& default_file_path,
+                            const std::vector<CefString>& accept_filters,
+                            const std::vector<CefString>& accept_extensions,
+                            const std::vector<CefString>& accept_descriptions,
+                            CefRefPtr<CefFileDialogCallback> callback) override;
+#endif
+
 #pragma endregion
 
   // CefDisplayHandler methods
@@ -231,10 +249,17 @@ protected:
   // CefDownloadHandler
 #pragma region CefDownloadHandler
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
-  void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+  #if CEF_VERSION_MAJOR < 125
+  virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefDownloadItem> download_item,
                         const CefString& suggested_name,
                         CefRefPtr<CefBeforeDownloadCallback> callback) override;
+  #else
+  virtual bool OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefDownloadItem> download_item,
+                                const CefString& suggested_name,
+                                CefRefPtr<CefBeforeDownloadCallback> callback) override;
+  #endif
 
   void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefDownloadItem> download_item,
@@ -343,10 +368,17 @@ protected:
                        const void* buffer,
                        int width,
                        int height) override;
+#if CEF_VERSION_MAJOR < 124
   virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   PaintElementType type,
                                   const RectList& dirtyRects,
                                   void* shared_handle) override;
+#else
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  PaintElementType type,
+                                  const RectList& dirtyRects,
+                                  const CefAcceleratedPaintInfo& info) override;
+#endif
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              CefRenderHandler::DragOperationsMask allowed_ops,
@@ -384,7 +416,15 @@ protected:
                               CefRefPtr<CefCallback> callback) override;
 #endif
 
+#if CEF_VERSION_MAJOR < 124
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
+#else
+  virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                         TerminationStatus status,
+                                         int error_code,
+                                         const CefString& error_string) override;
+#endif
+
 #pragma endregion
 
   // CefResourceRequestHandler

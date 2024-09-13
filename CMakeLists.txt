@@ -96,23 +96,29 @@ configure_file(
 message(STATUS "Detecting CEF_SDK_VERSION: ${CEF_SDK_VERSION}")
 
 if(NOT CEF_SDK_VERSION)
-  # "89.0.12+g2b76680+chromium-89.0.4389.90"    # GOOD
-  # "91.1.23+g04c8d56+chromium-91.0.4472.164"   # GOOD
-  # "95.7.12+g99c4ac0+chromium-95.0.4638.54"    # GOOD
-  # "99.2.15+g71e9523+chromium-99.0.4844.84"    # GOOD
-  # "102.0.10+gf249b2e+chromium-102.0.5005.115" # GOOD
-  # "104.4.18+g2587cf2+chromium-104.0.5112.81"  # BAD   # crash on macOS - debug mode
-  # "104.4.26+g4180781+chromium-104.0.5112.102" # BAD   # crash on macOS - debug mode
-  # "105.3.25+g0ca6a9e+chromium-105.0.5195.54"  # BAD   # debugbreak - debug mode
-  # "105.3.28+g002805e+chromium-105.0.5195.54"  # BAD   # debugbreak - debug mode
-  # "107.1.9+g1f0a21a+chromium-107.0.5304.110"  # BAD   # debugbreak - debug mode
-  # "110.0.26+g732747f+chromium-110.0.5481.97"  # BAD   # TO-BE-FIXED
-  # "113.3.1+g525fa10+chromium-113.0.5672.128"  # GOOD
-  # "119.4.4+g5d1e039+chromium-119.0.6045.199"  # GOOD
-  # "120.1.6+gf08b1fd+chromium-120.0.6099.71"   # GOOD
-  # "121.3.15+g4d3b0b4+chromium-121.0.6167.184" # GOOD
-  # "122.1.7+gdd187af+chromium-122.0.6261.29"
-  set(DEFAULT_CEF_SDK_VER "119.4.4+g5d1e039+chromium-119.0.6045.199")
+  # set(DEFAULT_CEF_SDK_VER "89.0.12+g2b76680+chromium-89.0.4389.90")     # GOOD
+  # set(DEFAULT_CEF_SDK_VER "91.1.23+g04c8d56+chromium-91.0.4472.164")    # GOOD
+  # set(DEFAULT_CEF_SDK_VER "95.7.12+g99c4ac0+chromium-95.0.4638.54")     # GOOD
+  # set(DEFAULT_CEF_SDK_VER "99.2.15+g71e9523+chromium-99.0.4844.84")     # GOOD
+  # set(DEFAULT_CEF_SDK_VER "102.0.10+gf249b2e+chromium-102.0.5005.115")  # GOOD
+  # set(DEFAULT_CEF_SDK_VER "104.4.18+g2587cf2+chromium-104.0.5112.81")   # BAD   # crash on macOS - debug mode
+  # set(DEFAULT_CEF_SDK_VER "104.4.26+g4180781+chromium-104.0.5112.102")  # BAD   # crash on macOS - debug mode
+  # set(DEFAULT_CEF_SDK_VER "105.3.25+g0ca6a9e+chromium-105.0.5195.54")   # BAD   # debugbreak - debug mode
+  # set(DEFAULT_CEF_SDK_VER "105.3.28+g002805e+chromium-105.0.5195.54")   # BAD   # debugbreak - debug mode
+  # set(DEFAULT_CEF_SDK_VER "107.1.9+g1f0a21a+chromium-107.0.5304.110")   # BAD   # debugbreak - debug mode
+  # set(DEFAULT_CEF_SDK_VER "110.0.26+g732747f+chromium-110.0.5481.97")   # BAD   # TO-BE-FIXED
+  # set(DEFAULT_CEF_SDK_VER "113.3.1+g525fa10+chromium-113.0.5672.128")   # GOOD
+  # set(DEFAULT_CEF_SDK_VER "119.4.4+g5d1e039+chromium-119.0.6045.199")   # GOOD
+  # set(DEFAULT_CEF_SDK_VER "120.1.6+gf08b1fd+chromium-120.0.6099.71")    # GOOD
+  # set(DEFAULT_CEF_SDK_VER "121.3.15+g4d3b0b4+chromium-121.0.6167.184")  # GOOD
+  # set(DEFAULT_CEF_SDK_VER "122.1.13+gde5b724+chromium-122.0.6261.130")  # NOT-TEST
+  # set(DEFAULT_CEF_SDK_VER "123.0.13+gfc703fb+chromium-123.0.6312.124")  # NOT-TEST
+  # set(DEFAULT_CEF_SDK_VER "124.3.9+g9bd638f+chromium-124.0.6367.207")   # NOT-TEST
+  # set(DEFAULT_CEF_SDK_VER "125.0.22+gc410c95+chromium-125.0.6422.142")  # NOT-TEST
+  # set(DEFAULT_CEF_SDK_VER "126.2.18+g3647d39+chromium-126.0.6478.183")  # NOT-TEST
+  set(DEFAULT_CEF_SDK_VER "127.3.5+g114ea2a+chromium-127.0.6533.120") # GOOD
+
+  # set(DEFAULT_CEF_SDK_VER "128.4.9+g9840ad9+chromium-128.0.6613.120")   # BAD   # debugbreak - debug mode
   message(STATUS
     "CEF_SDK_VERSION is empty, use default version ${DEFAULT_CEF_SDK_VER}\n"
     "You can change the version by adding -DCEF_SDK_VERSION=xxx to commandline for generation")
