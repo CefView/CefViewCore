@@ -6,7 +6,7 @@
 //
 
 #include "CefViewDebug.h"
-
+#include <include/cef_version.h>
 #include <string>
 
 std::string toString(CefRefPtr<CefBrowser> browser)
@@ -45,7 +45,9 @@ std::string toString(CefRefPtr<CefFrame> frame)
     msg += ", IsMain=" + std::to_string(frame->IsMain());
     msg += ", IsFocused=" + std::to_string(frame->IsFocused());
     msg += ", GetName=" + frame->GetName().ToString();
+#if CEF_VERSION_MAJOR < 122
     msg += ", GetIdentifier=" + std::to_string(frame->GetIdentifier());
+#endif
     msg += ", GetParent=" + std::to_string((int64_t)frame->GetParent().get());
     msg += ", GetURL=" + frame->GetURL().ToString();
     msg += ", GetBrowser=" + std::to_string((int64_t)frame->GetBrowser().get());
