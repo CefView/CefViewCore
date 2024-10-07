@@ -40,7 +40,7 @@ CefViewBrowserClient::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
   if (delegate)
     delegate->onBeforeDownload(browser, download_item, suggested_name, callback);
 
-  return false;
+  return true;
 }
 #endif
 
