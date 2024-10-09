@@ -15,7 +15,7 @@
 /// <summary>
 /// CefView Helper Process Name
 /// </summary>
-#define kCefViewRenderProcessName "CefViewWing"
+#define kCefViewRenderProcessName "@CEFVIEW_WING_NAME@"
 
 /// <summary>
 ///

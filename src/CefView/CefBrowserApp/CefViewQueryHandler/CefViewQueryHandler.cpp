@@ -1,10 +1,34 @@
-﻿#include <CefViewQueryHandler.h>
+﻿#include "CefViewQueryHandler.h"
 
 CefViewQueryHandler::CefViewQueryHandler(CefViewBrowserClientDelegateInterface::WeakPtr delegate)
   : handler_delegate_(delegate)
-{}
+{
+}
 
 CefViewQueryHandler::~CefViewQueryHandler() {}
+
+bool
+CefViewQueryHandler::Response(int64_t query, bool success, const CefString& response, int error)
+{
+  CefRefPtr<Callback> cb;
+  mtxCallbackMap_.lock();
+  auto it = mapCallback_.find(query);
+  if (it != mapCallback_.end()) {
+    cb = it->second;
+    mapCallback_.erase(it);
+  }
+  mtxCallbackMap_.unlock();
+
+  if (!cb)
+    return false;
+
+  if (success)
+    cb->Success(response);
+  else
+    cb->Failure(error, response);
+
+  return true;
+}
 
 bool
 CefViewQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
@@ -37,27 +61,4 @@ CefViewQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     mapCallback_.erase(it);
 
   mtxCallbackMap_.unlock();
-}
-
-bool
-CefViewQueryHandler::Response(int64_t query, bool success, const CefString& response, int error)
-{
-  CefRefPtr<Callback> cb;
-  mtxCallbackMap_.lock();
-  auto it = mapCallback_.find(query);
-  if (it != mapCallback_.end()) {
-    cb = it->second;
-    mapCallback_.erase(it);
-  }
-  mtxCallbackMap_.unlock();
-
-  if (!cb)
-    return false;
-
-  if (success)
-    cb->Success(response);
-  else
-    cb->Failure(error, response);
-
-  return true;
 }

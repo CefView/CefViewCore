@@ -1,17 +1,6 @@
-//
-//  CefWingAppBase.cpp
-//  CeViewfWing
-//
-//  Created by Sheen Tian on 2020/6/17.
-//
+﻿#include "CefViewAppBase.h"
 
-#pragma region project_heasers
-#include "CefViewAppBase.h"
-#pragma endregion project_heasers
-
-#pragma region mac_headers
 #include <Common/CefViewCoreLog.h>
-#pragma endregion mac_headers
 
 #include <CefViewCoreProtocol.h>
 
@@ -20,7 +9,10 @@ const char kProcessType[] = "type";
 const char kZygoteProcess[] = "zygote";
 const char kRendererProcess[] = "renderer";
 
-CefViewAppBase::CefViewAppBase() {}
+CefViewAppBase::CefViewAppBase(const std::string& scheme_name)
+  : builtin_scheme_name_(scheme_name)
+{
+}
 
 // static
 CefViewAppBase::ProcessType
@@ -51,4 +43,24 @@ CefViewAppBase::GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line)
   const std::string& name = command_line->GetSwitchValue(kCefViewBridgeObjectNameKey);
   logI("bridge object name: %s", name.c_str());
   return name;
+}
+
+std::string
+CefViewAppBase::GetBuiltinSchemeName(CefRefPtr<CefCommandLine> command_line)
+{
+  if (!command_line->HasSwitch(kCefViewBuiltinSchemeNameKey))
+    return "";
+
+  const std::string& name = command_line->GetSwitchValue(kCefViewBuiltinSchemeNameKey);
+  logI("built-in scheme name: %s", name.c_str());
+  return name;
+}
+
+void
+CefViewAppBase::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
+{
+  if (registrar) {
+    registrar->AddCustomScheme(builtin_scheme_name_.empty() ? kCefViewDefaultBuiltinSchemaName : builtin_scheme_name_,
+                               0);
+  }
 }

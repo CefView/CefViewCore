@@ -1,10 +1,10 @@
 ﻿#include <CefViewBrowserClient.h>
 
-#pragma region std_headers
+#pragma region stl_headers
 #include <sstream>
 #include <string>
 #include <algorithm>
-#pragma endregion std_headers
+#pragma endregion
 
 #include <Common/CefViewCoreLog.h>
 
@@ -40,7 +40,7 @@ CefViewBrowserClient::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
   if (delegate)
     delegate->onBeforeDownload(browser, download_item, suggested_name, callback);
 
-  return true;
+  return false;
 }
 #endif
 

@@ -1,0 +1,1 @@
+cmake --preset=osx-x64 %*

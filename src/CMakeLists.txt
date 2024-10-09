@@ -146,8 +146,10 @@ endif() # OS_MACOS
 # ###############################################################################################
 # soruce code for all platforms
 file(GLOB_RECURSE CefViewWing_SRC_FILES
-  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/CefRenderApp/*.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/CefRenderApp/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/App/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/App/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/Bridge/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/Bridge/*.cpp"
 )
 source_group(
   TREE "${CMAKE_CURRENT_SOURCE_DIR}/CefWing"

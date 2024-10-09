@@ -1,6 +1,6 @@
 ﻿//
 //  CefViewBrowserHandlerDelegate.h
-//  CefView
+//  CefViewCore
 //
 //  Created by Sheen Tian on 2020/6/11.
 //
@@ -9,11 +9,10 @@
 #define CefViewBrowserHandlerDelegate_h
 #pragma once
 
+#pragma region stl_headers
 #include <memory>
 #include <string>
-
-#include <include/cef_version.h>
-#include <include/cef_client.h>
+#pragma endregion
 
 #include <CefViewCoreGlobal.h>
 
@@ -23,27 +22,70 @@
 class CefViewBrowserClientDelegateInterface
 {
 public:
+  /// <summary>
+  ///
+  /// </summary>
   typedef std::shared_ptr<CefViewBrowserClientDelegateInterface> RefPtr;
+
+  /// <summary>
+  ///
+  /// </summary>
   typedef std::weak_ptr<CefViewBrowserClientDelegateInterface> WeakPtr;
 
+  /// <summary>
+  ///
+  /// </summary>
   virtual ~CefViewBrowserClientDelegateInterface() {}
 
-  virtual void processUrlRequest(const std::string& url) = 0;
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="url"></param>
+  virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const std::string& url) = 0;
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="query"></param>
+  /// <param name="query_id"></param>
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
                                    const CefFrameId& frameId,
                                    const std::string& query,
                                    const int64_t query_id) = 0;
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="focusOnEditableNode"></param>
   virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
                                           const CefFrameId& frameId,
                                           bool focusOnEditableNode) = 0;
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="method"></param>
+  /// <param name="arguments"></param>
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
                                   const CefFrameId& frameId,
                                   const std::string& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="frameId"></param>
+  /// <param name="context"></param>
+  /// <param name="result"></param>
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
                               const CefFrameId& frameId,
                               const std::string& context,
@@ -216,14 +258,14 @@ public:
                                   void* shared_handle)
   {
   }
-  #else
+#else
   virtual void onAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   CefRenderHandler::PaintElementType type,
                                   const CefRenderHandler::RectList& dirtyRects,
                                   const CefAcceleratedPaintInfo& info)
   {
   }
-  #endif
+#endif
   virtual bool startDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              CefRenderHandler::DragOperationsMask allowed_ops,

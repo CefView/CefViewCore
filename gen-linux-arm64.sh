@@ -1,0 +1,1 @@
+cmake --preset=linux-arm64 %*

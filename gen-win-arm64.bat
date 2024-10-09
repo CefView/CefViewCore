@@ -1,0 +1,1 @@
+cmake --preset=win-arm64 %*
