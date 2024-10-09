@@ -1,1 +1,0 @@
-cmake -G "Unix Makefiles" -S . -B .build/linux.arm64 -DPROJECT_ARCH=arm64 -DUSE_SANDBOX=ON $*

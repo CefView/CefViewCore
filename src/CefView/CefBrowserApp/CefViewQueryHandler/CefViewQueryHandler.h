@@ -9,18 +9,12 @@
 #define CefViewQueryHandler_h
 #pragma once
 
-#pragma region std_headers
+#pragma region stl_headers
 #include <map>
 #include <mutex>
-#pragma endregion std_headers
+#pragma endregion
 
-#pragma region cef_headers
-#include <include/cef_base.h>
-#include <include/wrapper/cef_message_router.h>
-#include <include/wrapper/cef_stream_resource_handler.h>
-
-#pragma endregion cef_headers
-
+#include <CefViewCoreGlobal.h>
 #include <CefViewBrowserClientDelegate.h>
 
 /// <summary>
@@ -32,11 +26,45 @@ class CefViewQueryHandler
 {
   IMPLEMENT_REFCOUNTING(CefViewQueryHandler);
 
+private:
+  /// <summary>
+  ///
+  /// </summary>
+  CefViewBrowserClientDelegateInterface::WeakPtr handler_delegate_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  std::map<int64_t, CefRefPtr<Callback>> mapCallback_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  std::mutex mtxCallbackMap_;
+
 public:
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="delegate"></param>
   CefViewQueryHandler(CefViewBrowserClientDelegateInterface::WeakPtr delegate);
 
+  /// <summary>
+  ///
+  /// </summary>
   ~CefViewQueryHandler();
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="query"></param>
+  /// <param name="success"></param>
+  /// <param name="response"></param>
+  /// <param name="error"></param>
+  /// <returns></returns>
+  bool Response(int64_t query, bool success, const CefString& response, int error);
+
+protected:
   /// <summary>
   ///
   /// </summary>
@@ -61,31 +89,5 @@ public:
   /// <param name="frame"></param>
   /// <param name="query_id"></param>
   virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id) override;
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="query"></param>
-  /// <param name="success"></param>
-  /// <param name="response"></param>
-  /// <param name="error"></param>
-  /// <returns></returns>
-  bool Response(int64_t query, bool success, const CefString& response, int error);
-
-private:
-  /// <summary>
-  ///
-  /// </summary>
-  CefViewBrowserClientDelegateInterface::WeakPtr handler_delegate_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  std::map<int64_t, CefRefPtr<Callback>> mapCallback_;
-
-  /// <summary>
-  ///
-  /// </summary>
-  std::mutex mtxCallbackMap_;
 };
 #endif

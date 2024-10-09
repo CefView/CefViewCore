@@ -1,6 +1,6 @@
 ﻿//
 //  CefViewBrowserApp.h
-//  CefView
+//  CefViewCore
 //
 //  Created by Sheen Tian on 2020/6/11.
 //
@@ -9,17 +9,14 @@
 #define CefViewBrowserApp_h
 #pragma once
 
-#pragma region std_headers
-#include <set>
+#pragma region stl_headers
 #include <string>
-#include <unordered_set>
-#pragma endregion std_headers
+#include <unordered_map>
+#pragma endregion
 
-#pragma region cef_headers
-#include <include/cef_app.h>
-#pragma endregion cef_headers
-
+#include <CefViewCoreGlobal.h>
 #include <CefViewBrowserAppDelegate.h>
+#include <CefViewBrowserClientDelegate.h>
 
 class CefViewBrowserApp
   : public CefApp
@@ -29,32 +26,30 @@ class CefViewBrowserApp
 
 private:
   // The name of the bridge object
+  std::string builtin_scheme_name_;
   std::string bridge_object_name_;
-  std::unordered_set<void*> client_set_;
+  std::unordered_map<void*, CefViewBrowserClientDelegateInterface::WeakPtr> client_handler_map_;
 
   // The app delegate
   CefViewBrowserAppDelegateInterface::WeakPtr app_delegate_;
 
 public:
-  CefViewBrowserApp(const std::string& bridge_name, CefViewBrowserAppDelegateInterface::RefPtr delegate);
+  CefViewBrowserApp(const std::string& scheme_name,
+                    const std::string& bridge_name,
+                    CefViewBrowserAppDelegateInterface::RefPtr delegate);
 
   ~CefViewBrowserApp();
 
-  void CheckInClient(void* ctx);
+  void CheckInClient(void* ctx, const CefViewBrowserClientDelegateInterface::RefPtr& handler);
 
   void CheckOutClient(void* ctx);
+
+  CefViewBrowserClientDelegateInterface::RefPtr GetClientHandler(void* ctx);
 
   bool IsSafeToExit();
 
 private:
-  // Registers custom schemes handler factories
-  static void RegisterCustomSchemesHandlerFactories();
-
-  // Registers custom schemes. Implemented in client_app_delegates.
-  static void RegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar);
-
 #pragma region CefApp
-
   //////////////////////////////////////////////////////////////////////////
   // CefApp methods:
   virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
@@ -62,12 +57,16 @@ private:
 
   virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
 
+  virtual CefRefPtr<CefResourceBundleHandler> GetResourceBundleHandler() override;
+
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
 
-#pragma endregion CefApp
+  virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
+
+#pragma endregion
 
 #pragma region CefBrowserProcessHandler
-
+  //////////////////////////////////////////////////////////////////////////
   // CefBrowserProcessHandler methods:
   virtual void OnContextInitialized() override;
 
@@ -75,7 +74,9 @@ private:
 
   virtual void OnScheduleMessagePumpWork(int64_t delay_ms) override;
 
-#pragma endregion CefBrowserProcessHandler
+  CefRefPtr<CefClient> GetDefaultClient() override;
+
+#pragma endregion
 };
 
 #endif

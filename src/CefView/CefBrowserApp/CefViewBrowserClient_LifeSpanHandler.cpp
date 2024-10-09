@@ -1,16 +1,14 @@
 ﻿#include <CefViewBrowserClient.h>
 
-#pragma region std_headers
+#pragma region stl_headers
 #include <sstream>
 #include <string>
 #include <algorithm>
-#pragma endregion std_headers
-
-#pragma region cef_headers
-#include <include/cef_app.h>
-#pragma endregion cef_headers
+#pragma endregion
 
 #include <Common/CefViewCoreLog.h>
+
+#include "CefViewQueryHandler/CefViewQueryHandler.h"
 
 CefRefPtr<CefLifeSpanHandler>
 CefViewBrowserClient::GetLifeSpanHandler()
@@ -73,8 +71,8 @@ CefViewBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
   if (browser_map_.empty()) {
     message_router_ = CefMessageRouterBrowserSide::Create(message_router_config_);
 
-    cefquery_handler_ = new CefViewQueryHandler(client_delegate_);
-    message_router_->AddHandler(cefquery_handler_.get(), false);
+    message_router_handler_ = new CefViewQueryHandler(client_delegate_);
+    message_router_->AddHandler(message_router_handler_.get(), false);
   }
 
   auto delegate = client_delegate_.lock();
@@ -96,8 +94,7 @@ CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
   }
 
   auto delegate = client_delegate_.lock();
-  if (delegate)
-  {
+  if (delegate) {
     if (close_by_native_) {
       // close by native
       ignoreClose = delegate->doClose(browser);
@@ -128,8 +125,8 @@ CefViewBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
   browser_map_.erase(browser->GetIdentifier());
 
   if (browser_map_.empty()) {
-    message_router_->RemoveHandler(cefquery_handler_.get());
+    message_router_->RemoveHandler(message_router_handler_.get());
     message_router_ = nullptr;
-    cefquery_handler_ = nullptr;
+    message_router_handler_ = nullptr;
   }
 }

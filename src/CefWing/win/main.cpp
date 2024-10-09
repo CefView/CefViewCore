@@ -11,20 +11,15 @@
 #if defined(CEF_USE_SANDBOX)
 #include <include/cef_sandbox_win.h>
 #endif
-#pragma endregion cef_headers
+#pragma endregion
 
-#pragma region win_headers
-
-#pragma endregion win_headers
-
-#pragma region project_heasers
-#include <Common/CefViewCoreLog.h>
 #include <CefViewCoreProtocol.h>
 
-#include "../CefRenderApp/CefViewAppBase.h"
-#include "../CefRenderApp/CefViewOtherApp.h"
-#include "../CefRenderApp/CefViewRenderApp.h"
-#pragma endregion project_heasers
+#include <Common/CefViewCoreLog.h>
+
+#include "../App/CefViewAppBase.h"
+#include "../App/CefViewOtherApp.h"
+#include "../App/CefViewRenderApp.h"
 
 int
 CefViewWingMain(HINSTANCE hInstance)
@@ -47,12 +42,17 @@ CefViewWingMain(HINSTANCE hInstance)
   CefRefPtr<CefApp> app;
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
   command_line->InitFromString(::GetCommandLineW());
+
+  // get parameter from command line
   auto process_type = CefViewAppBase::GetProcessType(command_line);
+  auto builtin_scheme_name = CefViewAppBase::GetBuiltinSchemeName(command_line);
+  auto bridge_object_name = CefViewAppBase::GetBridgeObjectName(command_line);
+
+  // create application
   if (process_type == CefViewAppBase::RendererProcess) {
-    auto bridge_name = CefViewAppBase::GetBridgeObjectName(command_line);
-    app = new CefViewRenderApp(bridge_name);
+    app = new CefViewRenderApp(builtin_scheme_name, bridge_object_name);
   } else if (process_type == CefViewAppBase::OtherProcess) {
-    app = new CefViewOtherApp();
+    app = new CefViewOtherApp(builtin_scheme_name);
   } else {
     logI("Parse process unknown, exit");
     return 1;

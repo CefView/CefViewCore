@@ -1,17 +1,16 @@
-#include <CefViewBrowserClient.h>
+﻿#include <CefViewBrowserClient.h>
 
-#pragma region std_headers
+#pragma region stl_headers
 #include <sstream>
 #include <string>
 #include <algorithm>
-#pragma endregion std_headers
+#pragma endregion
 
-#pragma region cef_headers
-#include <include/cef_app.h>
-#pragma endregion cef_headers
+#include <Common/CefViewCoreLog.h>
 
 #include <CefViewCoreProtocol.h>
-#include <Common/CefViewCoreLog.h>
+
+#include "CefViewQueryHandler/CefViewQueryHandler.h"
 
 #if CEF_VERSION_MAJOR < 122
 const CefFrameId CefViewBrowserClient::MAIN_FRAME = 0;
@@ -23,16 +22,16 @@ const CefFrameId CefViewBrowserClient::ALL_FRAMES = "-1";
 
 CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
                                            CefViewBrowserClientDelegateInterface::RefPtr delegate)
-  : is_closing_(false)
+  : app_(app)
+  , client_delegate_(delegate)
+  , is_closing_(false)
   , close_by_native_(false)
   , initial_navigation_(true)
-  , app_(app)
-  , client_delegate_(delegate)
-  , cefquery_handler_(nullptr)
   , message_router_(nullptr)
+  , message_router_handler_(nullptr)
   , resource_manager_(new CefResourceManager())
 {
-  app_->CheckInClient(this);
+  app_->CheckInClient(this, delegate);
 
   // Create the browser-side router for query handling.
   message_router_config_.js_query_function = kCefViewQueryFuntionName;
@@ -42,6 +41,7 @@ CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
 CefViewBrowserClient::~CefViewBrowserClient()
 {
   log_debug("CefViewBrowserClient::~CefViewBrowserClient()");
+
   app_->CheckOutClient(this);
 }
 
@@ -111,7 +111,7 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
 #else
       auto frame = browser->GetFrame(id);
 #endif
-      
+
       frame->SendProcessMessage(PID_RENDERER, m);
     }
 
@@ -124,8 +124,8 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
 bool
 CefViewBrowserClient::ResponseQuery(const int64_t query, bool success, const CefString& response, int error)
 {
-  if (cefquery_handler_)
-    return cefquery_handler_->Response(query, success, response, error);
+  if (message_router_handler_)
+    return message_router_handler_->Response(query, success, response, error);
 
   return false;
 }

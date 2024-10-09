@@ -11,20 +11,17 @@
 #if defined(CEF_USE_SANDBOX)
 #include <include/cef_sandbox_mac.h>
 #endif
-#pragma endregion cef_headers
+#pragma endregion
 
-#pragma region mac_headers
 #include <Foundation/Foundation.h>
 #include <libgen.h>
 #include <mach-o/dyld.h>
-#pragma endregion mac_headers
 
-#pragma region project_heasers
-#include "../CefRenderApp/CefViewAppBase.h"
-#include "../CefRenderApp/CefViewOtherApp.h"
-#include "../CefRenderApp/CefViewRenderApp.h"
 #include <Common/CefViewCoreLog.h>
-#pragma endregion project_heasers
+
+#include "../App/CefViewAppBase.h"
+#include "../App/CefViewOtherApp.h"
+#include "../App/CefViewRenderApp.h"
 
 const char kFrameworkPath[] = "Chromium Embedded Framework.framework/Chromium Embedded Framework";
 const char kPathFromHelperExe[] = "../../..";
@@ -83,12 +80,16 @@ int CefViewWingMain(int argc, char *argv[]) {
   CefRefPtr<CefApp> app;
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
   command_line->InitFromArgv(argc, argv);
+
+  // get parameter from command line
   auto process_type = CefViewAppBase::GetProcessType(command_line);
+  auto builtin_scheme_name = CefViewAppBase::GetBuiltinSchemeName(command_line);
+  auto bridge_object_name = CefViewAppBase::GetBridgeObjectName(command_line);
+
   if (process_type == CefViewAppBase::RendererProcess) {
-    auto bridge_name = CefViewAppBase::GetBridgeObjectName(command_line);
-    app = new CefViewRenderApp(bridge_name);
+    app = new CefViewRenderApp(builtin_scheme_name, bridge_object_name);
   } else if (process_type == CefViewAppBase::OtherProcess) {
-    app = new CefViewOtherApp();
+    app = new CefViewOtherApp(builtin_scheme_name);
   } else {
     logI("Parse process unknown, exit");
     return 1;

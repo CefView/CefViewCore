@@ -1,0 +1,130 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "include": [],
+  "configurePresets": [
+    {
+      "name": "default",
+      "hidden": true
+    },
+    {
+      "name": "win",
+      "hidden": true,
+      "inherits": "default"
+    },
+    {
+      "name": "win-x86",
+      "inherits": "win",
+      "displayName": "Windows x86 (Debug & Release)",
+      "binaryDir": "${sourceDir}/.build/win.x86",
+      "architecture": "Win32",
+      "cacheVariables": {
+        "PROJECT_ARCH": "x86",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "win-x64",
+      "inherits": "win",
+      "displayName": "Windows x64 (Debug & Release)",
+      "binaryDir": "${sourceDir}/.build/win.x64",
+      "architecture": "x64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "x86_64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "win-arm64",
+      "inherits": "win",
+      "displayName": "Windows arm64 (Debug & Release)",
+      "binaryDir": "${sourceDir}/.build/win.arm64",
+      "architecture": "ARM64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "arm64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "osx",
+      "hidden": true,
+      "generator": "Xcode",
+      "inherits": "default"
+    },
+    {
+      "name": "osx-x64",
+      "inherits": "osx",
+      "displayName": "macOS x64 (Debug & Release)",
+      "binaryDir": "${sourceDir}/.build/osx.x64",
+      "architecture": "x64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "x86_64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "osx-arm64",
+      "inherits": "osx",
+      "displayName": "macOS arm64 (Debug & Release)",
+      "binaryDir": "${sourceDir}/.build/osx.arm64",
+      "architecture": "arm64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "arm64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "inherits": "default"
+    },
+    {
+      "name": "linux-x64",
+      "inherits": "linux",
+      "displayName": "Linux x64",
+      "binaryDir": "${sourceDir}/.build/linux.x64",
+      "architecture": "x64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "x86_64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "linux-arm64",
+      "inherits": "linux",
+      "displayName": "Linux arm64",
+      "binaryDir": "${sourceDir}/.build/linux.arm64",
+      "architecture": "arm64",
+      "cacheVariables": {
+        "PROJECT_ARCH": "arm64",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "linux-x86",
+      "inherits": "linux",
+      "displayName": "Linux x86",
+      "binaryDir": "${sourceDir}/.build/linux.x86",
+      "architecture": "x86",
+      "cacheVariables": {
+        "PROJECT_ARCH": "x86",
+        "USE_SANDBOX": "ON"
+      }
+    },
+    {
+      "name": "linux-arm",
+      "inherits": "linux",
+      "displayName": "Linux arm",
+      "binaryDir": "${sourceDir}/.build/linux.arm",
+      "architecture": "arm",
+      "cacheVariables": {
+        "PROJECT_ARCH": "arm",
+        "USE_SANDBOX": "ON"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ﻿//
 //  CefViewBrowserAppDelegate.h
-//  CefView
+//  CefViewCore
 //
 //  Created by Sheen Tian on 2020/6/11.
 //
@@ -9,10 +9,12 @@
 #define CefViewBrowserAppDelegate_h
 #pragma once
 
+#pragma region stl_headers
 #include <memory>
 #include <string>
+#pragma endregion
 
-#include <include/cef_app.h>
+#include <CefViewCoreGlobal.h>
 
 /// <summary>
 ///

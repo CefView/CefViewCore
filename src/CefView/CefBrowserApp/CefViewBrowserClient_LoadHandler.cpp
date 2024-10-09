@@ -1,15 +1,10 @@
 ﻿#include <CefViewBrowserClient.h>
 
-#pragma region std_headers
+#pragma region stl_headers
 #include <sstream>
 #include <string>
 #include <algorithm>
-#pragma endregion std_headers
-
-#pragma region cef_headers
-#include <include/cef_app.h>
-#include <include/cef_parser.h>
-#pragma endregion cef_headers
+#pragma endregion
 
 #include <Common/CefViewCoreLog.h>
 

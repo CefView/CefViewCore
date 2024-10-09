@@ -1,1 +1,0 @@
-cmake -G "Xcode" -S . -B .build/mac.arm64 -DPROJECT_ARCH=arm64 -DUSE_SANDBOX=ON $*

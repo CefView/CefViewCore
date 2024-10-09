@@ -9,17 +9,14 @@
 #define CefOtherApp_h
 #pragma once
 
-#pragma region project_heasers
 #include "CefViewAppBase.h"
-#pragma endregion project_heasers
 
 class CefViewOtherApp : public CefViewAppBase
 {
-public:
-  CefViewOtherApp();
-
-private:
   IMPLEMENT_REFCOUNTING(CefViewOtherApp);
+
+public:
+  CefViewOtherApp(const std::string& scheme_name);
 };
 
 #endif

@@ -1,20 +1,20 @@
 ﻿#pragma once
-#pragma region std_headers
+#pragma region stl_headers
 #include <list>
 #include <map>
 #pragma endregion
 
 #pragma region cef_headers
 #include <include/cef_v8.h>
-#pragma endregion cef_headers
-
-#include <CefViewCoreProtocol.h>
+#pragma endregion
 
 /// <summary>
 ///
 /// </summary>
-class CefViewClient : public CefBaseRefCounted
+class CefViewBridgeObject : public CefBaseRefCounted
 {
+  IMPLEMENT_REFCOUNTING(CefViewBridgeObject);
+
   /// <summary>
   ///
   /// </summary>
@@ -44,7 +44,7 @@ class CefViewClient : public CefBaseRefCounted
     ///
     /// </summary>
     /// <param name="client"></param>
-    V8Handler(CefViewClient* client);
+    V8Handler(CefViewBridgeObject* object);
 
     /// <summary>
     ///
@@ -114,7 +114,7 @@ class CefViewClient : public CefBaseRefCounted
     /// <summary>
     ///
     /// </summary>
-    CefViewClient* client_;
+    CefViewBridgeObject* object_;
 
   private:
     IMPLEMENT_REFCOUNTING(V8Handler);
@@ -128,10 +128,10 @@ public:
   /// <param name="frame"></param>
   /// <param name="global"></param>
   /// <param name="name"></param>
-  CefViewClient(CefRefPtr<CefBrowser> browser,
-                CefRefPtr<CefFrame> frame,
-                CefRefPtr<CefV8Value> global,
-                const std::string& name);
+  CefViewBridgeObject(CefRefPtr<CefBrowser> browser,
+                      CefRefPtr<CefFrame> frame,
+                      CefRefPtr<CefV8Value> global,
+                      const std::string& name);
 
   /// <summary>
   ///
@@ -216,8 +216,5 @@ private:
   /// <summary>
   ///
   /// </summary>
-  CefViewClient::EventListenerListMap eventListenerListMap_;
-
-private:
-  IMPLEMENT_REFCOUNTING(CefViewClient);
+  CefViewBridgeObject::EventListenerListMap eventListenerListMap_;
 };

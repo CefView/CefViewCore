@@ -1,1 +1,0 @@
-cmake -S . -B .build\win.arm64 -A ARM64 -DPROJECT_ARCH=arm64 -DUSE_SANDBOX=ON %*

@@ -1,6 +1,6 @@
 ﻿//
-//  CefViewBrowserHandler.h
-//  CefView
+//  CefViewBrowserClient.h
+//  CefViewCore
 //
 //  Created by Sheen Tian on 2020/6/11.
 //
@@ -9,27 +9,23 @@
 #define CefViewBrowserHandler_h
 #pragma once
 
-#pragma region std_headers
-#include <list>
-#include <map>
-#include <mutex>
-#include <set>
+#pragma region stl_headers
 #include <string>
 #include <unordered_map>
-#pragma endregion std_headers
-
-#pragma region cef_headers
-#include <include/cef_version.h>
-#include <include/cef_client.h>
-#include <include/wrapper/cef_message_router.h>
-#include <include/wrapper/cef_resource_manager.h>
-#pragma endregion cef_headers
+#pragma endregion
 
 #include <CefViewCoreGlobal.h>
 #include <CefViewBrowserApp.h>
 #include <CefViewBrowserClientDelegate.h>
-#include <CefViewQueryHandler.h>
 
+/// <summary>
+/// Forward declaration
+/// </summary>
+class CefViewQueryHandler;
+
+/// <summary>
+///
+/// </summary>
 class CefViewBrowserClient
   : public CefClient
   , public CefContextMenuHandler
@@ -37,6 +33,7 @@ class CefViewBrowserClient
   , public CefDisplayHandler
   , public CefDownloadHandler
   , public CefDragHandler
+  , public CefFindHandler
   , public CefFocusHandler
   , public CefJSDialogHandler
   , public CefKeyboardHandler
@@ -49,22 +46,31 @@ class CefViewBrowserClient
   IMPLEMENT_REFCOUNTING(CefViewBrowserClient);
 
 private:
+  /// <summary>
+  ///
+  /// </summary>
+  CefRefPtr<CefViewBrowserApp> app_;
+
+  /// <summary>
+  ///
+  /// </summary>
+  CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
+
+  // flags
   bool is_closing_;
   bool close_by_native_;
   bool initial_navigation_;
 
-  std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
-
-  CefRefPtr<CefViewBrowserApp> app_;
-  CefViewBrowserClientDelegateInterface::WeakPtr client_delegate_;
-
   // message router
   CefMessageRouterConfig message_router_config_;
-  CefRefPtr<CefViewQueryHandler> cefquery_handler_;
   CefRefPtr<CefMessageRouterBrowserSide> message_router_;
+  CefRefPtr<CefViewQueryHandler> message_router_handler_;
 
   // resource manager
   CefRefPtr<CefResourceManager> resource_manager_;
+
+  // browser map
+  std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
 
 public:
   /// <summary>
@@ -249,17 +255,17 @@ protected:
   // CefDownloadHandler
 #pragma region CefDownloadHandler
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
-  #if CEF_VERSION_MAJOR < 125
+#if CEF_VERSION_MAJOR < 125
   virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefDownloadItem> download_item,
-                        const CefString& suggested_name,
-                        CefRefPtr<CefBeforeDownloadCallback> callback) override;
-  #else
+                                CefRefPtr<CefDownloadItem> download_item,
+                                const CefString& suggested_name,
+                                CefRefPtr<CefBeforeDownloadCallback> callback) override;
+#else
   virtual bool OnBeforeDownload(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefDownloadItem> download_item,
                                 const CefString& suggested_name,
                                 CefRefPtr<CefBeforeDownloadCallback> callback) override;
-  #endif
+#endif
 
   void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefDownloadItem> download_item,
@@ -276,6 +282,17 @@ protected:
   virtual void OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          const std::vector<CefDraggableRegion>& regions) override;
+#pragma endregion
+
+  // CefFindHandler methods
+#pragma region CefDragHandler
+  virtual CefRefPtr<CefFindHandler> GetFindHandler() override;
+  virtual void OnFindResult(CefRefPtr<CefBrowser> browser,
+                            int identifier,
+                            int count,
+                            const CefRect& selectionRect,
+                            int activeMatchOrdinal,
+                            bool finalUpdate) override;
 #pragma endregion
 
   // CefFocusHandler methods

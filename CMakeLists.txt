@@ -86,8 +86,8 @@ if(NOT CEFVIEW_WING_NAME)
 endif()
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewWingProcessName.h.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewWingProcessName.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewCoreProtocol.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewCoreProtocol.h"
   @ONLY
 )
 
