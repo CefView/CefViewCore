@@ -43,7 +43,7 @@ public:
   /// <param name="browser"></param>
   /// <param name="frameId"></param>
   /// <param name="url"></param>
-  virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const std::string& url) = 0;
+  virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const CefString& url) = 0;
 
   /// <summary>
   ///
@@ -54,7 +54,7 @@ public:
   /// <param name="query_id"></param>
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
                                    const CefFrameId& frameId,
-                                   const std::string& query,
+                                   const CefString& query,
                                    const int64_t query_id) = 0;
 
   /// <summary>
@@ -76,7 +76,7 @@ public:
   /// <param name="arguments"></param>
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
                                   const CefFrameId& frameId,
-                                  const std::string& method,
+                                  const CefString& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
 
   /// <summary>
@@ -88,7 +88,7 @@ public:
   /// <param name="result"></param>
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
                               const CefFrameId& frameId,
-                              const std::string& context,
+                              const CefString& context,
                               const CefRefPtr<CefValue>& result) = 0;
 
   // context menu handler
@@ -128,21 +128,21 @@ public:
 
   // display handler
 #pragma region DisplayHandler
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const std::string& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const CefString& url) = 0;
 
-  virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const std::string& title) = 0;
+  virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const CefString& title) = 0;
 
   virtual void faviconURLChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) = 0;
 
-  virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const std::string& text) = 0;
+  virtual bool tooltipMessage(CefRefPtr<CefBrowser>& browser, const CefString& text) = 0;
 
   virtual void fullscreenModeChanged(CefRefPtr<CefBrowser>& browser, bool fullscreen) = 0;
 
-  virtual void statusMessage(CefRefPtr<CefBrowser>& browser, const std::string& value) = 0;
+  virtual void statusMessage(CefRefPtr<CefBrowser>& browser, const CefString& value) = 0;
 
   virtual void loadingProgressChanged(CefRefPtr<CefBrowser>& browser, double progress) = 0;
 
-  virtual void consoleMessage(CefRefPtr<CefBrowser>& browser, const std::string& message, int level) = 0;
+  virtual void consoleMessage(CefRefPtr<CefBrowser>& browser, const CefString& message, int level) = 0;
 
   virtual bool cursorChanged(CefRefPtr<CefBrowser> browser,
                              CefCursorHandle cursor,
@@ -179,8 +179,8 @@ public:
 #pragma region LifeSpanHandler
   virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
                              const CefFrameId& frameId,
-                             const std::string& targetUrl,
-                             const std::string& targetFrameName,
+                             const CefString& targetUrl,
+                             const CefString& targetFrameName,
                              CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
                              CefWindowInfo& windowInfo,
                              CefBrowserSettings& settings,
@@ -217,8 +217,8 @@ public:
   virtual void loadError(CefRefPtr<CefBrowser>& browser,
                          CefRefPtr<CefFrame>& frame,
                          int errorCode,
-                         const std::string& errorMsg,
-                         const std::string& failedUrl,
+                         const CefString& errorMsg,
+                         const CefString& failedUrl,
                          bool& handled) = 0;
 #pragma endregion
 

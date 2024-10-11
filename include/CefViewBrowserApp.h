@@ -12,11 +12,27 @@
 #pragma region stl_headers
 #include <string>
 #include <unordered_map>
+#include <list>
 #pragma endregion
 
 #include <CefViewCoreGlobal.h>
 #include <CefViewBrowserAppDelegate.h>
 #include <CefViewBrowserClientDelegate.h>
+
+struct FolderResourceMapping
+{
+  std::string path;
+  std::string url;
+  int priority;
+};
+
+struct ArchiveResourceMapping
+{
+  std::string path;
+  std::string url;
+  std::string password;
+  int priority;
+};
 
 class CefViewBrowserApp
   : public CefApp
@@ -33,6 +49,10 @@ private:
   // The app delegate
   CefViewBrowserAppDelegateInterface::WeakPtr app_delegate_;
 
+  std::list<FolderResourceMapping> folderResourceMappingList_;
+
+  std::list<ArchiveResourceMapping> archiveResourceMappingList_;
+
 public:
   CefViewBrowserApp(const std::string& scheme_name,
                     const std::string& bridge_name,
@@ -45,6 +65,34 @@ public:
   void CheckOutClient(void* ctx);
 
   CefViewBrowserClientDelegateInterface::RefPtr GetClientHandler(void* ctx);
+
+  void AddLocalFolderResource(const std::string& path, const std::string& url, int priority = 0);
+  const std::list<FolderResourceMapping>& FolderResourceMappingList();
+
+  void AddArchiveResource(const std::string& path,
+                          const std::string& url,
+                          const std::string& password = "",
+                          int priority = 0);
+  const std::list<ArchiveResourceMapping>& ArchiveResourceMappingList();
+
+  bool AddGlobalCookie(const std::string& name,
+                       const std::string& value,
+                       const std::string& domain,
+                       const std::string& url);
+
+  bool DeleteAllCookies();
+
+  bool AddCrossOriginWhitelistEntry(const std::string& sourceOrigin,
+                                    const std::string& targetSchema,
+                                    const std::string& targetDomain,
+                                    bool allowTargetSubdomains);
+
+  bool RemoveCrossOriginWhitelistEntry(const std::string& sourceOrigin,
+                                       const std::string& targetSchema,
+                                       const std::string& targetDomain,
+                                       bool allowTargetSubdomains);
+
+  bool ClearCrossOriginWhitelistEntry();
 
   bool IsSafeToExit();
 

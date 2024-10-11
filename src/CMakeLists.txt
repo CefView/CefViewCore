@@ -37,8 +37,11 @@ add_library(CefViewCore STATIC
   ${CefViewCore_SRC_FILES}
 )
 
-target_include_directories(CefViewCore PRIVATE
+target_include_directories(CefViewCore
+  PUBLIC
   ${CefViewCore_INCLUDE_PATH}
+  PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
 )
 
 # ADD_LOGICAL_TARGET(libcef_lib
@@ -142,6 +145,8 @@ if(OS_MACOS)
   )
 endif() # OS_MACOS
 
+add_library(CefViewCore::CefViewCore ALIAS CefViewCore)
+
 # ## CefViewWing
 # ###############################################################################################
 # soruce code for all platforms
@@ -202,8 +207,10 @@ if(OS_WINDOWS)
   )
 
   target_include_directories(${CEFVIEW_WING_NAME}
-    PRIVATE
+    PUBLIC
     ${CefViewCore_INCLUDE_PATH}
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
   )
 
   add_dependencies(${CEFVIEW_WING_NAME}
@@ -281,8 +288,11 @@ if(OS_LINUX)
     BUILD_WITH_INSTALL_RPATH TRUE
   )
 
-  target_include_directories(${CEFVIEW_WING_NAME} PRIVATE
+  target_include_directories(${CEFVIEW_WING_NAME}
+    PUBLIC
     ${CefViewCore_INCLUDE_PATH}
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
   )
 
   add_dependencies(${CEFVIEW_WING_NAME}
@@ -378,8 +388,11 @@ if(OS_MACOS)
       XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/CefWing/mac/CefViewWing.entitlements"
     )
 
-    target_include_directories(${_helper_target} PRIVATE
+    target_include_directories(${_helper_target}
+      PUBLIC
       ${CefViewCore_INCLUDE_PATH}
+      PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
     )
 
     add_dependencies(${_helper_target}
@@ -405,3 +418,6 @@ if(OS_MACOS)
     VERBATIM
   )
 endif() # OS_MACOS
+
+# add alias for heper process target
+add_executable(CefViewCore::CefViewWing ALIAS ${CEFVIEW_WING_NAME})

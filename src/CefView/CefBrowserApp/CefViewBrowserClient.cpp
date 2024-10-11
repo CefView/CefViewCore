@@ -25,6 +25,15 @@ CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
 {
   app_->CheckInClient(this, delegate);
 
+  for (auto& folderMapping : app_->FolderResourceMappingList()) {
+    AddLocalDirectoryResourceProvider(folderMapping.path, folderMapping.url, folderMapping.priority);
+  }
+
+  for (auto& archiveMapping : app_->ArchiveResourceMappingList()) {
+    AddArchiveResourceProvider(
+      archiveMapping.path, archiveMapping.url, archiveMapping.password, archiveMapping.priority);
+  }
+
   // Create the browser-side router for query handling.
   message_router_config_.js_query_function = kCefViewQueryFuntionName;
   message_router_config_.js_cancel_function = kCefViewQueryCancelFunctionName;

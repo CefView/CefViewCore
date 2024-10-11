@@ -48,7 +48,7 @@ public:
   ///
   /// </summary>
   /// <param name="command_line"></param>
-  virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) = 0;
+  virtual void onBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) = 0;
 
   /// <summary>
   ///

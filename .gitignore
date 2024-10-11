@@ -6,3 +6,5 @@ dep/*.bz2
 dep/cef_binary_*
 .build
 include/CefViewWingProcessName.h
+include/CefViewCoreProtocol.h
+include/CefViewCoreProtocol.h

@@ -159,7 +159,6 @@ if(OS_WINDOWS)
     add_compile_options("/MT$<$<CONFIG:Debug>:d>")
   else()
     # either MT or MD is supported
-    message(STATUS "===== " ${STATIC_CRT})
     set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
     add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
   endif()
@@ -195,7 +194,6 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 # ##############################################################
 set(CefViewCore_INCLUDE_PATH
   "${CEF_INCLUDE_PATH}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Shared"
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
