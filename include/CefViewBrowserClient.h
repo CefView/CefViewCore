@@ -1,4 +1,4 @@
-﻿//
+//
 //  CefViewBrowserClient.h
 //  CefViewCore
 //
@@ -17,6 +17,14 @@
 #include <CefViewCoreGlobal.h>
 #include <CefViewBrowserApp.h>
 #include <CefViewBrowserClientDelegate.h>
+
+#if CEF_VERSION_MAJOR < 122
+#define CEFVIEW_MAIN_FRAME (0)
+#define CEFVIEW_ALL_FRAMES (-1)
+#else
+#define CEFVIEW_MAIN_FRAME  ("0")
+#define CEFVIEW_ALL_FRAMES  ("-1")
+#endif
 
 /// <summary>
 /// Forward declaration
@@ -73,16 +81,6 @@ private:
   std::unordered_map<int, CefRefPtr<CefBrowser>> browser_map_;
 
 public:
-  /// <summary>
-  ///
-  /// </summary>
-  const static CefFrameId MAIN_FRAME;
-
-  /// <summary>
-  ///
-  /// </summary>
-  const static CefFrameId ALL_FRAMES;
-
   /// <summary>
   ///
   /// </summary>

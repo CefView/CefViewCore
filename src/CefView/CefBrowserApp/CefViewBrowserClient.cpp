@@ -1,4 +1,4 @@
-﻿#include <CefViewBrowserClient.h>
+#include <CefViewBrowserClient.h>
 
 #pragma region stl_headers
 #include <sstream>
@@ -11,14 +11,6 @@
 #include <CefViewCoreProtocol.h>
 
 #include "CefViewQueryHandler/CefViewQueryHandler.h"
-
-#if CEF_VERSION_MAJOR < 122
-const CefFrameId CefViewBrowserClient::MAIN_FRAME = 0;
-const CefFrameId CefViewBrowserClient::ALL_FRAMES = -1;
-#else
-const CefFrameId CefViewBrowserClient::MAIN_FRAME = "0";
-const CefFrameId CefViewBrowserClient::ALL_FRAMES = "-1";
-#endif
 
 CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
                                            CefViewBrowserClientDelegateInterface::RefPtr delegate)
@@ -96,9 +88,9 @@ CefViewBrowserClient::TriggerEvent(CefRefPtr<CefBrowser> browser,
 
   if (browser) {
     std::vector<CefFrameId> frameIds;
-    if (MAIN_FRAME == frame_id) {
+    if (frame_id == CEFVIEW_MAIN_FRAME) {
       frameIds.push_back(browser->GetMainFrame()->GetIdentifier());
-    } else if (ALL_FRAMES == frame_id) {
+    } else if (frame_id == CEFVIEW_ALL_FRAMES) {
       browser->GetFrameIdentifiers(frameIds);
     } else {
       frameIds.push_back(frame_id);
