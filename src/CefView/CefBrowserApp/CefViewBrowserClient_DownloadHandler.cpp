@@ -37,10 +37,18 @@ CefViewBrowserClient::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (delegate) {
     delegate->onBeforeDownload(browser, download_item, suggested_name, callback);
+  } else {
+    // no delegate, just allow this download and then cancel it in OnDownloadUpdated
+    if (callback) {
+      callback->Continue("", false);
+    }
+  }
 
-  return false;
+  /// Return true and execute |callback| either asynchronously or in this method to continue or cancel the download.
+  /// Return false to proceed with default handling (cancel with Alloy style, download shelf with Chrome style)
+  return true;
 }
 #endif
 
@@ -52,6 +60,12 @@ CefViewBrowserClient::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (delegate) {
     delegate->onDownloadUpdated(browser, download_item, callback);
+  } else {
+    // no delegate, just cancel this downloading
+    if (callback) {
+      callback->Cancel();
+    }
+  }
 }
