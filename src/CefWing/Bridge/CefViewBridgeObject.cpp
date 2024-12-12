@@ -4,6 +4,75 @@
 
 #include <CefViewCoreProtocol.h>
 
+class CefViewArrayBuffer : public CefV8ArrayBufferReleaseCallback
+{
+  IMPLEMENT_REFCOUNTING(CefViewArrayBuffer);
+  DISALLOW_COPY_AND_ASSIGN(CefViewArrayBuffer);
+
+public:
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="v"></param>
+  CefViewArrayBuffer(CefBinaryValue* v)
+    : m_size(0)
+    , m_buffer(nullptr)
+  {
+    if (v) {
+      auto l = v->GetSize();
+      if (l) {
+        m_buffer = std::make_unique<uint8_t[]>(l);
+        v->GetData(m_buffer.get(), l, 0);
+        m_size = l;
+      }
+    }
+  }
+
+  /// <summary>
+  ///
+  /// </summary>
+  ~CefViewArrayBuffer()
+  {
+    m_buffer.reset();
+    m_size = 0;
+  }
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns></returns>
+  void* GetBuffer()
+  {
+    // get under layer buffer address
+    return m_buffer.get();
+  }
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns></returns>
+  size_t GetSize()
+  {
+    // return size
+    return m_size;
+  }
+
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="buffer"></param>
+  void ReleaseBuffer(void* buffer) override
+  {
+    // release under layer buffer
+    m_buffer.reset();
+    m_size = 0;
+  }
+
+private:
+  size_t m_size;
+  std::unique_ptr<uint8_t[]> m_buffer;
+};
+
 CefViewBridgeObject::V8Handler::V8Handler(CefViewBridgeObject* object)
   : object_(object)
 {
@@ -210,8 +279,9 @@ CefViewBridgeObject::CefValueToV8Value(CefValue* cefValue)
       v8Value = CefV8Value::CreateString(v);
     } break;
     case CefValueType::VTYPE_BINARY: {
-      // TO-DO
-      // currently not supported
+      auto v = cefValue->GetBinary();
+      auto arryBuffer = new CefViewArrayBuffer(v.get());
+      v8Value = CefV8Value::CreateArrayBuffer(arryBuffer->GetBuffer(), arryBuffer->GetSize(), arryBuffer);
     } break;
     case CefValueType::VTYPE_DICTIONARY: {
       auto cDict = cefValue->GetDictionary();
@@ -288,8 +358,9 @@ CefViewBridgeObject::V8ValueToCefValue(CefV8Value* v8Value)
   else if (v8Value->IsString())
     cefValue->SetString(v8Value->GetStringValue());
   else if (v8Value->IsArrayBuffer()) {
-    // TO-DO
-    // currently not supported
+    auto size = v8Value->GetArrayBufferByteLength();
+    auto data = v8Value->GetArrayBufferData();
+    cefValue->SetBinary(CefBinaryValue::Create(data, size));
   } else if (v8Value->IsArray()) {
     auto s = v8Value->GetArrayLength();
     auto cefList = CefListValue::Create();

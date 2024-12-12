@@ -14,6 +14,7 @@
 class CefViewBridgeObject : public CefBaseRefCounted
 {
   IMPLEMENT_REFCOUNTING(CefViewBridgeObject);
+  DISALLOW_COPY_AND_ASSIGN(CefViewBridgeObject);
 
   /// <summary>
   ///
