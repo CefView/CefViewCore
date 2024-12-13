@@ -246,14 +246,9 @@ if(OS_WINDOWS)
     # .1 copy the cef resources to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_RESOURCE_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/resources"
+    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
 
-    # .2 move the icudtl.dat to root of output dir
-    COMMAND ${CMAKE_COMMAND} -E rename
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/resources/icudtl.dat"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/icudtl.dat"
-
-    # .3 copy all cef binary files to output dir
+    # copy all cef binary files to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}"
     "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
@@ -316,14 +311,9 @@ if(OS_LINUX)
     # .1 copy the cef resources to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_RESOURCE_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/resources"
+    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
 
-    # .2 move the icudtl.dat to root of output dir
-    COMMAND ${CMAKE_COMMAND} -E rename
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/resources/icudtl.dat"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/icudtl.dat"
-
-    # .3 copy all cef binary files to output dir
+    # copy all cef binary files to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}"
     "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
