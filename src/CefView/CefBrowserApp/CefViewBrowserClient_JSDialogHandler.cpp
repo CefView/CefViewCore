@@ -25,6 +25,11 @@ CefViewBrowserClient::OnJSDialog(CefRefPtr<CefBrowser> browser,
 {
   CEF_REQUIRE_UI_THREAD();
 
+  auto delegate = client_delegate_.lock();
+  if (delegate)
+    return delegate->OnJSDialog(
+      browser, origin_url, dialog_type, message_text, default_prompt_text, callback, suppress_message);
+
   return false;
 }
 
