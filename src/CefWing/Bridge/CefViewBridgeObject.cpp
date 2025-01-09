@@ -1,9 +1,13 @@
 ﻿#include "CefViewBridgeObject.h"
 
+#include <include/cef_version.h>
+
 #include <Common/CefViewCoreLog.h>
 
 #include <CefViewCoreProtocol.h>
 
+
+#if CEF_VERSION_MAJOR >= 119
 class CefViewArrayBuffer : public CefV8ArrayBufferReleaseCallback
 {
   IMPLEMENT_REFCOUNTING(CefViewArrayBuffer);
@@ -72,6 +76,7 @@ private:
   size_t m_size;
   std::unique_ptr<uint8_t[]> m_buffer;
 };
+#endif
 
 CefViewBridgeObject::V8Handler::V8Handler(CefViewBridgeObject* object)
   : object_(object)
@@ -279,9 +284,13 @@ CefViewBridgeObject::CefValueToV8Value(CefValue* cefValue)
       v8Value = CefV8Value::CreateString(v);
     } break;
     case CefValueType::VTYPE_BINARY: {
+#if CEF_VERSION_MAJOR >= 119
       auto v = cefValue->GetBinary();
       auto arryBuffer = new CefViewArrayBuffer(v.get());
       v8Value = CefV8Value::CreateArrayBuffer(arryBuffer->GetBuffer(), arryBuffer->GetSize(), arryBuffer);
+#else
+      // currently not supported
+#endif
     } break;
     case CefValueType::VTYPE_DICTIONARY: {
       auto cDict = cefValue->GetDictionary();
@@ -358,9 +367,13 @@ CefViewBridgeObject::V8ValueToCefValue(CefV8Value* v8Value)
   else if (v8Value->IsString())
     cefValue->SetString(v8Value->GetStringValue());
   else if (v8Value->IsArrayBuffer()) {
+#if CEF_VERSION_MAJOR >= 119
     auto size = v8Value->GetArrayBufferByteLength();
     auto data = v8Value->GetArrayBufferData();
     cefValue->SetBinary(CefBinaryValue::Create(data, size));
+#else
+    // currently not supported
+#endif
   } else if (v8Value->IsArray()) {
     auto s = v8Value->GetArrayLength();
     auto cefList = CefListValue::Create();
