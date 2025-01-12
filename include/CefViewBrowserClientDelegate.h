@@ -162,8 +162,8 @@ public:
                                  CefRefPtr<CefDownloadItemCallback> callback) = 0;
 #pragma endregion
 
-#pragma region GetDragHandler
   // drag hander
+#pragma region DragHandler
   virtual bool onDragEnter(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefDragData> dragData,
                            CefDragHandler::DragOperationsMask mask)
@@ -173,6 +173,43 @@ public:
 
   virtual void draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
                                       const std::vector<CefDraggableRegion>& regions) = 0;
+#pragma endregion
+
+  // focus handler
+#pragma region FocusHandler
+  virtual void takeFocus(CefRefPtr<CefBrowser>& browser, bool next) = 0;
+
+  virtual bool setFocus(CefRefPtr<CefBrowser>& browser) = 0;
+
+  virtual void gotFocus(CefRefPtr<CefBrowser>& browser) = 0;
+#pragma endregion
+
+// JS dialog handler
+#pragma region JSDialogHandler
+  virtual bool onJSDialog(CefRefPtr<CefBrowser> browser,
+                          const CefString& origin_url,
+                          CefJSDialogHandler::JSDialogType dialog_type,
+                          const CefString& message_text,
+                          const CefString& default_prompt_text,
+                          CefRefPtr<CefJSDialogCallback> callback,
+                          bool& suppress_message) = 0;
+
+  virtual bool onBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
+                                    const CefString& message_text,
+                                    bool is_reload,
+                                    CefRefPtr<CefJSDialogCallback> callback) = 0;
+  virtual void onResetDialogState(CefRefPtr<CefBrowser> browser) = 0;
+  virtual void onDialogClosed(CefRefPtr<CefBrowser> browser) = 0;
+#pragma endregion
+
+  // keyboard handler
+#pragma region KeyboardHandler
+  virtual bool onPreKeyEvent(CefRefPtr<CefBrowser> browser,
+                             const CefKeyEvent& event,
+                             CefEventHandle os_event,
+                             bool* is_keyboard_shortcut) = 0;
+
+  virtual bool onKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event) = 0;
 #pragma endregion
 
   // life span handler
@@ -194,15 +231,6 @@ public:
   virtual void onBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
 #pragma endregion
 
-  // focus handler
-#pragma region FocusHandler
-  virtual void takeFocus(CefRefPtr<CefBrowser>& browser, bool next) = 0;
-
-  virtual bool setFocus(CefRefPtr<CefBrowser>& browser) = 0;
-
-  virtual void gotFocus(CefRefPtr<CefBrowser>& browser) = 0;
-#pragma endregion
-
   // load handler
 #pragma region LoadHandler
   virtual void loadingStateChanged(CefRefPtr<CefBrowser>& browser,
@@ -220,16 +248,6 @@ public:
                          const CefString& errorMsg,
                          const CefString& failedUrl,
                          bool& handled) = 0;
-#pragma endregion
-
-  // keyboard handler
-#pragma region KeyboardHandler
-  virtual bool onPreKeyEvent(CefRefPtr<CefBrowser> browser,
-                             const CefKeyEvent& event,
-                             CefEventHandle os_event,
-                             bool* is_keyboard_shortcut) = 0;
-
-  virtual bool onKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& event, CefEventHandle os_event) = 0;
 #pragma endregion
 
   // Off screen rendering

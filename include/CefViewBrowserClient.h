@@ -1,4 +1,4 @@
-//
+﻿//
 //  CefViewBrowserClient.h
 //  CefViewCore
 //
@@ -22,8 +22,8 @@
 #define CEFVIEW_MAIN_FRAME (0)
 #define CEFVIEW_ALL_FRAMES (-1)
 #else
-#define CEFVIEW_MAIN_FRAME  ("0")
-#define CEFVIEW_ALL_FRAMES  ("-1")
+#define CEFVIEW_MAIN_FRAME ("0")
+#define CEFVIEW_ALL_FRAMES ("-1")
 #endif
 
 /// <summary>
@@ -283,7 +283,7 @@ protected:
 #pragma endregion
 
   // CefFindHandler methods
-#pragma region CefDragHandler
+#pragma region CefFindHandler
   virtual CefRefPtr<CefFindHandler> GetFindHandler() override;
   virtual void OnFindResult(CefRefPtr<CefBrowser> browser,
                             int identifier,
@@ -311,12 +311,12 @@ protected:
                           const CefString& default_prompt_text,
                           CefRefPtr<CefJSDialogCallback> callback,
                           bool& suppress_message) override;
-
   virtual bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
                                     const CefString& message_text,
                                     bool is_reload,
                                     CefRefPtr<CefJSDialogCallback> callback) override;
   virtual void OnResetDialogState(CefRefPtr<CefBrowser> browser) override;
+  virtual void OnDialogClosed(CefRefPtr<CefBrowser> browser) override;
 #pragma endregion
 
   // CefKeyboardHandler methods
