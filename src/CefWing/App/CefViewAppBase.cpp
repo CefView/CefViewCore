@@ -9,7 +9,7 @@ const char kProcessType[] = "type";
 const char kZygoteProcess[] = "zygote";
 const char kRendererProcess[] = "renderer";
 
-CefViewAppBase::CefViewAppBase(const std::string& scheme_name)
+CefViewAppBase::CefViewAppBase(const CefString& scheme_name)
   : builtin_scheme_name_(scheme_name)
 {
 }
@@ -22,7 +22,7 @@ CefViewAppBase::GetProcessType(CefRefPtr<CefCommandLine> command_line)
   if (!command_line->HasSwitch(kProcessType))
     return UnkownProcess;
 
-  const std::string& process_type = command_line->GetSwitchValue(kProcessType);
+  auto process_type = command_line->GetSwitchValue(kProcessType);
   logI("process type parameter is: %s", process_type.c_str());
   if (process_type == kZygoteProcess) {
     // for linux only
@@ -34,24 +34,24 @@ CefViewAppBase::GetProcessType(CefRefPtr<CefCommandLine> command_line)
   return OtherProcess;
 }
 
-std::string
+CefString
 CefViewAppBase::GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line)
 {
   if (!command_line->HasSwitch(kCefViewBridgeObjectNameKey))
     return "";
 
-  const std::string& name = command_line->GetSwitchValue(kCefViewBridgeObjectNameKey);
+  auto name = command_line->GetSwitchValue(kCefViewBridgeObjectNameKey);
   logI("bridge object name: %s", name.c_str());
   return name;
 }
 
-std::string
+CefString
 CefViewAppBase::GetBuiltinSchemeName(CefRefPtr<CefCommandLine> command_line)
 {
   if (!command_line->HasSwitch(kCefViewBuiltinSchemeNameKey))
     return "";
 
-  const std::string& name = command_line->GetSwitchValue(kCefViewBuiltinSchemeNameKey);
+  auto name = command_line->GetSwitchValue(kCefViewBuiltinSchemeNameKey);
   logI("built-in scheme name: %s", name.c_str());
   return name;
 }
@@ -60,7 +60,15 @@ void
 CefViewAppBase::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
 {
   if (registrar) {
-    registrar->AddCustomScheme(builtin_scheme_name_.empty() ? kCefViewDefaultBuiltinSchemaName : builtin_scheme_name_,
-                               0);
+    int options = 0                                 //
+                  | CEF_SCHEME_OPTION_STANDARD      //
+                  | CEF_SCHEME_OPTION_SECURE        //
+                  | CEF_SCHEME_OPTION_CORS_ENABLED  //
+                  | CEF_SCHEME_OPTION_FETCH_ENABLED //
+                  | 0;
+    auto scheme = builtin_scheme_name_.empty() ? kCefViewDefaultBuiltinSchemaName : builtin_scheme_name_;
+    if (!registrar->AddCustomScheme(scheme, options)) {
+      logE("faield to add built-in scheme: %s", scheme.c_str());
+    }
   }
 }

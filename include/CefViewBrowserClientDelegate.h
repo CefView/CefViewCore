@@ -11,7 +11,6 @@
 
 #pragma region stl_headers
 #include <memory>
-#include <string>
 #pragma endregion
 
 #include <CefViewCoreGlobal.h>

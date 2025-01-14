@@ -10,7 +10,6 @@
 #pragma once
 
 #pragma region stl_headers
-#include <string>
 #include <unordered_map>
 #include <list>
 #pragma endregion
@@ -21,16 +20,16 @@
 
 struct FolderResourceMapping
 {
-  std::string path;
-  std::string url;
+  CefString path;
+  CefString url;
   int priority;
 };
 
 struct ArchiveResourceMapping
 {
-  std::string path;
-  std::string url;
-  std::string password;
+  CefString path;
+  CefString url;
+  CefString password;
   int priority;
 };
 
@@ -42,8 +41,8 @@ class CefViewBrowserApp
 
 private:
   // The name of the bridge object
-  std::string builtin_scheme_name_;
-  std::string bridge_object_name_;
+  CefString builtin_scheme_name_;
+  CefString bridge_object_name_;
   std::unordered_map<void*, CefViewBrowserClientDelegateInterface::WeakPtr> client_handler_map_;
 
   // The app delegate
@@ -54,8 +53,8 @@ private:
   std::list<ArchiveResourceMapping> archiveResourceMappingList_;
 
 public:
-  CefViewBrowserApp(const std::string& scheme_name,
-                    const std::string& bridge_name,
+  CefViewBrowserApp(const CefString& scheme_name,
+                    const CefString& bridge_name,
                     CefViewBrowserAppDelegateInterface::RefPtr delegate);
 
   ~CefViewBrowserApp();
@@ -66,30 +65,30 @@ public:
 
   CefViewBrowserClientDelegateInterface::RefPtr GetClientHandler(void* ctx);
 
-  void AddLocalFolderResource(const std::string& path, const std::string& url, int priority = 0);
+  void AddLocalFolderResource(const CefString& path, const CefString& url, int priority = 0);
   const std::list<FolderResourceMapping>& FolderResourceMappingList();
 
-  void AddArchiveResource(const std::string& path,
-                          const std::string& url,
-                          const std::string& password = "",
+  void AddArchiveResource(const CefString& path,
+                          const CefString& url,
+                          const CefString& password = "",
                           int priority = 0);
   const std::list<ArchiveResourceMapping>& ArchiveResourceMappingList();
 
-  bool AddGlobalCookie(const std::string& name,
-                       const std::string& value,
-                       const std::string& domain,
-                       const std::string& url);
+  bool AddGlobalCookie(const CefString& name,
+                       const CefString& value,
+                       const CefString& domain,
+                       const CefString& url);
 
   bool DeleteAllCookies();
 
-  bool AddCrossOriginWhitelistEntry(const std::string& sourceOrigin,
-                                    const std::string& targetSchema,
-                                    const std::string& targetDomain,
+  bool AddCrossOriginWhitelistEntry(const CefString& sourceOrigin,
+                                    const CefString& targetSchema,
+                                    const CefString& targetDomain,
                                     bool allowTargetSubdomains);
 
-  bool RemoveCrossOriginWhitelistEntry(const std::string& sourceOrigin,
-                                       const std::string& targetSchema,
-                                       const std::string& targetDomain,
+  bool RemoveCrossOriginWhitelistEntry(const CefString& sourceOrigin,
+                                       const CefString& targetSchema,
+                                       const CefString& targetDomain,
                                        bool allowTargetSubdomains);
 
   bool ClearCrossOriginWhitelistEntry();

@@ -1,9 +1,5 @@
 ﻿#include "CefViewRenderApp.h"
 
-#pragma region stl_headers
-#include <string>
-#pragma endregion
-
 #pragma region cef_headers
 #include <include/cef_browser.h>
 #include <include/cef_command_line.h>
@@ -14,7 +10,7 @@
 
 #include <CefViewCoreProtocol.h>
 
-CefViewRenderApp::CefViewRenderApp(const std::string& scheme_name, const std::string& bridge_name)
+CefViewRenderApp::CefViewRenderApp(const CefString& scheme_name, const CefString& bridge_name)
   : CefViewAppBase(scheme_name)
   , bridge_object_name_(bridge_name)
   , last_node_is_editable_(false)

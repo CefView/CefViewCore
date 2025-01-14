@@ -132,7 +132,7 @@ public:
   CefViewBridgeObject(CefRefPtr<CefBrowser> browser,
                       CefRefPtr<CefFrame> frame,
                       CefRefPtr<CefV8Value> global,
-                      const std::string& name);
+                      const CefString& name);
 
   /// <summary>
   ///
@@ -187,7 +187,7 @@ private:
   /// <summary>
   ///
   /// </summary>
-  std::string name_;
+  CefString name_;
 
   /// <summary>
   ///

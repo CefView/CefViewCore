@@ -15,8 +15,8 @@
 
 #include "CefViewSchemeHandler/CefViewSchemeHandlerFactory.h"
 
-CefViewBrowserApp::CefViewBrowserApp(const std::string& scheme_name,
-                                     const std::string& bridge_name,
+CefViewBrowserApp::CefViewBrowserApp(const CefString& scheme_name,
+                                     const CefString& bridge_name,
                                      CefViewBrowserAppDelegateInterface::RefPtr delegate)
   : builtin_scheme_name_(scheme_name.empty() ? kCefViewDefaultBuiltinSchemaName : scheme_name)
   , bridge_object_name_(bridge_name.empty() ? kCefViewDefaultBridgeObjectName : bridge_name)
@@ -26,7 +26,7 @@ CefViewBrowserApp::CefViewBrowserApp(const std::string& scheme_name,
 
 CefViewBrowserApp::~CefViewBrowserApp()
 {
-  log_debug("CefViewBrowserApp::~CefViewBrowserApp");
+  logD("CefViewBrowserApp::~CefViewBrowserApp");
 }
 
 void
@@ -51,7 +51,7 @@ CefViewBrowserApp::GetClientHandler(void* ctx)
 }
 
 void
-CefViewBrowserApp::AddLocalFolderResource(const std::string& path, const std::string& url, int priority /*= 0*/)
+CefViewBrowserApp::AddLocalFolderResource(const CefString& path, const CefString& url, int priority /*= 0*/)
 {
   folderResourceMappingList_.emplace_back(FolderResourceMapping{ path, url, priority });
 }
@@ -63,9 +63,9 @@ CefViewBrowserApp::FolderResourceMappingList()
 }
 
 void
-CefViewBrowserApp::AddArchiveResource(const std::string& path,
-                                      const std::string& url,
-                                      const std::string& password /*= ""*/,
+CefViewBrowserApp::AddArchiveResource(const CefString& path,
+                                      const CefString& url,
+                                      const CefString& password /*= ""*/,
                                       int priority /*= 0*/)
 {
   archiveResourceMappingList_.emplace_back(ArchiveResourceMapping{ path, url, password, priority });
@@ -78,15 +78,15 @@ CefViewBrowserApp::ArchiveResourceMappingList()
 }
 
 bool
-CefViewBrowserApp::AddGlobalCookie(const std::string& name,
-                                   const std::string& value,
-                                   const std::string& domain,
-                                   const std::string& url)
+CefViewBrowserApp::AddGlobalCookie(const CefString& name,
+                                   const CefString& value,
+                                   const CefString& domain,
+                                   const CefString& url)
 {
   CefCookie cookie;
-  CefString(&cookie.name).FromString(name);
-  CefString(&cookie.value).FromString(value);
-  CefString(&cookie.domain).FromString(domain);
+  CefString(&cookie.name) = name;
+  CefString(&cookie.value) = value;
+  CefString(&cookie.domain) = domain;
   return CefCookieManager::GetGlobalManager(nullptr)->SetCookie(CefString(url), cookie, nullptr);
 }
 
@@ -97,27 +97,21 @@ CefViewBrowserApp::DeleteAllCookies()
 }
 
 bool
-CefViewBrowserApp::AddCrossOriginWhitelistEntry(const std::string& sourceOrigin,
-                                                const std::string& targetSchema,
-                                                const std::string& targetDomain,
+CefViewBrowserApp::AddCrossOriginWhitelistEntry(const CefString& sourceOrigin,
+                                                const CefString& targetSchema,
+                                                const CefString& targetDomain,
                                                 bool allowTargetSubdomains)
 {
-  CefString source(sourceOrigin);
-  CefString schema(targetSchema);
-  CefString domain(targetDomain);
-  return CefAddCrossOriginWhitelistEntry(source, schema, domain, allowTargetSubdomains);
+  return CefAddCrossOriginWhitelistEntry(sourceOrigin, targetSchema, targetDomain, allowTargetSubdomains);
 }
 
 bool
-CefViewBrowserApp::RemoveCrossOriginWhitelistEntry(const std::string& sourceOrigin,
-                                                   const std::string& targetSchema,
-                                                   const std::string& targetDomain,
+CefViewBrowserApp::RemoveCrossOriginWhitelistEntry(const CefString& sourceOrigin,
+                                                   const CefString& targetSchema,
+                                                   const CefString& targetDomain,
                                                    bool allowTargetSubdomains)
 {
-  CefString source(sourceOrigin);
-  CefString schema(targetSchema);
-  CefString domain(targetDomain);
-  return CefRemoveCrossOriginWhitelistEntry(source, schema, domain, allowTargetSubdomains);
+  return CefRemoveCrossOriginWhitelistEntry(sourceOrigin, targetSchema, targetDomain, allowTargetSubdomains);
 }
 
 bool
@@ -146,7 +140,15 @@ CefViewBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registr
 {
   if (registrar) {
     // register custom scheme
-    registrar->AddCustomScheme(builtin_scheme_name_, 0);
+    int options = 0                                 //
+                  | CEF_SCHEME_OPTION_STANDARD      //
+                  | CEF_SCHEME_OPTION_SECURE        //
+                  | CEF_SCHEME_OPTION_CORS_ENABLED  //
+                  | CEF_SCHEME_OPTION_FETCH_ENABLED //
+                  | 0;
+    if (!registrar->AddCustomScheme(builtin_scheme_name_, options)) {
+      logE("faield to add built-in scheme: %s", builtin_scheme_name_.c_str());
+    }
   }
 }
 

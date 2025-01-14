@@ -10,7 +10,6 @@
 #pragma once
 
 #pragma region stl_headers
-#include <string>
 #include <unordered_map>
 #pragma endregion
 
@@ -110,7 +109,7 @@ public:
   /// <param name="dir_path"></param>
   /// <param name="url"></param>
   /// <param name="priority"></param>
-  void AddLocalDirectoryResourceProvider(const std::string& dir_path, const std::string& url, int priority = 0);
+  void AddLocalDirectoryResourceProvider(const CefString& dir_path, const CefString& url, int priority = 0);
 
   /// <summary>
   ///
@@ -119,9 +118,9 @@ public:
   /// <param name="url"></param>
   /// <param name="password"></param>
   /// <param name="priority"></param>
-  void AddArchiveResourceProvider(const std::string& archive_path,
-                                  const std::string& url,
-                                  const std::string& password,
+  void AddArchiveResourceProvider(const CefString& archive_path,
+                                  const CefString& url,
+                                  const CefString& password,
                                   int priority = 0);
 
   bool TriggerEvent(CefRefPtr<CefBrowser> browser, const CefFrameId& frame_id, const CefRefPtr<CefProcessMessage> msg);

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <CefViewCoreGlobal.h>
 #include <CefViewBrowserClientDelegate.h>
 

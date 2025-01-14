@@ -3,7 +3,6 @@
 #pragma once
 
 #pragma region stl_headers
-#include <string>
 #include <unordered_map>
 #pragma endregion
 
@@ -27,7 +26,7 @@ class CefViewRenderApp
   IMPLEMENT_REFCOUNTING(CefViewRenderApp);
 
 private:
-  std::string bridge_object_name_;
+  CefString bridge_object_name_;
 
   /// <summary>
   ///
@@ -49,7 +48,7 @@ public:
   /// <summary>
   ///
   /// </summary>
-  CefViewRenderApp(const std::string& scheme_name, const std::string& bridge_name);
+  CefViewRenderApp(const CefString& scheme_name, const CefString& bridge_name);
 
   /// <summary>
   ///

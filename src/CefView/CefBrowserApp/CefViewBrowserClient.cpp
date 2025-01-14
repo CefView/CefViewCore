@@ -58,15 +58,15 @@ CefViewBrowserClient::CloseAllBrowsers()
 }
 
 void
-CefViewBrowserClient::AddLocalDirectoryResourceProvider(const std::string& dir_path,
-                                                        const std::string& url,
+CefViewBrowserClient::AddLocalDirectoryResourceProvider(const CefString& dir_path,
+                                                        const CefString& url,
                                                         int priority /* = 0*/)
 {
   if (dir_path.empty() || url.empty())
     return;
 
   // convert to lower case
-  auto lower_url = url;
+  auto lower_url = url.ToString();
   std::transform(
     lower_url.begin(), lower_url.end(), lower_url.begin(), [](unsigned char c) { return std::tolower(c); });
 
@@ -75,9 +75,9 @@ CefViewBrowserClient::AddLocalDirectoryResourceProvider(const std::string& dir_p
 }
 
 void
-CefViewBrowserClient::AddArchiveResourceProvider(const std::string& archive_path,
-                                                 const std::string& url,
-                                                 const std::string& password,
+CefViewBrowserClient::AddArchiveResourceProvider(const CefString& archive_path,
+                                                 const CefString& url,
+                                                 const CefString& password,
                                                  int priority /*= 0*/)
 {
   if (archive_path.empty() || url.empty())

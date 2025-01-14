@@ -190,7 +190,7 @@ CefViewBridgeObject::V8Handler::ExecuteReportJSResult(CefRefPtr<CefV8Value> obje
 CefViewBridgeObject::CefViewBridgeObject(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          CefRefPtr<CefV8Value> global,
-                                         const std::string& name)
+                                         const CefString& name)
   : name_(name.empty() ? kCefViewDefaultBridgeObjectName : name)
   , bridgeObject_(nullptr)
   , reportJSResultFunction_(nullptr)
@@ -236,7 +236,7 @@ CefViewBridgeObject::CefViewBridgeObject(CefRefPtr<CefBrowser> browser,
                    static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                               V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                               V8_PROPERTY_ATTRIBUTE_DONTDELETE));
-  frame_->ExecuteJavaScript("console.info('[JSRuntime]:window." + name_ + " [object] created');", frame_->GetURL(), 0);
+  frame_->ExecuteJavaScript("console.info('[JSRuntime]:window." + name_.ToString() + " [object] created');", frame_->GetURL(), 0);
 
   // create "__cefview_report_js_result__" function and mount it on the global context(window)
   reportJSResultFunction_ = CefV8Value::CreateFunction(kCefViewReportJSResultFunctionName, v8Handler_);

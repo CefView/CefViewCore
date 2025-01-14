@@ -16,7 +16,7 @@ class CefViewOtherApp : public CefViewAppBase
   IMPLEMENT_REFCOUNTING(CefViewOtherApp);
 
 public:
-  CefViewOtherApp(const std::string& scheme_name);
+  CefViewOtherApp(const CefString& scheme_name);
 };
 
 #endif

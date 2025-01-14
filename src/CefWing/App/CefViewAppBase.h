@@ -22,10 +22,10 @@ class CefViewAppBase : public CefApp
   /// <summary>
   ///
   /// </summary>
-  std::string builtin_scheme_name_;
+  CefString builtin_scheme_name_;
 
 public:
-  CefViewAppBase(const std::string& scheme_name);
+  CefViewAppBase(const CefString& scheme_name);
 
   enum ProcessType
   {
@@ -47,14 +47,14 @@ public:
   /// </summary>
   /// <param name="command_line">The command line</param>
   /// <returns>The bridge object name</returns>
-  static std::string GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line);
+  static CefString GetBridgeObjectName(CefRefPtr<CefCommandLine> command_line);
 
   /// <summary>
   /// Gets the built-in scheme name
   /// </summary>
   /// <param name="command_line">The command line</param>
   /// <returns>The built-in scheme name</returns>
-  static std::string GetBuiltinSchemeName(CefRefPtr<CefCommandLine> command_line);
+  static CefString GetBuiltinSchemeName(CefRefPtr<CefCommandLine> command_line);
 
 private:
   /// <summary>
