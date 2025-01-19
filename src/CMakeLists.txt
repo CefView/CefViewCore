@@ -259,6 +259,16 @@ if(OS_WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}"
     "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+
+    # move libcef.lib to lib output
+    COMMAND ${CMAKE_COMMAND} -E rename
+    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/libcef.lib"
+    "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/libcef.lib"
+
+    # move cef_sandbox.lib to lib output
+    COMMAND ${CMAKE_COMMAND} -E rename
+    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/cef_sandbox.lib"
+    "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/cef_sandbox.lib"
   )
 endif() # OS_WINDOWS
 
