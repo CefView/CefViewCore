@@ -22,8 +22,7 @@ CefViewSchemeHandler::Open(CefRefPtr<CefRequest> request, bool& handle_request, 
   auto browserDelegate = handler_delegate_.lock();
   if (browserDelegate) {
     CefString cefStrUrl = request->GetURL();
-    CefFrameId frameId = frame_->GetIdentifier();
-    browserDelegate->processUrlRequest(browser_, frameId, cefStrUrl.ToString());
+    browserDelegate->processUrlRequest(browser_, frame_, cefStrUrl.ToString());
   }
 
   data_ = "ok";

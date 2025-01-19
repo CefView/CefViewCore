@@ -21,7 +21,7 @@ CefViewBrowserClient::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->addressChanged(browser, frame->GetIdentifier(), url);
+    delegate->addressChanged(browser, frame, url);
 }
 
 void

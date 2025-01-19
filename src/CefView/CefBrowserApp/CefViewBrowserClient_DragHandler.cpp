@@ -37,5 +37,5 @@ CefViewBrowserClient::OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser,
 
   auto delegate = client_delegate_.lock();
   if (delegate)
-    delegate->draggableRegionChanged(browser, regions);
+    delegate->draggableRegionChanged(browser, frame, regions);
 }

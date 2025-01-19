@@ -191,7 +191,7 @@ CefViewBrowserClient::OnRenderFocusedNodeChangedMessage(CefRefPtr<CefBrowser> br
     return false;
 
   bool focusOnEditableField = message->GetArgumentList()->GetBool(0);
-  delegate->focusedEditableNodeChanged(browser, frame->GetIdentifier(), focusOnEditableField);
+  delegate->focusedEditableNodeChanged(browser, frame, focusOnEditableField);
 
   return true;
 }
@@ -223,7 +223,7 @@ CefViewBrowserClient::OnRenderInvokeMethodMessage(CefRefPtr<CefBrowser> browser,
     return false;
   arguments->Remove(0);
 
-  delegate->invokeMethodNotify(browser, frame->GetIdentifier(), method, arguments);
+  delegate->invokeMethodNotify(browser, frame, method, arguments);
 
   return true;
 }
@@ -254,7 +254,7 @@ CefViewBrowserClient::OnRenderReportJSResultMessage(CefRefPtr<CefBrowser> browse
   // get script result
   auto result = arguments->GetValue(1);
 
-  delegate->reportJSResult(browser, frame->GetIdentifier(), context, result);
+  delegate->reportJSResult(browser, frame, context, result);
 
   return true;
 }

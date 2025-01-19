@@ -40,19 +40,19 @@ public:
   ///
   /// </summary>
   /// <param name="browser"></param>
-  /// <param name="frameId"></param>
+  /// <param name="frame"></param>
   /// <param name="url"></param>
-  virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const CefString& url) = 0;
+  virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame>& frame, const CefString& url) = 0;
 
   /// <summary>
   ///
   /// </summary>
   /// <param name="browser"></param>
-  /// <param name="frameId"></param>
+  /// <param name="frame"></param>
   /// <param name="query"></param>
   /// <param name="query_id"></param>
   virtual void processQueryRequest(CefRefPtr<CefBrowser>& browser,
-                                   const CefFrameId& frameId,
+                                   CefRefPtr<CefFrame>& frame,
                                    const CefString& query,
                                    const int64_t query_id) = 0;
 
@@ -60,21 +60,21 @@ public:
   ///
   /// </summary>
   /// <param name="browser"></param>
-  /// <param name="frameId"></param>
+  /// <param name="frame"></param>
   /// <param name="focusOnEditableNode"></param>
   virtual void focusedEditableNodeChanged(CefRefPtr<CefBrowser>& browser,
-                                          const CefFrameId& frameId,
+                                          CefRefPtr<CefFrame>& frame,
                                           bool focusOnEditableNode) = 0;
 
   /// <summary>
   ///
   /// </summary>
   /// <param name="browser"></param>
-  /// <param name="frameId"></param>
+  /// <param name="frame"></param>
   /// <param name="method"></param>
   /// <param name="arguments"></param>
   virtual void invokeMethodNotify(CefRefPtr<CefBrowser>& browser,
-                                  const CefFrameId& frameId,
+                                  CefRefPtr<CefFrame>& frame,
                                   const CefString& method,
                                   const CefRefPtr<CefListValue>& arguments) = 0;
 
@@ -82,11 +82,11 @@ public:
   ///
   /// </summary>
   /// <param name="browser"></param>
-  /// <param name="frameId"></param>
+  /// <param name="frame"></param>
   /// <param name="context"></param>
   /// <param name="result"></param>
   virtual void reportJSResult(CefRefPtr<CefBrowser>& browser,
-                              const CefFrameId& frameId,
+                              CefRefPtr<CefFrame>& frame,
                               const CefString& context,
                               const CefRefPtr<CefValue>& result) = 0;
 
@@ -127,7 +127,7 @@ public:
 
   // display handler
 #pragma region DisplayHandler
-  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, const CefFrameId& frameId, const CefString& url) = 0;
+  virtual void addressChanged(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame>& frame, const CefString& url) = 0;
 
   virtual void titleChanged(CefRefPtr<CefBrowser>& browser, const CefString& title) = 0;
 
@@ -171,6 +171,7 @@ public:
   }
 
   virtual void draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
+                                      CefRefPtr<CefFrame>& frame,
                                       const std::vector<CefDraggableRegion>& regions) = 0;
 #pragma endregion
 
@@ -214,7 +215,7 @@ public:
   // life span handler
 #pragma region LifeSpanHandler
   virtual bool onBeforePopup(CefRefPtr<CefBrowser>& browser,
-                             const CefFrameId& frameId,
+                             CefRefPtr<CefFrame>& frame,
                              const CefString& targetUrl,
                              const CefString& targetFrameName,
                              CefLifeSpanHandler::WindowOpenDisposition targetDisposition,

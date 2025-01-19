@@ -86,7 +86,7 @@ if(NOT CEFVIEW_WING_NAME)
 endif()
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewCoreProtocol.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/CefViewCoreProtocol.h.in"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/CefViewCoreProtocol.h"
   @ONLY
 )
@@ -145,53 +145,8 @@ if(NOT CEF_SDK_VERSION)
   set(CEF_SDK_VERSION ${DEFAULT_CEF_SDK_VERSION} CACHE STRING "Cef binary SDK version" FORCE)
 endif()
 
-include(DownloadCef)
-
-if(${CMAKE_VERSION} GREATER "3.11")
-  cmake_policy(SET CMP0074 NEW)
-endif()
-
-if(${CMAKE_VERSION} GREATER "3.12")
-  cmake_policy(SET CMP0077 NEW)
-endif()
-
-if(OS_WINDOWS)
-  add_link_options(/DEBUG)
-
-  if(USE_SANDBOX)
-    # cef_sandbox.lib is MT already, must keep the same with it
-    set(CEF_RUNTIME_LIBRARY_FLAG "/MT" CACHE STRING "Use static runtime")
-    add_compile_options("/MT$<$<CONFIG:Debug>:d>")
-  else()
-    # either MT or MD is supported
-    set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
-    add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
-  endif()
-else()
-  add_compile_options(
-    "-g"
-    "$<$<CONFIG:DEBUG>:-O0>"
-    "$<$<CONFIG:RELEASE>:-O3>"
-  )
-endif()
-
-# Append CEF root dir to CMAKE_MODULE_PATH
-set(CEF_ROOT "${CEF_SDK_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${CEF_ROOT}/cmake")
-find_package(CEF REQUIRED)
-
-# Add libcef dll wrapper
-add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
-
-if(USE_SANDBOX AND(OS_WINDOWS OR OS_MACOS))
-  add_definitions(-DCEF_USE_SANDBOX)
-
-  # message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}" )
-  # Logical target used to link the cef_sandbox library.
-  ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-endif()
-
-PRINT_CEF_CONFIG()
+# setup CEF
+include(SetupCef)
 
 # ##############################################################
 set(CMAKE_SUPPRESS_REGENERATION TRUE)
@@ -230,3 +185,20 @@ if(IS_CURRENT_IN_SUBDIRECTORY)
   set(CefViewCore_CEF_RESOURCE_DIR ${CEF_RESOURCE_DIR} PARENT_SCOPE)
   set(CefViewCore_CEF_INCLUDE_DIR ${CEF_ROOT}/include PARENT_SCOPE)
 endif()
+
+install(
+  DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/lib"
+  DESTINATION "$<CONFIG>"
+)
+install(
+  DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/bin"
+  DESTINATION "$<CONFIG>"
+)
+install(
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+  DESTINATION "include/CefViewCore"
+)
+install(
+  DIRECTORY "${CEF_SDK_DIR}/include"
+  DESTINATION "include/cef"
+)
