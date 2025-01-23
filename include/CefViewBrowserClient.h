@@ -144,11 +144,11 @@ public:
   /// <param name="url"></param>
   /// <param name="context"></param>
   /// <returns></returns>
-  int64_t AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             const CefString& code,
-                             const CefString& url,
-                             const CefString& context);
+  bool AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<CefFrame> frame,
+                          const CefString& code,
+                          const CefString& url,
+                          const CefString& context);
 
 protected:
   bool DispatchRenderMessage(CefRefPtr<CefBrowser> browser,

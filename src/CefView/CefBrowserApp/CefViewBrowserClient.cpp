@@ -131,7 +131,7 @@ CefViewBrowserClient::ResponseQuery(const int64_t query, bool success, const Cef
   return false;
 }
 
-int64_t
+bool
 CefViewBrowserClient::AsyncExecuteJSCode(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          const CefString& code,
