@@ -333,6 +333,9 @@ protected:
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
   virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
+#if CEF_VERSION_MAJOR > 131
+                             int popup_id,
+#endif
                              const CefString& target_url,
                              const CefString& target_frame_name,
                              CefLifeSpanHandler::WindowOpenDisposition target_disposition,
