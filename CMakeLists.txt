@@ -157,16 +157,6 @@ set(CefViewCore_INCLUDE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-if(OS_MACOS)
-  # CEF Helper app suffixes, format: "<name suffix>:<target suffix>:<plist suffix>"
-  set(CEF_HELPER_APP_SUFFIXES
-    "::"
-    " (GPU):_gpu:.gpu"
-    " (Plugin):_plugin:.plugin"
-    " (Renderer):_renderer:.renderer"
-  )
-endif()
-
 add_subdirectory(src)
 
 if(OS_MACOS)
