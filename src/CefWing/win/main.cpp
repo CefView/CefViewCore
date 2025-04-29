@@ -21,6 +21,16 @@
 #include "../App/CefViewOtherApp.h"
 #include "../App/CefViewRenderApp.h"
 
+// Use discrete GPU by default.
+extern "C"
+{
+  // http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
+  __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+
+  // https://gpuopen.com/learn/amdpowerxpressrequesthighperformance
+  _declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001;
+}
+
 int
 CefViewWingMain(HINSTANCE hInstance)
 {
