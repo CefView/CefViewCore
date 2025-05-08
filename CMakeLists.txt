@@ -5,8 +5,12 @@ cmake_minimum_required(VERSION 3.19.1)
 project(CefViewCore)
 
 option(USE_SANDBOX "Enable CEF Sandbox" OFF)
+
 option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
 
+option(USE_GPU_OPTIMUS "Enable GPU Optimus (Only for Windows and usually not needed)" OFF)
+
+# add camke modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Determine the project architecture.
@@ -52,6 +56,10 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(OS_WINDOWS 1)
   add_definitions(-DOS_WINDOWS=1)
+
+  if(USE_GPU_OPTIMUS)
+    add_definitions(-DENABLE_GPU_OPTIMUS=1)
+  endif()
 endif()
 
 # Only generate Debug and Release configuration types.
