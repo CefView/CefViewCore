@@ -15,6 +15,20 @@
 
 #include "CefViewSchemeHandler/CefViewSchemeHandlerFactory.h"
 
+#if defined(OS_LINUX) && defined(_LIBCPP_VERBOSE_ABORT)
+#pragma message "**** detected std::__libcpp_verbose_abort, override it"
+// Provide own definition for `std::__libcpp_verbose_abort` to avoid dependency
+// on the version provided by libc++.
+void std::__libcpp_verbose_abort(char const* format, ...) {
+  va_list list;
+  va_start(list, format);
+  std::vfprintf(stderr, format, list);
+  va_end(list);
+
+  std::abort();
+}
+#endif
+
 CefViewBrowserApp::CefViewBrowserApp(const CefString& scheme_name,
                                      const CefString& bridge_name,
                                      CefViewBrowserAppDelegateInterface::RefPtr delegate)
