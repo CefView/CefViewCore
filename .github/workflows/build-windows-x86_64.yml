@@ -1,4 +1,4 @@
-name: Build on Windows
+name: Build on Windows x86_64
 
 on:
   push:
@@ -45,8 +45,19 @@ jobs:
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        run: cmake -B ${{github.workspace}}/build -A x64 -DPROJECT_ARCH=x86_64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: cmake -B ${{github.workspace}}/build -A x64 -DPROJECT_ARCH=x86_64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX:PATH=${{github.workspace}}/install
 
       - name: Build
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Install
+        # Collect the output
+        run: cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Create artifact
+        uses: actions/upload-artifact@v4
+        # Upload artifact
+        with:
+          name: CefViewCore.Windows.x86_64
+          path: ${{github.workspace}}/install
