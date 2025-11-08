@@ -11,6 +11,7 @@
 #include <CefViewCoreProtocol.h>
 
 #include "CefViewQueryHandler/CefViewQueryHandler.h"
+#include "CefViewDirectoryProvider/CefViewDirectoryProvider.h"
 
 CefViewBrowserClient::CefViewBrowserClient(CefRefPtr<CefViewBrowserApp> app,
                                            CefViewBrowserClientDelegateInterface::RefPtr delegate)
@@ -71,7 +72,11 @@ CefViewBrowserClient::AddLocalDirectoryResourceProvider(const CefString& dir_pat
     lower_url.begin(), lower_url.end(), lower_url.begin(), [](unsigned char c) { return std::tolower(c); });
 
   std::string identifier;
-  resource_manager_->AddDirectoryProvider(lower_url, dir_path, priority, identifier);
+  // we use CefViewDirectoryProvider to support HTTP range request
+  resource_manager_->AddProvider( //
+    new CefViewDirectoryProvider(lower_url, dir_path),
+    priority,
+    identifier);
 }
 
 void
