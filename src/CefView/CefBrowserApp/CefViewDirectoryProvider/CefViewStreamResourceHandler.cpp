@@ -144,11 +144,18 @@ Make416Response(CefRefPtr<CefResponse>& response, const int64_t& file_size)
 std::string
 GetLastModifiedTime(const std::string& file_path)
 {
+  using namespace std::chrono;
+  using namespace std::filesystem;
+
   std::error_code ec;
-  auto lwt = std::filesystem::last_write_time(file_path, ec);
-  auto tt = std::chrono::system_clock::to_time_t( //
-    std::chrono::system_clock::now() + (lwt - std::filesystem::file_time_type::clock::now()));
-  std::tm tm = *std::gmtime(&tt);
+  auto ftime = last_write_time(file_path, ec);
+  if (ec)
+    return {};
+
+  auto tt = system_clock::to_time_t(system_clock::now() +
+                                    duration_cast<system_clock::duration>(ftime - file_time_type::clock::now()));
+  auto tm = *std::gmtime(&tt);
+
   std::ostringstream oss;
   oss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");
   return oss.str();
@@ -160,11 +167,9 @@ CefViewStreamResourceHandler::CefViewStreamResourceHandler( //
   const CefString& mime_type,
   CefRefPtr<CefStreamReader> stream)
   : file_path_(file_path)
-  , file_size_(0)
   , mime_type_(mime_type)
   , stream_(stream)
-  , bytes_start_(0)
-  , bytes_end_(-1)
+  , file_size_(0)
 {
   DCHECK(!mime_type_.empty());
   header_map_ = {
@@ -242,7 +247,6 @@ CefViewStreamResourceHandler::Skip(int64_t bytes_to_skip,
   if (0 == stream_->Seek(bytes_to_skip, SEEK_SET)) {
     // success;
     bytes_skipped = bytes_to_skip;
-    bytes_start_ = bytes_skipped;
     return true;
   }
 
@@ -268,7 +272,6 @@ CefViewStreamResourceHandler::Read(void* data_out,
     bytes_read += read;
   } while (read != 0 && bytes_read < bytes_to_read);
 
-  bytes_end_ += (bytes_start_ + bytes_read);
   return (bytes_read > 0);
 }
 

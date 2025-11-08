@@ -16,3 +16,4 @@ CefViewCore was written in only C++ (minor Objective-C code is used in CefViewWi
 | Windows-x64 | [![Build on Windows](https://github.com/CefView/CefViewCore/actions/workflows/build-windows-x86_64.yml/badge.svg)](https://github.com/CefView/CefViewCore/actions/workflows/build-windows-x86_64.yml) |
 |  macOS-x64  | [![Build on macOS](https://github.com/CefView/CefViewCore/actions/workflows/build-macos-x86_64.yml/badge.svg)](https://github.com/CefView/CefViewCore/actions/workflows/build-macos-x86_64.yml) |
 |  Linux-x64  | [![Build on Linux](https://github.com/CefView/CefViewCore/actions/workflows/build-linux-x86_64.yml/badge.svg)](https://github.com/CefView/CefViewCore/actions/workflows/build-linux-x86_64.yml) |
+|  Linux-arm64  | [![Build on Linux](https://github.com/CefView/CefViewCore/actions/workflows/build-linux-arm64.yml/badge.svg)](https://github.com/CefView/CefViewCore/actions/workflows/build-linux-arm64.yml) |

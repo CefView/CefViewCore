@@ -30,8 +30,6 @@ private:
   const CefRefPtr<CefStreamReader> stream_;
 
   int64_t file_size_;
-  int64_t bytes_start_;
-  int64_t bytes_end_;
   CefString range_header_;
   CefResponse::HeaderMap header_map_;
 
