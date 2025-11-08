@@ -144,80 +144,39 @@ PRINT_CEF_CONFIG()
 # #################################################################################
 # Stage 4. Read CEF version and generated CefVersion.h
 # set need configure QCefView_global to false
+message(STATUS "${CEF_ROOT}/include/cef_version.h")
+file(READ "${CEF_ROOT}/include/cef_version.h" cef_sdk_ver_content)
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/CefVersion.h")
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/include/CefVersion.h" cef_local_ver_content)
+else()
+  set(local_cef_version_content "")
+endif()
+
 set(Need_Config_CefVersion_File FALSE)
 
-message(STATUS "${CEF_ROOT}/include/cef_version.h")
-file(READ "${CEF_ROOT}/include/cef_version.h" cef_version_content)
+macro(compare_cef_version _verSeg _verReg _sdkContent _localContent)
+  # read version seg value from CEF header file
+  string(REGEX MATCH "#define ${_verSeg} ${_verReg}" _ "${_sdkContent}")
+  set(${_verSeg} ${CMAKE_MATCH_1} CACHE STRING "CEF Version" FORCE)
 
-# ------------ check CEF_VERSION
-string(REGEX MATCH "#define CEF_VERSION \"([a-z0-9\.\+\-]+)\"" _ ${cef_version_content})
+  string(REGEX MATCH "#define ${_verSeg} ${_verReg}" _ "${_localContent}")
+  set(LOCAL_${_verSeg} ${CMAKE_MATCH_1} CACHE STRING "CEF Version" FORCE)
 
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_VERSION}")
-  set(CEF_VERSION ${CMAKE_MATCH_1} CACHE STRING "CEF Version" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_VERSION: ${CEF_VERSION} - Updated!")
-else()
-  message(STATUS "CEF_VERSION: ${CEF_VERSION} - No Change!")
-endif()
+  if(NOT "${${_verSeg}}" STREQUAL "${LOCAL_${_verSeg}}")
+    set(Need_Config_CefVersion_File TRUE)
+    message(STATUS "${_verSeg} Changed: ${LOCAL_${_verSeg}} -> ${${_verSeg}}")
+  else()
+    message(STATUS "${_verSeg} Same: ${LOCAL_${_verSeg}} = ${${_verSeg}}")
+  endif()
+endmacro(compare_cef_version)
 
-# ------------ check CEF_VERSION_MAJOR
-string(REGEX MATCH "#define CEF_VERSION_MAJOR ([0-9]+)" _ ${cef_version_content})
-
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_VERSION_MAJOR}")
-  set(CEF_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE STRING "CEF Major Version" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_VERSION_MAJOR: ${CEF_VERSION_MAJOR} - Updated!")
-else()
-  message(STATUS "CEF_VERSION_MAJOR: ${CEF_VERSION_MAJOR} - No Change!")
-endif()
-
-# ------------ check CEF_VERSION_MINOR
-string(REGEX MATCH "#define CEF_VERSION_MINOR ([0-9]+)" _ ${cef_version_content})
-
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_VERSION_MINOR}")
-  set(CEF_VERSION_MINOR ${CMAKE_MATCH_1} CACHE STRING "CEF Minor Version" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_VERSION_MINOR: ${CEF_VERSION_MINOR} - Updated!")
-else()
-  message(STATUS "CEF_VERSION_MINOR: ${CEF_VERSION_MINOR} - No Change!")
-endif()
-
-# ------------ check CEF_VERSION_PATCH
-string(REGEX MATCH "#define CEF_VERSION_PATCH ([0-9]+)" _ ${cef_version_content})
-
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_VERSION_PATCH}")
-  set(CEF_VERSION_PATCH ${CMAKE_MATCH_1} CACHE STRING "CEF Patch Version" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_VERSION_PATCH: ${CEF_VERSION_PATCH} - Updated!")
-else()
-  message(STATUS "CEF_VERSION_PATCH: ${CEF_VERSION_PATCH} - No Change!")
-endif()
-
-# ------------ check CEF_COMMIT_NUMBER
-string(REGEX MATCH "#define CEF_COMMIT_NUMBER ([0-9]+)" _ ${cef_version_content})
-
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_COMMIT_NUMBER}")
-  set(CEF_COMMIT_NUMBER ${CMAKE_MATCH_1} CACHE STRING "CEF Commit Number" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_COMMIT_NUMBER: ${CEF_COMMIT_NUMBER} - Updated!")
-else()
-  message(STATUS "CEF_COMMIT_NUMBER: ${CEF_COMMIT_NUMBER} - No Change!")
-endif()
-
-# ------------ check CEF_COMMIT_HASH
-string(REGEX MATCH "#define CEF_COMMIT_HASH \"([a-z0-9]+)\"" _ ${cef_version_content})
-
-if(NOT "${CMAKE_MATCH_1}" STREQUAL "${CEF_COMMIT_HASH}")
-  set(CEF_COMMIT_HASH ${CMAKE_MATCH_1} CACHE STRING "CEF Commit Hash" FORCE)
-  set(Need_Config_CefVersion_File TRUE)
-  message(STATUS "CEF_COMMIT_HASH: ${CEF_COMMIT_HASH} - Updated!")
-else()
-  message(STATUS "CEF_COMMIT_HASH: ${CEF_COMMIT_HASH} - No Change!")
-endif()
-
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/CefVersion.h")
-  set(Need_Config_CefVersion_File TRUE)
-endif()
+compare_cef_version(CEF_VERSION "\"([a-z0-9\.\+\-]+)\"" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
+compare_cef_version(CEF_VERSION_MAJOR "([0-9]+)" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
+compare_cef_version(CEF_VERSION_MINOR "([0-9]+)" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
+compare_cef_version(CEF_VERSION_PATCH "([0-9]+)" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
+compare_cef_version(CEF_COMMIT_NUMBER "([0-9]+)" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
+compare_cef_version(CEF_COMMIT_HASH "\"([a-z0-9]+)\"" "${cef_sdk_ver_content}" "${cef_local_ver_content}")
 
 if(${Need_Config_CefVersion_File})
   message(STATUS "Need to configure CefVersion.h file")
