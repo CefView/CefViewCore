@@ -230,7 +230,7 @@ if(OS_WINDOWS)
     ${CEF_SANDBOX_STANDARD_LIBS}
   )
 
-  if(USE_SANDBOX)
+  if(USE_SANDBOX AND CEF_VERSION_MAJOR LESS 138)
     list(APPEND _helper_libs cef_sandbox_lib)
   endif()
 
@@ -246,11 +246,11 @@ if(OS_WINDOWS)
 
     # embed the manifest file
     COMMAND mt.exe
-    -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\"
+    -manifest "\"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\""
     -outputresource:\"$<TARGET_FILE:${CEFVIEW_WING_NAME}>\"
 
     # copy cef binary files
-    # .1 copy the cef resources to output dir
+    # 1 copy the cef resources to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_RESOURCE_DIR}"
     "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
@@ -264,12 +264,19 @@ if(OS_WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E rename
     "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/libcef.lib"
     "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/libcef.lib"
-
-    # move cef_sandbox.lib to lib output
-    COMMAND ${CMAKE_COMMAND} -E rename
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/cef_sandbox.lib"
-    "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/cef_sandbox.lib"
   )
+
+  if(CEF_VERSION_MAJOR LESS 138)
+    add_custom_command(
+      TARGET ${CEFVIEW_WING_NAME}
+      POST_BUILD
+
+      # move cef_sandbox.lib to lib output
+      COMMAND ${CMAKE_COMMAND} -E rename
+      "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/cef_sandbox.lib"
+      "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/cef_sandbox.lib"
+    )
+  endif()
 endif() # OS_WINDOWS
 
 if(OS_LINUX)
