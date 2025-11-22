@@ -266,7 +266,7 @@ if(OS_WINDOWS)
     "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/libcef.lib"
   )
 
-  if(CEF_VERSION_MAJOR LESS 138)
+  if(USE_SANDBOX AND CEF_VERSION_MAJOR LESS 138)
     add_custom_command(
       TARGET ${CEFVIEW_WING_NAME}
       POST_BUILD
