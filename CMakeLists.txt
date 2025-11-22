@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.19.1)
 project(CefViewCore)
 
-option(USE_SANDBOX "Enable CEF Sandbox" OFF)
+option(USE_SANDBOX "Enable CEF Sandbox (Deprecated since CEF 138)" OFF)
 
 option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
 

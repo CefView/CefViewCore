@@ -70,7 +70,7 @@ if(OS_WINDOWS)
     ${CEF_STANDARD_LIBS}
   )
 
-  if(USE_SANDBOX)
+  if(USE_SANDBOX AND(CEF_VERSION_MAJOR LESS 138))
     list(APPEND CefViewCore_LIBS cef_sandbox_lib)
   endif()
 
@@ -135,7 +135,7 @@ if(OS_MACOS)
     ${CEF_STANDARD_LIBS}
   )
 
-  if(USE_SANDBOX)
+  if(USE_SANDBOX AND(CEF_VERSION_MAJOR LESS 138))
     list(APPEND CefViewCore_LIBS cef_sandbox_lib)
   endif()
 
@@ -230,7 +230,7 @@ if(OS_WINDOWS)
     ${CEF_SANDBOX_STANDARD_LIBS}
   )
 
-  if(USE_SANDBOX AND CEF_VERSION_MAJOR LESS 138)
+  if(USE_SANDBOX AND(CEF_VERSION_MAJOR LESS 138))
     list(APPEND _helper_libs cef_sandbox_lib)
   endif()
 
@@ -367,7 +367,7 @@ if(OS_MACOS)
     ${CEF_STANDARD_LIBS}
   )
 
-  if(USE_SANDBOX)
+  if(USE_SANDBOX AND(CEF_VERSION_MAJOR LESS 138))
     list(APPEND CefViewWing_LIBS cef_sandbox_lib)
   endif()
 

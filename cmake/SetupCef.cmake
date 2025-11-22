@@ -105,16 +105,8 @@ endif()
 
 if(OS_WINDOWS)
   add_link_options(/DEBUG)
-
-  if(USE_SANDBOX)
-    # cef_sandbox.lib is MT already, must keep the same with it
-    set(CEF_RUNTIME_LIBRARY_FLAG "/MT" CACHE STRING "Use static runtime")
-    add_compile_options("/MT$<$<CONFIG:Debug>:d>")
-  else()
-    # either MT or MD is supported
-    set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
-    add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
-  endif()
+  set(CEF_RUNTIME_LIBRARY_FLAG "/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>" CACHE STRING "Use static runtime" FORCE)
+  add_compile_options("/M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>")
 else()
   add_compile_options(
     "-g"
@@ -130,14 +122,6 @@ find_package(CEF REQUIRED)
 
 # Add libcef dll wrapper
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
-
-if(USE_SANDBOX AND(OS_WINDOWS OR OS_MACOS))
-  add_definitions(-DCEF_USE_SANDBOX)
-
-  # message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}" )
-  # Logical target used to link the cef_sandbox library.
-  ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-endif()
 
 PRINT_CEF_CONFIG()
 
@@ -188,4 +172,28 @@ if(${Need_Config_CefVersion_File})
   )
 else()
   message(STATUS "No need to configure CefVersion.h file")
+endif()
+
+# config CEF sandbox
+if(CEF_VERSION_MAJOR LESS 138 AND USE_SANDBOX)
+  if(OS_WINDOWS)
+    if(STATIC_CRT)
+      # sandbox enabled
+      add_definitions(-DCEF_USE_SANDBOX)
+      message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
+      ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+    else()
+      # error, on windows platform CEF sandbox is only supported when:
+      # 1. Static CRT linkage (MT/MTd)
+      # 2. CEF version less than 138
+      message(FATAL_ERROR "CEF sandbox feature on windows requires: CEF version < 138 and STATIC CRT linkage")
+    endif()
+  endif()
+
+  if(OS_MACOS)
+    # sandbox enabled
+    add_definitions(-DCEF_USE_SANDBOX)
+    message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
+    ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+  endif()
 endif()
