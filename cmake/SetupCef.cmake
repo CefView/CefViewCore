@@ -175,25 +175,51 @@ else()
 endif()
 
 # config CEF sandbox
-if(CEF_VERSION_MAJOR LESS 138 AND USE_SANDBOX)
+if(USE_SANDBOX)
+  # sandbox enable
   if(OS_WINDOWS)
-    if(STATIC_CRT)
-      # sandbox enabled
-      add_definitions(-DCEF_USE_SANDBOX)
-      message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
-      ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+    # Window
+    if(CEF_VERSION_MAJOR LESS 138)
+      # for CEF below 138 we need to link the cef_sandbox.lib
+      if(STATIC_CRT)
+        # sandbox enabled
+        add_definitions(-DCEF_USE_SANDBOX)
+        message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
+        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+      else()
+        string(JOIN "\n" SANDBOX_CONFIG_ERROR_MESSAGE
+          " ####################################################################################################################"
+          " #                                                                                                                  #"
+          " # CefViewCore:CEF sandbox on Windows requires STATIC_CRT=ON                                                        #"
+          " #                                                                                                                  #"
+          " ####################################################################################################################"
+          " "
+        )
+        message(FATAL_ERROR ${SANDBOX_CONFIG_ERROR_MESSAGE})
+      endif() # STATIC_CRT
     else()
-      # error, on windows platform CEF sandbox is only supported when:
-      # 1. Static CRT linkage (MT/MTd)
-      # 2. CEF version less than 138
-      message(FATAL_ERROR "CEF sandbox feature on windows requires: CEF version < 138 and STATIC CRT linkage")
-    endif()
-  endif()
+      # for CEF 138+, sandbox is not supported
+      string(JOIN "\n" SANDBOX_CONFIG_ERROR_MESSAGE
+        " ####################################################################################################################"
+        " #                                                                                                                  #"
+        " # CEF sandbox on Windows is not supported when >= 138, please refer to:                                            #"
+        " # https://bitbucket.org/chromiumembedded/cef/wiki/SandboxSetup.md#markdown-header-building-bootstrap-windows       #"
+        " #                                                                                                                  #"
+        " ####################################################################################################################"
+        " "
+      )
+      message(FATAL_ERROR ${SANDBOX_CONFIG_ERROR_MESSAGE})
+    endif() # CEF_VERSION_MAJOR LESS 138
+  endif() # OS_WINDOWS
 
   if(OS_MACOS)
-    # sandbox enabled
+    # macOS
     add_definitions(-DCEF_USE_SANDBOX)
-    message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
-    ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-  endif()
-endif()
+
+    if(CEF_VERSION_MAJOR LESS 138)
+      # for CEF below 138 we need to link the cef_sandbox.lib
+      message(STATUS "cef_sandbox_lib path:" "${CEF_SANDBOX_LIB_DEBUG}," "${CEF_SANDBOX_LIB_RELEASE}")
+      ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+    endif() # CEF_VERSION_MAJOR LESS 138
+  endif() # OS_MACOS
+endif() # USE_SANDBOX
