@@ -41,8 +41,7 @@ CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 
   bool result = false;
 
-  auto delegate = client_delegate_.lock();
-  if (delegate) {
+  if (auto delegate = client_delegate_.lock()) {
     bool disableJSAccess = no_javascript_access ? *no_javascript_access : false;
     result = delegate->onBeforePopup(browser,
                                      frame,
@@ -78,9 +77,9 @@ CefViewBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     message_router_->AddHandler(message_router_handler_.get(), false);
   }
 
-  auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (auto delegate = client_delegate_.lock()) {
     delegate->onAfterCreate(browser);
+  }
 
   browser_map_[browser->GetIdentifier()] = browser;
 }
@@ -90,14 +89,14 @@ CefViewBrowserClient::DoClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
-  bool ignoreClose = false;
-
   if (browser->IsPopup()) {
-    return ignoreClose;
+    // return false for pop-up browser
+    return false;
   }
 
-  auto delegate = client_delegate_.lock();
-  if (delegate) {
+  bool ignoreClose = false;
+
+  if (auto delegate = client_delegate_.lock()) {
     if (close_by_native_) {
       // close by native
       ignoreClose = delegate->doClose(browser);
@@ -119,9 +118,9 @@ CefViewBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
-  auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (auto delegate = client_delegate_.lock()) {
     delegate->onBeforeClose(browser);
+  }
 
   message_router_->OnBeforeClose(browser);
 

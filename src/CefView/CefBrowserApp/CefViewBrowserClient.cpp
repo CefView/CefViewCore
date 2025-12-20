@@ -50,11 +50,26 @@ CefViewBrowserClient::~CefViewBrowserClient()
 void
 CefViewBrowserClient::CloseAllBrowsers()
 {
-  close_by_native_ = true;
-  auto browsers = browser_map_;
-  for (auto& kv : browsers) {
-    kv.second->StopLoad();
-    kv.second->GetHost()->CloseBrowser(true);
+  CefRefPtr<CefViewBrowserClient> self = this;
+  auto closeTask = [self]() {
+    // set flags
+    self->is_closing_ = true;
+    self->close_by_native_ = true;
+
+    // close all browser in current client instance
+    auto browserMap = self->browser_map_;
+    for (auto& kv : browserMap) {
+      if (kv.second) {
+        kv.second->StopLoad();
+        kv.second->GetHost()->CloseBrowser(true);
+      }
+    }
+  };
+
+  if (CefCurrentlyOn(TID_UI)) {
+    closeTask();
+  } else {
+    CefPostTask(TID_UI, new CefLambdaTask(std::move(closeTask)));
   }
 }
 

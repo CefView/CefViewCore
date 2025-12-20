@@ -17,8 +17,9 @@
 #pragma region cef_headers
 #include <include/cef_app.h>
 #include <include/cef_client.h>
-#include <include/cef_version.h>
 #include <include/cef_parser.h>
+#include <include/cef_task.h>
+#include <include/cef_version.h>
 #include <include/wrapper/cef_helpers.h>
 #include <include/wrapper/cef_message_router.h>
 #include <include/wrapper/cef_resource_manager.h>
@@ -40,5 +41,37 @@ struct std::hash<CefFrameId>
   }
 };
 #endif // CEF_VERSION_MAJOR < 122
+
+/// <summary>
+/// Task for rendering operations.
+/// </summary>
+class CefLambdaTask : public CefTask
+{
+  IMPLEMENT_REFCOUNTING(CefLambdaTask);
+
+  /// <summary>
+  /// Function that contains the lambda work to be executed.
+  /// </summary>
+  std::function<void()> work;
+
+public:
+  /// <summary>
+  /// Constructor for the task.
+  /// </summary>
+  CefLambdaTask(std::function<void()>&& t)
+    : work(std::move(t))
+  {
+  }
+
+  /// <summary>
+  /// Executes the task.
+  /// </summary>
+  void Execute() override
+  {
+    if (work) {
+      work();
+    }
+  }
+};
 
 #endif // CefViewCoreGlobal_h
