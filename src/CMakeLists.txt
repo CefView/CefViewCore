@@ -193,27 +193,32 @@ if(OS_WINDOWS)
   endif()
 
   # Create Helper executable target.
-  add_executable(${CEFVIEW_WING_NAME} WIN32
+  add_executable(CefViewWing WIN32
     ${CefViewCore_SHARED_SRC_FILES}
     ${CefViewWing_SRC_FILES}
     ${CefViewWing_PLATFORM_SRC_FILES}
     ${CefViewWing_WIN_RESOURCE_FILE}
   )
 
-  SET_EXECUTABLE_TARGET_PROPERTIES(${CEFVIEW_WING_NAME})
-  target_link_options(${CEFVIEW_WING_NAME}
+  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
+  set_target_properties(CefViewWing
+    PROPERTIES
+    OUTPUT_NAME ${CEFVIEW_WING_NAME}
+  )
+
+  target_link_options(CefViewWing
     PRIVATE
     "/MANIFEST"
   )
 
-  target_include_directories(${CEFVIEW_WING_NAME}
+  target_include_directories(CefViewWing
     PUBLIC
     ${CefViewCore_INCLUDE_PATH}
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
   )
 
-  add_dependencies(${CEFVIEW_WING_NAME}
+  add_dependencies(CefViewWing
     libcef_lib
     libcef_dll_wrapper
   )
@@ -234,46 +239,46 @@ if(OS_WINDOWS)
     list(APPEND _helper_libs cef_sandbox_lib)
   endif()
 
-  target_link_libraries(${CEFVIEW_WING_NAME}
+  target_link_libraries(CefViewWing
     ${_helper_libs}
   )
 
   # Add the Helper as a dependency of the main executable target.
-  add_dependencies(CefViewCore ${CEFVIEW_WING_NAME})
+  add_dependencies(CefViewCore CefViewWing)
 
-  add_custom_command(TARGET ${CEFVIEW_WING_NAME}
+  add_custom_command(TARGET CefViewWing
     POST_BUILD
 
     # embed the manifest file
     COMMAND mt.exe
     -manifest "\"${CMAKE_CURRENT_SOURCE_DIR}\\CefWing\\win\\CefViewWing.manifest\""
-    -outputresource:\"$<TARGET_FILE:${CEFVIEW_WING_NAME}>\"
+    -outputresource:\"$<TARGET_FILE:CefViewWing>\"
 
     # copy cef binary files
     # 1 copy the cef resources to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_RESOURCE_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+    "$<TARGET_FILE_DIR:CefViewWing>"
 
     # copy all cef binary files to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+    "$<TARGET_FILE_DIR:CefViewWing>"
 
     # move libcef.lib to lib output
     COMMAND ${CMAKE_COMMAND} -E rename
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/libcef.lib"
+    "$<TARGET_FILE_DIR:CefViewWing>/libcef.lib"
     "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/libcef.lib"
   )
 
   if(USE_SANDBOX AND CEF_VERSION_MAJOR LESS 138)
     add_custom_command(
-      TARGET ${CEFVIEW_WING_NAME}
+      TARGET CefViewWing
       POST_BUILD
 
       # move cef_sandbox.lib to lib output
       COMMAND ${CMAKE_COMMAND} -E rename
-      "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/cef_sandbox.lib"
+      "$<TARGET_FILE_DIR:CefViewWing>/cef_sandbox.lib"
       "$<TARGET_LINKER_FILE_DIR:libcef_dll_wrapper>/cef_sandbox.lib"
     )
   endif()
@@ -291,28 +296,29 @@ if(OS_LINUX)
   )
 
   # Create Helper executable target.
-  add_executable(${CEFVIEW_WING_NAME}
+  add_executable(CefViewWing
     ${CefViewCore_SHARED_SRC_FILES}
     ${CefViewWing_SRC_FILES}
     ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
-  SET_EXECUTABLE_TARGET_PROPERTIES(${CEFVIEW_WING_NAME})
+  SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
 
-  set_target_properties(${CEFVIEW_WING_NAME}
+  set_target_properties(CefViewWing
     PROPERTIES
     INSTALL_RPATH "$ORIGIN"
     BUILD_WITH_INSTALL_RPATH TRUE
+    OUTPUT_NAME ${CEFVIEW_WING_NAME}
   )
 
-  target_include_directories(${CEFVIEW_WING_NAME}
+  target_include_directories(CefViewWing
     PUBLIC
     ${CefViewCore_INCLUDE_PATH}
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/Shared"
   )
 
-  add_dependencies(${CEFVIEW_WING_NAME}
+  add_dependencies(CefViewWing
     libcef_lib
     libcef_dll_wrapper
   )
@@ -323,30 +329,30 @@ if(OS_LINUX)
     ${CEF_STANDARD_LIBS}
   )
 
-  target_link_libraries(${CEFVIEW_WING_NAME}
+  target_link_libraries(CefViewWing
     ${_helper_libs}
   )
 
   # Add the Helper as a dependency of the main executable target.
-  add_dependencies(CefViewCore ${CEFVIEW_WING_NAME})
+  add_dependencies(CefViewCore CefViewWing)
 
   # copy cef binary files
-  add_custom_command(TARGET ${CEFVIEW_WING_NAME}
+  add_custom_command(TARGET CefViewWing
     POST_BUILD
 
     # copy cef binary files
     # .1 copy the cef resources to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_RESOURCE_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+    "$<TARGET_FILE_DIR:CefViewWing>"
 
     # copy all cef binary files to output dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}"
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+    "$<TARGET_FILE_DIR:CefViewWing>"
   )
 
-  SET_LINUX_SUID_PERMISSIONS(${CEFVIEW_WING_NAME} "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>/chrome-sandbox")
+  SET_LINUX_SUID_PERMISSIONS(CefViewWing "$<TARGET_FILE_DIR:CefViewWing>/chrome-sandbox")
 endif() # OS_LINUX
 
 if(OS_MACOS)
@@ -380,7 +386,7 @@ if(OS_MACOS)
     list(GET _suffix_list 2 _plist_suffix)
 
     # Define Helper target and output names.
-    set(_helper_target "${CEFVIEW_WING_NAME}${_target_suffix}")
+    set(_helper_target "CefViewWing${_target_suffix}")
     set(_helper_output_name "${CEFVIEW_WING_NAME}${_name_suffix}")
 
     # Create Helper executable target.
@@ -425,16 +431,16 @@ if(OS_MACOS)
   endforeach()
 
   # copy cef binary files to the output folder
-  add_custom_command(TARGET ${CEFVIEW_WING_NAME}
+  add_custom_command(TARGET CefViewWing
     POST_BUILD
 
     # copy the cef framework to output directory
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-    "$<TARGET_BUNDLE_DIR:${CEFVIEW_WING_NAME}>/../Chromium Embedded Framework.framework"
+    "$<TARGET_BUNDLE_DIR:CefViewWing>/../Chromium Embedded Framework.framework"
     VERBATIM
   )
 endif() # OS_MACOS
 
-# add alias for heper process target
-add_executable(CefViewCore::CefViewWing ALIAS ${CEFVIEW_WING_NAME})
+# add alias for helper process target
+add_executable(CefViewCore::CefViewWing ALIAS CefViewWing)

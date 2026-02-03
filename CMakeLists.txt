@@ -88,7 +88,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/$<CONFIG>/
 if(NOT CEFVIEW_WING_NAME)
   set(DEFAULT_CEFVIEW_WING_NAME "CefViewWing")
   message(STATUS
-    "CEFVIEW_WING_NAME is empty, use default version ${DEFAULT_CEFVIEW_WING_NAME}\n"
+    "CEFVIEW_WING_NAME is empty, use default output name: ${DEFAULT_CEFVIEW_WING_NAME}\n"
     "You can change the name by adding -DCEFVIEW_WING_NAME=xxx to commandline for generation")
   set(CEFVIEW_WING_NAME ${DEFAULT_CEFVIEW_WING_NAME} CACHE STRING "CefViewWing Helper Process Name" FORCE)
 endif()
@@ -185,9 +185,9 @@ set(CefViewCore_INCLUDE_PATH
 add_subdirectory(src)
 
 if(OS_MACOS)
-  set(CefViewCore_HELPER_TARGETS "${CEFVIEW_WING_NAME};${CEFVIEW_WING_NAME}_gpu;${CEFVIEW_WING_NAME}_plugin;${CEFVIEW_WING_NAME}_renderer")
+  set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
 else()
-  set(CefViewCore_HELPER_TARGETS "${CEFVIEW_WING_NAME}")
+  set(CefViewCore_HELPER_TARGETS "CefViewWing")
 endif()
 
 get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
