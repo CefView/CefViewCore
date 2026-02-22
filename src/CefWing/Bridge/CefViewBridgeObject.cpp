@@ -2,10 +2,11 @@
 
 #include <include/cef_version.h>
 
+#include <cmath>
+
 #include <Common/CefViewCoreLog.h>
 
 #include <CefViewCoreProtocol.h>
-
 
 #if CEF_VERSION_MAJOR >= 119
 class CefViewArrayBuffer : public CefV8ArrayBufferReleaseCallback
@@ -236,7 +237,8 @@ CefViewBridgeObject::CefViewBridgeObject(CefRefPtr<CefBrowser> browser,
                    static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                               V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                               V8_PROPERTY_ATTRIBUTE_DONTDELETE));
-  frame_->ExecuteJavaScript("console.info('[JSRuntime]:window." + name_.ToString() + " [object] created');", frame_->GetURL(), 0);
+  frame_->ExecuteJavaScript(
+    "console.info('[JSRuntime]:window." + name_.ToString() + " [object] created');", frame_->GetURL(), 0);
 
   // create "__cefview_report_js_result__" function and mount it on the global context(window)
   reportJSResultFunction_ = CefV8Value::CreateFunction(kCefViewReportJSResultFunctionName, v8Handler_);
@@ -362,9 +364,15 @@ CefViewBridgeObject::V8ValueToCefValue(CefV8Value* v8Value)
     cefValue->SetBool(v8Value->GetBoolValue());
   else if (v8Value->IsInt())
     cefValue->SetInt(v8Value->GetIntValue());
-  else if (v8Value->IsDouble())
-    cefValue->SetDouble(v8Value->GetDoubleValue());
-  else if (v8Value->IsString())
+  else if (v8Value->IsDouble()) {
+    auto v = v8Value->GetDoubleValue();
+    if (std::isfinite(v)) {
+      cefValue->SetDouble(v);
+    } else {
+      // convert non-representable value(NaN/+inf/-inf) to string
+      cefValue->SetString(std::to_string(v));
+    }
+  } else if (v8Value->IsString())
     cefValue->SetString(v8Value->GetStringValue());
   else if (v8Value->IsArrayBuffer()) {
 #if CEF_VERSION_MAJOR >= 119
