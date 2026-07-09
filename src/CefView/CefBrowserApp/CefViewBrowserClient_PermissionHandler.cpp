@@ -8,6 +8,7 @@
 
 #include <Common/CefViewCoreLog.h>
 
+#if CEF_VERSION_MAJOR >= 106
 CefRefPtr<CefPermissionHandler>
 CefViewBrowserClient::GetPermissionHandler()
 {
@@ -59,3 +60,4 @@ CefViewBrowserClient::OnDismissPermissionPrompt(CefRefPtr<CefBrowser> browser,
   if (delegate)
     delegate->onDismissPermissionPrompt(browser, prompt_id, result);
 }
+#endif
