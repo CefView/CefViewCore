@@ -186,13 +186,9 @@ set(CefViewCore_INCLUDE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-add_subdirectory(src)
+set(CefViewCore_HELPER_TARGETS "")
 
-if(OS_MACOS)
-  set(CefViewCore_HELPER_TARGETS "CefViewWing;CefViewWing_gpu;CefViewWing_plugin;CefViewWing_renderer")
-else()
-  set(CefViewCore_HELPER_TARGETS "CefViewWing")
-endif()
+add_subdirectory(src)
 
 get_directory_property(IS_CURRENT_IN_SUBDIRECTORY PARENT_DIRECTORY)
 

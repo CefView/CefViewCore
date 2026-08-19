@@ -200,6 +200,8 @@ if(OS_WINDOWS)
     ${CefViewWing_WIN_RESOURCE_FILE}
   )
 
+  set(CefViewCore_HELPER_TARGETS "CefViewWing" PARENT_SCOPE)
+
   SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
   set_target_properties(CefViewWing
     PROPERTIES
@@ -302,6 +304,8 @@ if(OS_LINUX)
     ${CefViewWing_PLATFORM_SRC_FILES}
   )
 
+  set(CefViewCore_HELPER_TARGETS "CefViewWing" PARENT_SCOPE)
+
   SET_EXECUTABLE_TARGET_PROPERTIES(CefViewWing)
 
   set_target_properties(CefViewWing
@@ -389,6 +393,8 @@ if(OS_MACOS)
     set(_helper_target "CefViewWing${_target_suffix}")
     set(_helper_output_name "${CEFVIEW_WING_NAME}${_name_suffix}")
 
+    list(APPEND CefViewCore_HELPER_TARGETS ${_helper_target})
+
     # Create Helper executable target.
     add_executable(${_helper_target} MACOSX_BUNDLE
       ${CefViewCore_SHARED_SRC_FILES}
@@ -429,6 +435,8 @@ if(OS_MACOS)
     # Add the Helper as a dependency of the main executable target.
     add_dependencies(CefViewCore ${_helper_target})
   endforeach()
+
+  set(CefViewCore_HELPER_TARGETS "${CefViewCore_HELPER_TARGETS}" PARENT_SCOPE)
 
   # copy cef binary files to the output folder
   add_custom_command(TARGET CefViewWing
