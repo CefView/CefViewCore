@@ -175,6 +175,27 @@ public:
                                       const std::vector<CefDraggableRegion>& regions) = 0;
 #pragma endregion
 
+  // find handler
+#pragma region FindHandler
+  /// <summary>
+  /// Called to report find results.
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="identifier"></param>
+  /// <param name="count"></param>
+  /// <param name="selectionRect"></param>
+  /// <param name="activeMatchOrdinal"></param>
+  /// <param name="finalUpdate"></param>
+  virtual void onFindResult(CefRefPtr<CefBrowser>& browser,
+                            int identifier,
+                            int count,
+                            const CefRect& selectionRect,
+                            int activeMatchOrdinal,
+                            bool finalUpdate)
+  {
+  }
+#pragma endregion
+
   // focus handler
 #pragma region FocusHandler
   virtual void takeFocus(CefRefPtr<CefBrowser>& browser, bool next) = 0;
