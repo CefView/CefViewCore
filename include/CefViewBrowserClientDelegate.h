@@ -123,6 +123,25 @@ public:
   {
     return false;
   };
+
+#if CEF_VERSION_MAJOR >= 126
+  /// <summary>
+  /// Same as onFileDialog plus the raw accept extensions and descriptions
+  /// that CEF 126+ provides. The default implementation discards the extra
+  /// information and falls back to onFileDialog.
+  /// </summary>
+  virtual bool onFileDialogEx(CefRefPtr<CefBrowser>& browser,
+                              CefBrowserHost::FileDialogMode mode,
+                              const CefString& title,
+                              const CefString& default_file_path,
+                              const std::vector<CefString>& accept_filters,
+                              const std::vector<CefString>& accept_extensions,
+                              const std::vector<CefString>& accept_descriptions,
+                              CefRefPtr<CefFileDialogCallback>& callback)
+  {
+    return onFileDialog(browser, mode, title, default_file_path, accept_filters, callback);
+  }
+#endif
 #pragma endregion
 
   // display handler
