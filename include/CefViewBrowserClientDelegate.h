@@ -273,6 +273,40 @@ public:
                          bool& handled) = 0;
 #pragma endregion
 
+  // request handler
+#pragma region RequestHandler
+  /// <summary>
+  /// Called on the UI thread before browser navigation.
+  /// Return true to cancel the navigation.
+  /// </summary>
+  virtual bool onBeforeBrowse(CefRefPtr<CefBrowser>& browser,
+                              CefRefPtr<CefFrame>& frame,
+                              CefRefPtr<CefRequest>& request,
+                              bool user_gesture,
+                              bool is_redirect)
+  {
+    return false;
+  }
+
+  /// <summary>
+  /// Called when the render process terminates abnormally.
+  /// </summary>
+  /// <param name="browser"></param>
+  /// <param name="status"></param>
+  /// <param name="errorCode">Only available for CEF 124 and above.</param>
+  /// <param name="errorString">Only available for CEF 124 and above.</param>
+  virtual void onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
+                                         TerminationStatus status
+#if CEF_VERSION_MAJOR >= 124
+                                         ,
+                                         int errorCode,
+                                         const CefString& errorString
+#endif
+  )
+  {
+  }
+#pragma endregion
+
 #if CEF_VERSION_MAJOR >= 106
 #pragma region PermissionHandler
   virtual bool onRequestMediaAccessPermission(CefRefPtr<CefBrowser>& browser,

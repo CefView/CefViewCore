@@ -24,6 +24,10 @@ CefViewBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   message_router_->OnBeforeBrowse(browser, frame);
+
+  if (auto delegate = client_delegate_.lock())
+    return delegate->onBeforeBrowse(browser, frame, request, user_gesture, is_redirect);
+
   return false;
 }
 
@@ -71,6 +75,14 @@ CefViewBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   message_router_->OnRenderProcessTerminated(browser);
+
+  if (auto delegate = client_delegate_.lock()) {
+#if CEF_VERSION_MAJOR >= 124
+    delegate->onRenderProcessTerminated(browser, status, error_code, error_string);
+#else
+    delegate->onRenderProcessTerminated(browser, status);
+#endif
+  }
 
   if (browser) {
     CefString url = browser->GetMainFrame()->GetURL();
