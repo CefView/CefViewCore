@@ -315,7 +315,7 @@ public:
   /// <param name="errorCode">Only available for CEF 124 and above.</param>
   /// <param name="errorString">Only available for CEF 124 and above.</param>
   virtual void onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
-                                         TerminationStatus status
+                                         CefRequestHandler::TerminationStatus status
 #if CEF_VERSION_MAJOR >= 124
                                          ,
                                          int errorCode,
