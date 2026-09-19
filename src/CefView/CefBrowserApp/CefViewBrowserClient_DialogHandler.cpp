@@ -44,7 +44,17 @@ CefViewBrowserClient::OnFileDialog(CefRefPtr<CefBrowser> browser,
 #endif
 {
   auto delegate = client_delegate_.lock();
-  if (delegate)
+  if (delegate) {
+#if CEF_VERSION_MAJOR >= 126
+    return delegate->onFileDialogEx(browser,
+                                    mode,
+                                    title,
+                                    default_file_path,
+                                    accept_filters,
+                                    accept_extensions,
+                                    accept_descriptions,
+                                    callback);
+#else
     return delegate->onFileDialog(browser,
                                   mode,
                                   title,
@@ -54,6 +64,8 @@ CefViewBrowserClient::OnFileDialog(CefRefPtr<CefBrowser> browser,
                                   selected_accept_filter,
 #endif
                                   callback);
+#endif
+  }
 
   return false;
 }
