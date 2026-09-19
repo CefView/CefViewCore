@@ -17,4 +17,7 @@ CefViewBrowserClient::OnFindResult(CefRefPtr<CefBrowser> browser,
                                    bool finalUpdate)
 {
   CEF_REQUIRE_UI_THREAD();
+
+  if (auto delegate = client_delegate_.lock())
+    delegate->onFindResult(browser, identifier, count, selectionRect, activeMatchOrdinal, finalUpdate);
 }
