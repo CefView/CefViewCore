@@ -496,6 +496,10 @@ CefViewBridgeObject::RemoveEventListener(const CefString& name, const EventListe
         break;
       }
     }
+
+    if (eventListenerList.empty()) {
+      eventListenerListMap_.erase(itListenerList);
+    }
   }
 }
 
@@ -508,8 +512,9 @@ CefViewBridgeObject::ExecuteEventListener(const CefString eventName, CefRefPtr<C
     return;
   }
 
-  EventListenerList& eventListenerList = itListenerList->second;
-  for (auto listener : eventListenerList) {
+  // iterate over a snapshot so reentrant add/remove during JS execution cannot invalidate iterators
+  EventListenerList eventListenerList = itListenerList->second;
+  for (const auto& listener : eventListenerList) {
     listener.context_->Enter();
 
     // convert argument list from CefValue to CefV8Value

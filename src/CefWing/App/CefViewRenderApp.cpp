@@ -201,7 +201,7 @@ CefViewRenderApp::ExecuteEventListener(CefRefPtr<CefBrowser> browser,
     auto frameId = frame->GetIdentifier();
     auto it = frame_id_to_bridge_obj_map_.find(frameId);
     if (it != frame_id_to_bridge_obj_map_.end()) {
-      const CefRefPtr<CefViewBridgeObject>& objClient = it->second;
+      CefRefPtr<CefViewBridgeObject> objClient = it->second;
       objClient->ExecuteEventListener(name, args);
     }
   }
